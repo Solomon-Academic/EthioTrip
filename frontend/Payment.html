@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EthioTrip | Secure Checkout</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="payment.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="container header-flex">
+            <a href="home.html" class="logo">Ethio<span>Trip</span></a>
+
+            <nav class="nav-links">
+                <a href="home.html"><i class="fas fa-home"></i> Home</a>
+                <a href="destination.html">Destinations</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="stepper-bar">
+        <div class="container">
+            <div class="stepper">
+                <div class="step active" id="step1">1. Amount</div>
+                <div class="step" id="step2">2. Payment</div>
+                <div class="step" id="step3">3. Receipt</div>
+            </div>
+        </div>
+    </div>
+
+    <main class="container">
+        <section id="phase-amount" class="card-panel text-center">
+            <h1>Welcome to EthioTrip</h1>
+            <p>Please enter your booking details to begin.</p>
+            
+            <div class="form-group" style="max-width: 400px; margin: 0 auto 20px auto;">
+                <label style="display: block; text-align: left; font-weight: bold; margin-bottom: 5px;">Booking Amount ($)</label>
+                <div class="input-lockup">
+                    <span class="currency-label">$</span>
+                    <input type="number" id="inputAmount" placeholder="0.00">
+                </div>
+            </div>
+
+            <div class="form-group" style="max-width: 400px; margin: 0 auto 20px auto;">
+                <label style="display: block; text-align: left; font-weight: bold; margin-bottom: 5px;">Full Name</label>
+                <input type="text" id="inputUserName" placeholder="Enter your full name" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem;">
+            </div>
+
+            <button class="btn-primary" id="btnProceed">Check Discount & Proceed</button>
+        </section>
+
+        <section id="phase-checkout" style="display: none;">
+            <div class="method-tabs">
+                <button class="tab-btn active" data-method="card">Credit Card</button>
+                <button class="tab-btn tele-tab" data-method="telebirr">Telebirr</button>
+                <button class="tab-btn" data-method="paypal">PayPal</button>
+                <button class="tab-btn" data-method="mobile">Bank Transfer</button>
+                <button class="tab-btn" data-method="cash">Cash</button>
+            </div>
+
+            <div class="checkout-grid">
+                <div class="form-container">
+                    <form id="form-card" class="payment-view">
+                        <h3>Secure Card Payment</h3>
+                        <div class="form-group">
+                            <label>Cardholder Name</label>
+                            <input type="text" id="cardName" placeholder="Full Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Card Number</label>
+                            <input type="text" id="cardNumber" placeholder="0000 0000 0000 0000" maxlength="19" required>
+                        </div>
+                        <div class="split">
+                            <div class="form-group"><label>Expiry</label><input type="text" id="expiry" placeholder="MM/YY" maxlength="5" required></div>
+                            <div class="form-group"><label>CVV</label><input type="password" placeholder="***" maxlength="3" required></div>
+                        </div>
+                        <button type="submit" class="btn-primary">Pay Securely</button>
+                    </form>
+
+                    <div id="view-telebirr" class="payment-view" style="display:none;">
+                        <div style="background:#00a1e4; color:white; padding:15px; border-radius:10px; margin-bottom:20px; text-align:center; font-weight:bold;">Telebirr Digital Wallet</div>
+                        <div class="form-group">
+                            <label>Mobile Number</label>
+                            <input type="text" id="telePhone" placeholder="09XXXXXXXX" maxlength="10">
+                        </div>
+                        <button type="button" class="btn-primary" id="btnTelebirr" style="background:#00a1e4;">Confirm Push Request</button>
+                    </div>
+
+                    <div id="view-paypal" class="payment-view" style="display:none;">
+                        <h3>PayPal Transfer</h3>
+                        <p style="font-size: 0.9rem; margin-bottom:15px; color:var(--text-light);">Send funds to: <strong>payments@ethiotrip.com</strong></p>
+                        <div class="form-group">
+                            <label>PayPal Transaction ID</label>
+                            <input type="text" id="paypalRef" placeholder="Enter Transaction ID">
+                        </div>
+                        <button type="button" class="btn-primary" id="btnPaypal" style="background:#ffc439; color:black;">Verify PayPal Payment</button>
+                    </div>
+
+                    <div id="view-mobile" class="payment-view" style="display:none;">
+                        <h3>CBE / Bank Transfer</h3>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 20px; font-size: 0.9rem; border-left: 4px solid var(--accent);">
+                            <p><strong>Bank:</strong> Commercial Bank of Ethiopia (CBE)</p>
+                            <p><strong>Account:</strong> EthioTrip Travel & Tours</p>
+                            <p><strong>Account No:</strong> 1000456982341</p>
+                        </div>
+                        <div class="form-group">
+                            <label>Transaction Reference / FT Number</label>
+                            <input type="text" id="bankRef" placeholder="e.g. FT23098X...">
+                        </div>
+                        <button type="button" class="btn-primary" id="btnMobile">Confirm Bank Transfer</button>
+                    </div>
+
+                    <div id="view-cash" class="payment-view" style="display:none; text-align: center;">
+                        <h3>Pay at Our Office</h3>
+                        <p style="margin: 20px 0; color:var(--text-light);">Please visit our headquarters in Addis Ababa (Bole Atlas) to complete your payment in person.</p>
+                        <button type="button" class="btn-primary" id="btnCash">Confirm & Get Order ID</button>
+                    </div>
+                </div>
+
+                <aside class="summary-card">
+                    <h3>Invoice Summary</h3>
+                    <div class="row"><span>Subtotal</span><span id="sum-sub">$0.00</span></div>
+                    <div id="discount-row" class="row" style="display:none; color: var(--accent); font-weight: bold;">
+                        <span>Loyalty Discount</span><span id="sum-discount">-$0.00</span>
+                    </div>
+                    <div class="row"><span>VAT (10%)</span><span id="sum-tax">$0.00</span></div>
+                    <div class="row total"><span>Total Payable</span><span id="sum-total">$0.00</span></div>
+                </aside>
+            </div>
+        </section>
+
+        <section id="phase-receipt" style="display: none;"></section>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div class="footer-col">
+                <a href="#" class="logo">Ethio<span>Trip</span></a>
+                <p style="margin-top: 15px; color: #bbb;">Authentic Ethiopian journeys curated for the modern explorer.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Explore</h4>
+                <ul>
+                    <li><a href="Destination.html">Destinations</a></li>
+                    <li><a href="packages.html">Packages</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Connect</h4>
+                <ul>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="about.html">Contact Us</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">© 2025 EthioTrip Ethiopia. All rights reserved.</div>
+    </footer>
+
+    <script src="payment.js"></script>
+</body>
+</html>

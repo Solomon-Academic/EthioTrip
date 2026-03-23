@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EthioTrip | Habesha Travel Packages</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <link rel="stylesheet" href="packages.css">
+  </head>
+  <body>
+    <nav class="navbar">
+      <a href="home.html" class="logo">Ethio<span>Trip</span></a>
+      <ul class="nav-links">
+        <li>
+          <a href="home.html"><i class="fas fa-home"></i> Home</a>
+        </li>
+         <li><a href="Destination.html">Destinations</a></li>
+      </ul>
+    </nav>
+
+    <header class="section-header">
+      <h2>EthioTrip Packages</h2>
+      <p>
+        Authentic Ethiopian journeys inspired by our heritage, unity, and the
+        spirit of togetherness.
+      </p>
+    </header>
+
+    <div class="packages-container" id="packageList">
+      <div class="pkg-card" onclick="selectPkg(this, 'Meskerem Journey')">
+        <span class="pkg-tag">Common Choice</span>
+        <h3>Meskerem Journey</h3>
+        <div class="pkg-price">$350<span>/person</span></div>
+        <span class="pkg-duration"
+          ><i class="far fa-clock"></i> 3 Days / 2 Nights</span
+        >
+        <ul class="pkg-features">
+          <li><i class="fas fa-bus"></i> Tourist Coaster & Local Travel</li>
+          <li>
+            <i class="fas fa-hotel"></i> Comfortable 4-star Habesha hospitality
+          </li>
+          <li>
+            <i class="fas fa-landmark"></i> Historical site guides & entrance
+          </li>
+        </ul>
+        <button class="btn-pkg">Select Meskerem</button>
+      </div>
+
+      <div class="pkg-card" onclick="selectPkg(this, 'Gojo Expedition')">
+        <span class="pkg-tag">Vibrant Adventure</span>
+        <h3>Gojo Expedition</h3>
+        <div class="pkg-price">$550<span>/person</span></div>
+        <span class="pkg-duration"
+          ><i class="far fa-clock"></i> 4 Days / 3 Nights</span
+        >
+        <ul class="pkg-features">
+          <li><i class="fas fa-truck-monster"></i> Private Transport</li>
+          <li>
+            <i class="fas fa-campground"></i> Traditional gear & Habesha cook
+          </li>
+          <li>
+            <i class="fas fa-map-marked-alt"></i> Off-road community permits
+          </li>
+        </ul>
+        <button class="btn-pkg">Select Gojo</button>
+      </div>
+
+      <div class="pkg-card" onclick="selectPkg(this, 'Negus Luxury')">
+        <span class="pkg-tag">VIP / Premium</span>
+        <h3>Negus Luxury</h3>
+        <div class="pkg-price">$1000<span>/person</span></div>
+        <span class="pkg-duration"
+          ><i class="far fa-clock"></i> 2 Days / 1 Night</span
+        >
+        <ul class="pkg-features">
+          <li>
+            <i class="fas fa-helicopter"></i> Private Air Flight or Business
+            Class
+          </li>
+          <li><i class="fas fa-crown"></i> Elite Royal Resort & Lodge stay</li>
+          <li>
+            <i class="fas fa-utensils"></i> VIP private guide & sunset dinner
+          </li>
+        </ul>
+        <button class="btn-pkg">Select Negus</button>
+      </div>
+
+      <div class="pkg-card" onclick="selectPkg(this, 'Gadaa Heritage')">
+        <span class="pkg-tag">Cultural Roots</span>
+        <h3>Gadaa Heritage</h3>
+        <div class="pkg-price">$800<span>/person</span></div>
+        <span class="pkg-duration"
+          ><i class="far fa-clock"></i> 5 Days / 4 Nights</span
+        >
+        <ul class="pkg-features">
+          <li><i class="fas fa-car"></i> Private Land Crusier</li>
+          <li><i class="fas fa-home"></i> Authentic Village homestays</li>
+          <li>
+            <i class="fas fa-users"></i> Traditional ceremony participation
+          </li>
+        </ul>
+        <button class="btn-pkg">Select Gadaa</button>
+      </div>
+
+      <div class="pkg-card" onclick="selectPkg(this, 'Tizita Express')">
+        <span class="pkg-tag">Short Escape</span>
+        <h3>Tizita Express</h3>
+        <div class="pkg-price">$200<span>/person</span></div>
+        <span class="pkg-duration"
+          ><i class="far fa-clock"></i> 24 to 36 Hours</span
+        >
+        <ul class="pkg-features">
+          <li>
+            <i class="fas fa-plane-arrival"></i> Quick Flight & Airport Shuttle
+          </li>
+          <li><i class="fas fa-bed"></i> 1 Night premium city stay</li>
+          <li><i class="fas fa-bolt"></i> Focused 1-day historical tour</li>
+        </ul>
+        <button class="btn-pkg">Select Tizita</button>
+      </div>
+
+      <div class="pkg-card" onclick="selectPkg(this, 'Abyssinia Trek')">
+        <span class="pkg-tag">Eco & Nature</span>
+        <h3>Abyssinia Trek</h3>
+        <div class="pkg-price">$750<span>/person</span></div>
+        <span class="pkg-duration"
+          ><i class="far fa-clock"></i> 6 Days / 5 Nights</span
+        >
+        <ul class="pkg-features">
+          <li><i class="fas fa-hiking"></i> Local Bus & Mule trekking</li>
+          <li><i class="fas fa-leaf"></i> Eco-lodge stay & nature fees</li>
+          <li>
+            <i class="fas fa-binoculars"></i> Endemic wildlife tracking guide
+          </li>
+        </ul>
+        <button class="btn-pkg">Select Abyssinia</button>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <a href="#" class="logo">Ethio<span>Trip</span></a>
+          <p style="margin-top: 15px; color: #bbb">
+            Authentic Ethiopian journeys curated for the modern explorer.
+          </p>
+          <div class="social-links">
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <ul>
+            <li><a href="Destination.html">Destinations</a></li>
+            <li><a href="packages.html">Packages</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Connect</h4>
+           <ul>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="about.html">Contact Us</a></li>
+            </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        © 2025 EthioTrip Ethiopia. All rights reserved.
+      </div>
+    </footer>
+
+    <div class="selection-toast" id="toast">Package Selected!</div>
+
+    <script src="packages.js">
+      
+    </script>
+  </body>
+</html>

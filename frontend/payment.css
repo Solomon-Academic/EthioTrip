@@ -1,0 +1,373 @@
+/* --- ROOT VARIABLES --- */
+:root {
+    --primary: #2d3436;
+    --accent: #d4af37; /* EthioTrip Gold */
+    --text-light: #636e72;
+    --bg-white: #ffffff;
+    --shadow: 0 15px 35px rgba(0,0,0,0.1);
+    --tele: #00a1e4;
+}
+
+/* --- BASE STYLES --- */
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+    font-family: 'Poppins', sans-serif; 
+}
+
+body { 
+    background-color: #fcfcfc; 
+    color: var(--primary); 
+    overflow-x: hidden; 
+}
+
+.container { 
+    max-width: 1100px; 
+    margin: 0 auto; 
+    padding: 0 20px; 
+}
+
+/* --- NAVIGATION --- */
+.navbar {
+    padding: 1.5rem 0;
+    background: white;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+}
+
+.header-flex { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+}
+
+.logo { 
+    font-size: 1.6rem; 
+    font-weight: 600; 
+    text-decoration: none; 
+    color: var(--primary); 
+}
+
+.logo span { 
+    color: var(--accent); 
+}
+
+.nav-links { 
+    display: flex; 
+    gap: 25px; 
+    align-items: center; 
+}
+
+.nav-links a { 
+    text-decoration: none; 
+    color: var(--primary); 
+    font-size: 0.95rem; 
+    font-weight: 500; 
+    transition: 0.3s; 
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+}
+
+.nav-links a:hover { 
+    color: var(--accent); 
+}
+
+/* --- STEPPER --- */
+.stepper-bar { 
+    background: white; 
+    padding: 20px 0; 
+    border-bottom: 1px solid #eee; 
+    margin-bottom: 40px; 
+}
+
+.stepper { 
+    display: flex; 
+    justify-content: center; 
+    gap: 40px; 
+}
+
+.step { 
+    font-size: 0.9rem; 
+    color: #ccc; 
+    font-weight: 600; 
+    position: relative; 
+}
+
+.step.active { 
+    color: var(--accent); 
+}
+
+/* --- PAYMENT COMPONENTS --- */
+.card-panel { 
+    background: white; 
+    padding: 40px; 
+    border-radius: 20px; 
+    box-shadow: var(--shadow); 
+    max-width: 600px; 
+    margin: 0 auto; 
+}
+
+.text-center { 
+    text-align: center; 
+}
+
+.input-lockup { 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    margin: 25px 0; 
+    font-size: 2.5rem; 
+}
+
+.input-lockup input { 
+    border: none; 
+    border-bottom: 2px solid #eee; 
+    width: 220px; 
+    text-align: center; 
+    outline: none; 
+    font-size: 2.5rem; 
+    color: var(--primary); 
+    font-weight: 600; 
+}
+
+.currency-label { 
+    color: var(--accent); 
+    margin-right: 10px; 
+}
+
+.checkout-grid { 
+    display: grid; 
+    grid-template-columns: 1fr 350px; 
+    gap: 30px; 
+    margin-top: 30px; 
+}
+
+.method-tabs { 
+    display: flex; 
+    gap: 10px; 
+    margin-bottom: 20px; 
+    flex-wrap: wrap; 
+}
+
+.tab-btn { 
+    padding: 12px 20px; 
+    border-radius: 10px; 
+    border: 1px solid #eee; 
+    background: white; 
+    cursor: pointer; 
+    transition: 0.3s; 
+    font-weight: 600; 
+    font-size: 0.85rem; 
+}
+
+.tab-btn.active { 
+    background: var(--primary); 
+    color: white; 
+    border-color: var(--primary); 
+}
+
+.tab-btn.tele-tab.active { 
+    background: var(--tele); 
+    border-color: var(--tele); 
+}
+
+.payment-view { 
+    background: white; 
+    padding: 30px; 
+    border-radius: 20px; 
+    box-shadow: var(--shadow); 
+    min-height: 400px; 
+}
+
+.payment-view h3 { 
+    margin-bottom: 20px; 
+    font-size: 1.2rem; 
+}
+
+.form-group { 
+    margin-bottom: 18px; 
+}
+
+.form-group label { 
+    display: block; 
+    font-size: 0.85rem; 
+    margin-bottom: 8px; 
+    font-weight: 600; 
+    color: var(--primary); 
+}
+
+.form-group input { 
+    width: 100%; 
+    padding: 14px; 
+    border-radius: 8px; 
+    border: 1px solid #eee; 
+    font-size: 0.95rem; 
+    outline: none; 
+    transition: 0.3s; 
+}
+
+.form-group input:focus { 
+    border-color: var(--accent); 
+}
+
+.split { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 15px; 
+}
+
+/* --- SUMMARY CARD & ROW FIX --- */
+.summary-card { 
+    background: var(--primary); 
+    color: white; 
+    padding: 30px; 
+    border-radius: 20px; 
+    height: fit-content; 
+    position: sticky; 
+    top: 100px; 
+}
+
+.summary-card h3 { 
+    margin-bottom: 25px; 
+    border-bottom: 1px solid #444; 
+    padding-bottom: 15px; 
+}
+
+/* Targeting both 'row' and your 'ro2w' typo in HTML */
+.row, .ro2w { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    margin-bottom: 15px; 
+    font-size: 0.95rem; 
+}
+
+.total { 
+    font-size: 1.3rem; 
+    font-weight: 600; 
+    border-top: 1px solid #444; 
+    padding-top: 20px; 
+    margin-top: 15px; 
+    color: var(--accent); 
+    display: flex;
+    justify-content: space-between;
+}
+
+.btn-primary { 
+    width: 100%; 
+    padding: 16px; 
+    border-radius: 10px; 
+    border: none; 
+    background: var(--accent); 
+    color: white; 
+    font-weight: 600; 
+    cursor: pointer; 
+    transition: 0.3s; 
+    font-size: 1rem; 
+}
+
+.btn-primary:hover { 
+    opacity: 0.9; 
+    transform: translateY(-2px); 
+}
+
+/* --- RECEIPT STYLING --- */
+.receipt { 
+    background: white; 
+    padding: 50px; 
+    border-radius: 20px; 
+    box-shadow: var(--shadow); 
+    max-width: 700px; 
+    margin: 0 auto; 
+    text-align: center; 
+}
+
+/* --- FOOTER & SOCIAL ICONS --- */
+.footer { 
+    padding: 80px 0 40px; 
+    margin-top: 100px; 
+    background: #1a1a1a; 
+    color: white; 
+    border-top: 1px solid #333; 
+}
+
+.footer-grid { 
+    display: grid; 
+    grid-template-columns: 2fr 1fr 1fr; 
+    gap: 50px; 
+}
+
+.footer-col h4 { 
+    font-size: 1rem; 
+    margin-bottom: 25px; 
+    text-transform: uppercase; 
+    color: white; 
+    letter-spacing: 1.5px; 
+}
+
+.footer-col ul { 
+    list-style: none; 
+}
+
+.footer-col li { 
+    margin-bottom: 12px; 
+}
+
+.footer-col a { 
+    text-decoration: none; 
+    color: #bbb; 
+    font-size: 0.9rem; 
+    transition: 0.3s; 
+}
+
+.footer-col a:hover { 
+    color: var(--accent); 
+    padding-left: 5px; 
+}
+
+/* Social Links Fix */
+.social-links { 
+    display: flex; 
+    gap: 15px; 
+    margin-top: 25px; 
+}
+
+.social-links a { 
+    width: 40px; 
+    height: 40px; 
+    border-radius: 50%; 
+    background: #2d3436; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    color: white; 
+    text-decoration: none; 
+    font-size: 1.1rem; /* Ensure icon size is visible */
+    transition: 0.3s; 
+}
+
+.social-links a:hover { 
+    background: var(--accent); 
+    color: var(--primary);
+    transform: translateY(-3px); 
+}
+
+.footer-bottom { 
+    text-align: center; 
+    margin-top: 60px; 
+    padding-top: 30px; 
+    border-top: 1px solid #333; 
+    color: #7f8c8d; 
+    font-size: 0.85rem; 
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 850px) {
+    .checkout-grid { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr; gap: 40px; text-align: center; }
+    .social-links { justify-content: center; }
+}
