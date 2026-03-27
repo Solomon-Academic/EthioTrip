@@ -1,4 +1,5 @@
 <?php
+// registration 
 require_once 'includes/auth.php';
 requireGuest();
 
