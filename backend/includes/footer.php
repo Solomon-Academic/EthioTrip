@@ -1,4 +1,5 @@
 </main>
+<!-- updated footer-->
     <footer class="footer">
         <div class="footer-grid">
             <div class="footer-col">
