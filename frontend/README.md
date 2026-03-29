@@ -13,7 +13,49 @@ EthioTrip is built with scalability, usability, and visual elegance in mind, tar
 ---
 
 ##  Technical Stack
+## Project Folder Structure
 
+```text
+IP2_travel/
+├── backend/
+│   ├── config/
+│   ├── css/
+│   ├── includes/
+│   │   ├── auth.php
+│   │   ├── footer.php
+│   │   └── header.php
+│   ├── js/
+│   ├── sql/
+│   ├── bookings.php
+│   ├── create-booking.php
+│   ├── dashboard.php
+│   ├── delete-booking.php
+│   ├── edit-booking.php
+│   ├── login.php
+│   ├── logout.php
+│   ├── registration.php
+│   └── testdb.php
+├── frontend/
+│   ├── dest_images/
+│   ├── home_images/
+│   ├── .gitignore
+│   ├── about.css
+│   ├── about.html
+│   ├── about.js
+│   ├── destination.css
+│   ├── Destination.html
+│   ├── Home.css
+│   ├── home.html
+│   ├── home.js
+│   ├── LICENSE
+│   ├── packages.css
+│   ├── packages.html
+│   ├── packages.js
+│   ├── payment.css
+│   ├── Payment.html
+│   └── payment.js
+├── .gitignore
+└── README.md
 ### Frontend
 - **HTML5** – Semantic and accessible structure  
 - **CSS3** – Flexbox, Grid, CSS Variables, and 3D transforms  
