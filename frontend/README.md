@@ -13,6 +13,26 @@ EthioTrip is built with scalability, usability, and visual elegance in mind, tar
 ---
 
 ##  Technical Stack
+##  Project Folder Structure
+```text
+IP_FINAL/
+├── config/
+│   └── database.php
+├── includes/
+│   ├── header.php
+│   └── footer.php
+├── css/
+│   └── style.css
+├── sql/
+│   └── database.sql
+├── index.php
+├── register.php
+├── login.php
+├── dashboard.php
+├── create-booking.php
+├── bookings.php
+├── logout.php
+└── test-db.php
 
 ### Frontend
 - **HTML5** – Semantic and accessible structure  
