@@ -1,9 +1,9 @@
-# EthioTrip Web Platform 🌍  
+# EthioTrip Web Platform 🌍
 **A Premium Digital Gateway to Ethiopia – The Land of Origins**
 
 ---
 
-##  Executive Summary
+## Executive Summary
 
 **EthioTrip** is a modern, responsive travel and tourism web platform designed to promote Ethiopia as the **“Land of Origins.”**  
 The platform delivers a curated digital experience that blends Ethiopia’s rich cultural heritage with contemporary web technologies. It provides users with immersive destination discovery, intelligent storytelling, and a centralized user authentication system.
@@ -12,7 +12,8 @@ EthioTrip is built with scalability, usability, and visual elegance in mind, tar
 
 ---
 
-##  Technical Stack
+## Technical Stack
+
 ## Project Folder Structure
 
 ```text
@@ -56,7 +57,6 @@ IP2_travel/
 │   └── payment.js
 ├── .gitignore
 └── README.md
-
 # 🎨 Frontend
 - **HTML5** – Semantic and accessible structure  
 - **CSS3** – Flexbox, Grid, CSS Variables, and 3D transforms  
