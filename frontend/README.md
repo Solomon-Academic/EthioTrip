@@ -57,6 +57,9 @@ IP2_travel/
 │   └── payment.js
 ├── .gitignore
 └── README.md
+
+---
+
 # 🎨 Frontend
 - **HTML5** – Semantic and accessible structure  
 - **CSS3** – Flexbox, Grid, CSS Variables, and 3D transforms  
