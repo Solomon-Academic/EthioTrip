@@ -57,7 +57,7 @@ IP2_travel/
 │   └── payment.js
 ├── .gitignore
 └── README.md
-
+```
 ---
 
 # 🎨 Frontend
