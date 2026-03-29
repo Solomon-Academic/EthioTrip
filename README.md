@@ -73,6 +73,7 @@ RequestAnimationFrame API for smooth animations
 Data Persistence
 Browser LocalStorage for authentication state and session management
 Core Features
+
 1. Interactive Hero Experience
 
 The homepage features a 3D Card Stack Carousel that visually showcases key Ethiopian destinations.
