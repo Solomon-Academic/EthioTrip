@@ -17,6 +17,49 @@ topic :-**TOUR MANAGEMENT SYSTEM**
 EthioTrip is a modern, responsive travel and tourism platform designed to showcase Ethiopia as the “Land of Origins.” The platform provides a seamless digital experience for travelers, integrating curated destination information, cultural activities, user accounts, bookings, and interactive feedback. The system consists of: **Frontend** – User interface for browsing destinations, submitting inquiries, and interacting with travel content. **Backend** – Server-side system built with PHP, managing authentication, data processing, and communication with the database.
 
 ## Technology Stack
+## Project Folder Structure
+
+```text
+IP2_travel/
+├── backend/
+│   ├── config/
+│   ├── css/
+│   ├── includes/
+│   │   ├── auth.php
+│   │   ├── footer.php
+│   │   └── header.php
+│   ├── js/
+│   ├── sql/
+│   ├── bookings.php
+│   ├── create-booking.php
+│   ├── dashboard.php
+│   ├── delete-booking.php
+│   ├── edit-booking.php
+│   ├── login.php
+│   ├── logout.php
+│   ├── registration.php
+│   └── testdb.php
+├── frontend/
+│   ├── dest_images/
+│   ├── home_images/
+│   ├── .gitignore
+│   ├── about.css
+│   ├── about.html
+│   ├── about.js
+│   ├── destination.css
+│   ├── Destination.html
+│   ├── Home.css
+│   ├── home.html
+│   ├── home.js
+│   ├── LICENSE
+│   ├── packages.css
+│   ├── packages.html
+│   ├── packages.js
+│   ├── payment.css
+│   ├── Payment.html
+│   └── payment.js
+├── .gitignore
+└── README.md
 **Frontend**: HTML, CSS, JavaScript, responsive design, interactive UI components.  
 **Backend**: PHP – server-side scripting, MySQL/MariaDB – relational database, JWT (JSON Web Tokens) – secure authentication, bcrypt – password hashing.  
 **API & Communication**: RESTful API endpoints, JSON-based data exchange between frontend and backend.
