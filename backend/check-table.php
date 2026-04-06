@@ -1,4 +1,5 @@
 <?php
+// This script checks the structure of the 'users' table in the database.
 require_once 'config/database.php';
 
 echo "<h1>Users Table Structure</h1>";
