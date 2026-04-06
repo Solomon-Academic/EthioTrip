@@ -1,12 +1,14 @@
 <?php
 $host = 'localhost';
-$username = 'root';
-$password = '';
-$database = 'ethiotrip_db';
+$db   = 'ethiotrip_db';
+$user = 'root';
+$pass = '';
 
-$conn = new mysqli($host, $username, $password, $database);
+$conn = mysqli_connect($host, $user, $pass, $db);
 
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+if (!$conn) {
+    die("Database connection failed: " . mysqli_connect_error());
 }
+
+mysqli_set_charset($conn, "utf8");
 ?>

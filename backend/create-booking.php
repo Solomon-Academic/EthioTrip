@@ -1,4 +1,8 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 require_once 'config/database.php';
 require_once 'includes/auth.php';
 require_once 'includes/functions.php';
@@ -18,7 +22,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $travelers = $_POST['travelers'] ?? 1;
     $special_requests = $_POST['special_requests'] ?? '';
     
-    // Validation
     if (empty($package_id)) {
         $errors['package'] = 'Please select a package';
     }
@@ -59,8 +62,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+
 include 'includes/header.php';
 ?>
+
 <div class="form-container">
     <h1>Create New Booking</h1>
     
@@ -73,7 +78,10 @@ include 'includes/header.php';
             <label>Select Package *</label>
             <select name="package_id" required>
                 <option value="">-- Choose a package --</option>
-                <?php while($pkg = mysqli_fetch_assoc($packages)): ?>
+                <?php 
+                mysqli_data_seek($packages, 0);
+                while($pkg = mysqli_fetch_assoc($packages)): 
+                ?>
                 <option value="<?php echo $pkg['id']; ?>" <?php echo isset($_POST['package_id']) && $_POST['package_id'] == $pkg['id'] ? 'selected' : ''; ?>>
                     <?php echo $pkg['name']; ?> - $<?php echo $pkg['price']; ?> (<?php echo $pkg['duration']; ?>)
                 </option>
