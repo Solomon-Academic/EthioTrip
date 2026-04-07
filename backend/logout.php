@@ -22,5 +22,6 @@ session_destroy();
 
 // Redirect to home page
 header('Location: ../../frontend/home.html');
+header('Location: login.php');
 exit();
 ?>

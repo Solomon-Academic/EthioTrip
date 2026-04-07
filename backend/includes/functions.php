@@ -99,6 +99,11 @@ function sanitize($data) {
  * @param string $email - Email to validate
  * @return bool - True if valid
  */
+function sanitize($data) {
+    global $conn;
+    return mysqli_real_escape_string($conn, htmlspecialchars(trim($data)));
+}
+
 function validateEmail($email) {
     return filter_var($email, FILTER_VALIDATE_EMAIL);
 }
@@ -121,6 +126,9 @@ function validatePassword($password) {
 function displayError($errors, $field) {
     if (isset($errors[$field])) {
         return '<span class="error-message">' . htmlspecialchars($errors[$field]) . '</span>';
+function displayError($errors, $field) {
+    if (isset($errors[$field])) {
+        return '<span class="error">' . $errors[$field] . '</span>';
     }
     return '';
 }
@@ -210,5 +218,36 @@ function getPaginationData($current_page, $total_records, $per_page = 10) {
         'has_prev' => $current_page > 1,
         'has_next' => $current_page < $total_pages
     ];
+function calculateBookingTotal($price, $travelers, $discount_rate = 0) {
+    $subtotal = $price * $travelers;
+    $discount = $subtotal * $discount_rate;
+    $total = $subtotal - $discount;
+    $tax = $total * 0.10;
+    $grand_total = $total + $tax;
+    
+    return [
+        'subtotal' => $subtotal,
+        'discount' => $discount,
+        'total' => $total,
+        'tax' => $tax,
+        'grand_total' => $grand_total
+    ];
+}
+
+function redirectWithMessage($url, $message, $type = 'success') {
+    $_SESSION['flash_message'] = $message;
+    $_SESSION['flash_type'] = $type;
+    header('Location: ' . $url);
+    exit();
+}
+
+function getUserBookings($user_id, $limit = null) {
+    global $conn;
+    $query = "SELECT * FROM bookings WHERE user_id = ? ORDER BY created_at DESC";
+    if ($limit) $query .= " LIMIT " . $limit;
+    $stmt = mysqli_prepare($conn, $query);
+    mysqli_stmt_bind_param($stmt, "i", $user_id);
+    mysqli_stmt_execute($stmt);
+    return mysqli_stmt_get_result($stmt);
 }
 ?>

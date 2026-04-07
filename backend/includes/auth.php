@@ -20,8 +20,14 @@ require_once __DIR__ . '/functions.php';  // ADDED: Include functions
  * Check if user is logged in
  * @return bool - True if logged in
  */
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+require_once __DIR__ . '/../config/database.php';
+
 function isLoggedIn() {
-    return isset($_SESSION['user_id']);
+    return isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
 }
 
 /**
@@ -56,6 +62,16 @@ function requireGuest() {
 function getCurrentUser() {
     if (!isLoggedIn()) {
         return null;
+function getCurrentUser() {
+    if (isLoggedIn()) {
+        global $conn;
+        $user_id = $_SESSION['user_id'];
+        $query = "SELECT id, name, email, phone, role, trips_completed, total_spent, loyalty_discount, created_at FROM users WHERE id = ?";
+        $stmt = mysqli_prepare($conn, $query);
+        mysqli_stmt_bind_param($stmt, "i", $user_id);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        return mysqli_fetch_assoc($result);
     }
     
     global $conn;
@@ -86,13 +102,38 @@ function updateLoyaltyDiscount($user_id) {
     
     $trips = $user['trips_completed'] ?? 0;
     $discount = calculateLoyaltyDiscount($trips);
+    $trips = $user['trips_completed'];
+    $discount = 0;
+    
+    if ($trips >= 10) $discount = 0.15;
+    elseif ($trips >= 5) $discount = 0.10;
+    elseif ($trips >= 3) $discount = 0.05;
     
     // Update discount
     $update = "UPDATE users SET loyalty_discount = ? WHERE id = ?";
     $stmt = mysqli_prepare($conn, $update);
     mysqli_stmt_bind_param($stmt, "di", $discount, $user_id);
     mysqli_stmt_execute($stmt);
-    
     return $discount;
+}
+
+function sanitize($data) {
+    global $conn;
+    return mysqli_real_escape_string($conn, htmlspecialchars(trim($data)));
+}
+
+function validateEmail($email) {
+    return filter_var($email, FILTER_VALIDATE_EMAIL);
+}
+
+function validatePassword($password) {
+    return strlen($password) >= 6;
+}
+
+function displayError($errors, $field) {
+    if (isset($errors[$field])) {
+        return '<span class="error">' . $errors[$field] . '</span>';
+    }
+    return '';
 }
 ?>
