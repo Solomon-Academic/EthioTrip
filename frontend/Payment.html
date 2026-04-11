@@ -4,17 +4,172 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EthioTrip | Secure Checkout</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="payment.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: #f5f7fa; }
+
+        :root {
+            --primary: #2d3436;
+            --accent: #d4af37;
+            --text-light: #636e72;
+            --shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        /* Notification Styles */
+        .notification-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            max-width: 400px;
+        }
+
+        .notification {
+            background: white;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateX(100%);
+            animation: slideIn 0.3s ease forwards;
+            border-left: 4px solid;
+        }
+
+        @keyframes slideIn { to { transform: translateX(0); } }
+        @keyframes slideOut { from { transform: translateX(0); } to { transform: translateX(100%); } }
+
+        .notification-success { border-left-color: #27ae60; }
+        .notification-error { border-left-color: #e74c3c; }
+        .notification-info { border-left-color: #3498db; }
+        .notification-warning { border-left-color: #f39c12; }
+
+        .notification-icon {
+            width: 40px; height: 40px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 1.2rem;
+        }
+        .notification-success .notification-icon { background: #27ae60; }
+        .notification-error .notification-icon { background: #e74c3c; }
+        .notification-info .notification-icon { background: #3498db; }
+        .notification-warning .notification-icon { background: #f39c12; }
+
+        .notification-content { flex: 1; }
+        .notification-title { font-weight: 600; font-size: 0.9rem; margin-bottom: 4px; color: #2d3436; }
+        .notification-message { font-size: 0.8rem; color: #636e72; line-height: 1.4; }
+        .notification-close { cursor: pointer; color: #999; font-size: 0.8rem; }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 10001;
+            display: flex; align-items: center; justify-content: center;
+            animation: fadeIn 0.3s ease; padding: 20px;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .modal-container {
+            background: white; border-radius: 20px; max-width: 450px;
+            width: 100%; max-height: 90vh; overflow-y: auto;
+            animation: modalSlideIn 0.3s ease;
+        }
+        .modal-container::-webkit-scrollbar { width: 5px; }
+        .modal-container::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        .modal-container::-webkit-scrollbar-thumb { background: #d4af37; border-radius: 10px; }
+
+        .modal-header { padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; position: sticky; top: 0; background: white; }
+        .modal-header h3 { font-size: 1.1rem; font-weight: 600; }
+        .modal-close { cursor: pointer; font-size: 1.2rem; color: #999; }
+        .modal-body { padding: 20px; }
+        .modal-footer { padding: 12px 20px; background: #f8f9fa; display: flex; justify-content: flex-end; gap: 12px; position: sticky; bottom: 0; }
+
+        .modal-btn { padding: 8px 16px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; }
+        .modal-btn-primary { background: #d4af37; color: white; }
+        .modal-btn-secondary { background: #e0e0e0; color: #2d3436; }
+
+        .loyalty-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; padding: 14px; border-radius: 14px; margin-top: 12px;
+        }
+        .loyalty-card h4 { margin-bottom: 6px; font-size: 0.8rem; opacity: 0.9; }
+        .loyalty-card .progress-bar { background: rgba(255,255,255,0.3); border-radius: 10px; height: 5px; overflow: hidden; margin: 8px 0; }
+        .loyalty-card .progress-fill { background: #d4af37; width: 0%; height: 100%; }
+        .loyalty-card .next-tier { font-size: 0.7rem; opacity: 0.9; }
+
+        /* Main Styles */
+        .navbar { padding: 1.2rem 0; background: white; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .header-flex { display: flex; justify-content: space-between; align-items: center; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        .logo { font-size: 1.5rem; font-weight: 600; text-decoration: none; color: #2d3436; }
+        .logo span { color: #d4af37; }
+        .nav-links { display: flex; gap: 25px; align-items: center; }
+        .nav-links a { text-decoration: none; color: #2d3436; font-size: 0.9rem; font-weight: 500; }
+
+        .stepper-bar { background: white; padding: 15px 0; border-bottom: 1px solid #eee; margin-bottom: 30px; }
+        .stepper { display: flex; justify-content: center; gap: 40px; }
+        .step { font-size: 0.85rem; color: #ccc; font-weight: 600; }
+        .step.active { color: #d4af37; }
+
+        .card-panel { background: white; padding: 30px; border-radius: 20px; box-shadow: var(--shadow); max-width: 550px; margin: 0 auto; }
+        .text-center { text-align: center; }
+        .input-lockup { display: flex; align-items: center; justify-content: center; margin: 20px 0; font-size: 2rem; }
+        .input-lockup input { border: none; border-bottom: 2px solid #eee; width: 200px; text-align: center; outline: none; font-size: 2rem; color: #2d3436; font-weight: 600; }
+        .currency-label { color: #d4af37; margin-right: 10px; }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: #2d3436; }
+        .form-group input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #eee; font-size: 0.9rem; outline: none; }
+        .split { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        .method-tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab-btn { padding: 10px 16px; border-radius: 8px; border: 1px solid #eee; background: white; cursor: pointer; font-weight: 600; font-size: 0.8rem; }
+        .tab-btn.active { background: #2d3436; color: white; }
+
+        .payment-view { background: white; padding: 25px; border-radius: 20px; box-shadow: var(--shadow); min-height: 350px; }
+        .checkout-grid { display: grid; grid-template-columns: 1fr 320px; gap: 25px; margin-top: 25px; }
+        .summary-card { background: #2d3436; color: white; padding: 25px; border-radius: 20px; height: fit-content; }
+        .row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.9rem; }
+        .total { font-size: 1.2rem; font-weight: 600; border-top: 1px solid #444; padding-top: 15px; margin-top: 12px; color: #d4af37; }
+
+        .btn-primary { width: 100%; padding: 14px; border-radius: 8px; border: none; background: #d4af37; color: white; font-weight: 600; cursor: pointer; font-size: 0.95rem; }
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-2px); }
+        button:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        .receipt { background: white; padding: 30px; border-radius: 20px; box-shadow: var(--shadow); max-width: 650px; margin: 0 auto; text-align: center; }
+
+        .footer { padding: 60px 0 30px; margin-top: 80px; background: #1a1a1a; color: white; }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; }
+        .footer-col h4 { font-size: 0.9rem; margin-bottom: 20px; text-transform: uppercase; }
+        .footer-col ul { list-style: none; }
+        .footer-col li { margin-bottom: 10px; }
+        .footer-col a { text-decoration: none; color: #bbb; font-size: 0.85rem; }
+        .footer-col a:hover { color: #d4af37; }
+        .social-links { display: flex; gap: 12px; margin-top: 20px; }
+        .social-links a { width: 35px; height: 35px; border-radius: 50%; background: #2d3436; display: flex; align-items: center; justify-content: center; color: white; }
+        .footer-bottom { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #333; color: #7f8c8d; font-size: 0.8rem; }
+
+        @media (max-width: 850px) {
+            .checkout-grid { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr; text-align: center; }
+            .social-links { justify-content: center; }
+        }
+
+        .loading-spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; margin-right: 8px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
 </head>
 <body>
     <header class="navbar">
         <div class="container header-flex">
             <a href="home.html" class="logo">Ethio<span>Trip</span></a>
-
             <nav class="nav-links">
                 <a href="home.html"><i class="fas fa-home"></i> Home</a>
-                <a href="destination.html">Destinations</a>
+                <a href="Destination.html">Destinations</a>
+                <a href="packages.html">Packages</a>
             </nav>
         </div>
     </header>
@@ -32,19 +187,19 @@
     <main class="container">
         <section id="phase-amount" class="card-panel text-center">
             <h1>Welcome to EthioTrip</h1>
-            <p>Please enter your booking details to begin.</p>
+            <p style="font-size: 0.85rem;">Please enter your booking details to begin.</p>
             
-            <div class="form-group" style="max-width: 400px; margin: 0 auto 20px auto;">
-                <label style="display: block; text-align: left; font-weight: bold; margin-bottom: 5px;">Booking Amount ($)</label>
+            <div class="form-group" style="max-width: 350px; margin: 0 auto 15px auto;">
+                <label style="display: block; text-align: left; font-weight: bold;">Booking Amount ($)</label>
                 <div class="input-lockup">
                     <span class="currency-label">$</span>
                     <input type="number" id="inputAmount" placeholder="0.00">
                 </div>
             </div>
 
-            <div class="form-group" style="max-width: 400px; margin: 0 auto 20px auto;">
-                <label style="display: block; text-align: left; font-weight: bold; margin-bottom: 5px;">Full Name</label>
-                <input type="text" id="inputUserName" placeholder="Enter your full name" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem;">
+            <div class="form-group" style="max-width: 350px; margin: 0 auto 15px auto;">
+                <label style="display: block; text-align: left; font-weight: bold;">Full Name</label>
+                <input type="text" id="inputUserName" placeholder="Enter your full name">
             </div>
 
             <button class="btn-primary" id="btnProceed">Check Discount & Proceed</button>
@@ -53,7 +208,7 @@
         <section id="phase-checkout" style="display: none;">
             <div class="method-tabs">
                 <button class="tab-btn active" data-method="card">Credit Card</button>
-                <button class="tab-btn tele-tab" data-method="telebirr">Telebirr</button>
+                <button class="tab-btn" data-method="telebirr">Telebirr</button>
                 <button class="tab-btn" data-method="paypal">PayPal</button>
                 <button class="tab-btn" data-method="mobile">Bank Transfer</button>
                 <button class="tab-btn" data-method="cash">Cash</button>
@@ -63,14 +218,8 @@
                 <div class="form-container">
                     <form id="form-card" class="payment-view">
                         <h3>Secure Card Payment</h3>
-                        <div class="form-group">
-                            <label>Cardholder Name</label>
-                            <input type="text" id="cardName" placeholder="Full Name" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Card Number</label>
-                            <input type="text" id="cardNumber" placeholder="0000 0000 0000 0000" maxlength="19" required>
-                        </div>
+                        <div class="form-group"><label>Cardholder Name</label><input type="text" id="cardName" required></div>
+                        <div class="form-group"><label>Card Number</label><input type="text" id="cardNumber" placeholder="0000 0000 0000 0000" maxlength="19" required></div>
                         <div class="split">
                             <div class="form-group"><label>Expiry</label><input type="text" id="expiry" placeholder="MM/YY" maxlength="5" required></div>
                             <div class="form-group"><label>CVV</label><input type="password" placeholder="***" maxlength="3" required></div>
@@ -79,51 +228,40 @@
                     </form>
 
                     <div id="view-telebirr" class="payment-view" style="display:none;">
-                        <div style="background:#00a1e4; color:white; padding:15px; border-radius:10px; margin-bottom:20px; text-align:center; font-weight:bold;">Telebirr Digital Wallet</div>
-                        <div class="form-group">
-                            <label>Mobile Number</label>
-                            <input type="text" id="telePhone" placeholder="09XXXXXXXX" maxlength="10">
-                        </div>
-                        <button type="button" class="btn-primary" id="btnTelebirr" style="background:#00a1e4;">Confirm Push Request</button>
+                        <div style="background:#00a1e4; color:white; padding:12px; border-radius:8px; text-align:center; font-weight:bold;">Telebirr Digital Wallet</div>
+                        <div class="form-group"><label>Mobile Number</label><input type="text" id="telePhone" placeholder="09XXXXXXXX" maxlength="10"></div>
+                        <button type="button" class="btn-primary" id="btnTelebirr" style="background:#00a1e4;">Confirm Payment</button>
                     </div>
 
                     <div id="view-paypal" class="payment-view" style="display:none;">
                         <h3>PayPal Transfer</h3>
-                        <p style="font-size: 0.9rem; margin-bottom:15px; color:var(--text-light);">Send funds to: <strong>payments@ethiotrip.com</strong></p>
-                        <div class="form-group">
-                            <label>PayPal Transaction ID</label>
-                            <input type="text" id="paypalRef" placeholder="Enter Transaction ID">
-                        </div>
-                        <button type="button" class="btn-primary" id="btnPaypal" style="background:#ffc439; color:black;">Verify PayPal Payment</button>
+                        <p style="font-size: 0.8rem;">Send funds to: <strong>payments@ethiotrip.com</strong></p>
+                        <div class="form-group"><label>Transaction ID</label><input type="text" id="paypalRef" placeholder="Enter Transaction ID"></div>
+                        <button type="button" class="btn-primary" id="btnPaypal" style="background:#ffc439; color:black;">Verify Payment</button>
                     </div>
 
                     <div id="view-mobile" class="payment-view" style="display:none;">
-                        <h3>CBE / Bank Transfer</h3>
-                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 20px; font-size: 0.9rem; border-left: 4px solid var(--accent);">
-                            <p><strong>Bank:</strong> Commercial Bank of Ethiopia (CBE)</p>
+                        <h3>Bank Transfer</h3>
+                        <div style="background:#f8f9fa; padding:12px; border-radius:8px; font-size:0.8rem; border-left:3px solid #d4af37;">
+                            <p><strong>Bank:</strong> CBE</p>
                             <p><strong>Account:</strong> EthioTrip Travel & Tours</p>
                             <p><strong>Account No:</strong> 1000456982341</p>
                         </div>
-                        <div class="form-group">
-                            <label>Transaction Reference / FT Number</label>
-                            <input type="text" id="bankRef" placeholder="e.g. FT23098X...">
-                        </div>
-                        <button type="button" class="btn-primary" id="btnMobile">Confirm Bank Transfer</button>
+                        <div class="form-group"><label>Reference Number</label><input type="text" id="bankRef" placeholder="e.g. FT23098X"></div>
+                        <button type="button" class="btn-primary" id="btnMobile">Confirm Transfer</button>
                     </div>
 
                     <div id="view-cash" class="payment-view" style="display:none; text-align: center;">
                         <h3>Pay at Our Office</h3>
-                        <p style="margin: 20px 0; color:var(--text-light);">Please visit our headquarters in Addis Ababa (Bole Atlas) to complete your payment in person.</p>
-                        <button type="button" class="btn-primary" id="btnCash">Confirm & Get Order ID</button>
+                        <p>Visit our headquarters in Addis Ababa (Bole Atlas)</p>
+                        <button type="button" class="btn-primary" id="btnCash">Confirm Booking</button>
                     </div>
                 </div>
 
                 <aside class="summary-card">
                     <h3>Invoice Summary</h3>
                     <div class="row"><span>Subtotal</span><span id="sum-sub">$0.00</span></div>
-                    <div id="discount-row" class="row" style="display:none; color: var(--accent); font-weight: bold;">
-                        <span>Loyalty Discount</span><span id="sum-discount">-$0.00</span>
-                    </div>
+                    <div id="discount-row" class="row" style="display:none; color:#d4af37;"><span>Loyalty Discount</span><span id="sum-discount">-$0.00</span></div>
                     <div class="row"><span>VAT (10%)</span><span id="sum-tax">$0.00</span></div>
                     <div class="row total"><span>Total Payable</span><span id="sum-total">$0.00</span></div>
                 </aside>
@@ -137,7 +275,7 @@
         <div class="container footer-grid">
             <div class="footer-col">
                 <a href="#" class="logo">Ethio<span>Trip</span></a>
-                <p style="margin-top: 15px; color: #bbb;">Authentic Ethiopian journeys curated for the modern explorer.</p>
+                <p style="margin-top:12px; color:#bbb; font-size:0.8rem;">Authentic Ethiopian journeys curated for the modern explorer.</p>
                 <div class="social-links">
                     <a href="#"><i class="fab fa-instagram"></i></a>
                     <a href="#"><i class="fab fa-facebook-f"></i></a>
@@ -146,22 +284,346 @@
             </div>
             <div class="footer-col">
                 <h4>Explore</h4>
-                <ul>
-                    <li><a href="Destination.html">Destinations</a></li>
-                    <li><a href="packages.html">Packages</a></li>
-                </ul>
+                <ul><li><a href="Destination.html">Destinations</a></li><li><a href="packages.html">Packages</a></li></ul>
             </div>
             <div class="footer-col">
                 <h4>Connect</h4>
-                <ul>
-                    <li><a href="about.html">About Us</a></li>
-                    <li><a href="about.html">Contact Us</a></li>
-                </ul>
+                <ul><li><a href="about.html">About Us</a></li><li><a href="about.html">Contact Us</a></li></ul>
             </div>
         </div>
         <div class="footer-bottom">© 2025 EthioTrip Ethiopia. All rights reserved.</div>
     </footer>
 
-    <script src="payment.js"></script>
+    <script>
+        // Auto-fill amount from packages page
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedPrice = localStorage.getItem("selectedPrice");
+            if (savedPrice) document.getElementById('inputAmount').value = savedPrice;
+        });
+
+        // Notification System
+        function showNotification(title, message, type = 'info', duration = 4000) {
+            let container = document.querySelector('.notification-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.className = 'notification-container';
+                document.body.appendChild(container);
+            }
+            
+            const icons = { success: '✓', error: '✗', info: 'ℹ', warning: '⚠' };
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+                <div class="notification-icon">${icons[type] || 'ℹ'}</div>
+                <div class="notification-content">
+                    <div class="notification-title">${title}</div>
+                    <div class="notification-message">${message}</div>
+                </div>
+                <div class="notification-close">×</div>
+            `;
+            container.appendChild(notification);
+            
+            notification.querySelector('.notification-close').onclick = () => {
+                notification.style.animation = 'slideOut 0.3s ease forwards';
+                setTimeout(() => notification.remove(), 300);
+            };
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.style.animation = 'slideOut 0.3s ease forwards';
+                    setTimeout(() => notification.remove(), 300);
+                }
+            }, duration);
+        }
+
+        function showModal(title, message, onConfirm, onCancel) {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            overlay.innerHTML = `
+                <div class="modal-container">
+                    <div class="modal-header"><h3>${title}</h3><span class="modal-close">×</span></div>
+                    <div class="modal-body"><p>${message.replace(/\n/g, '<br>')}</p></div>
+                    <div class="modal-footer">
+                        <button class="modal-btn modal-btn-secondary" id="modal-cancel">Cancel</button>
+                        <button class="modal-btn modal-btn-primary" id="modal-confirm">Continue</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            const close = () => overlay.remove();
+            overlay.querySelector('.modal-close').onclick = close;
+            overlay.querySelector('#modal-cancel').onclick = () => { close(); if (onCancel) onCancel(); };
+            overlay.querySelector('#modal-confirm').onclick = () => { close(); if (onConfirm) onConfirm(); };
+            overlay.onclick = (e) => { if (e.target === overlay) close(); };
+        }
+
+        function showLoyaltyInfo(userName, discountPercent, tierName, tripsCompleted, totalSpent) {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            const needed = Math.max(3 - tripsCompleted, 0);
+            overlay.innerHTML = `
+                <div class="modal-container">
+                    <div class="modal-header" style="background: linear-gradient(135deg, #667eea, #764ba2); color:white;">
+                        <h3 style="color:white;">🎉 Welcome ${userName.split(' ')[0]}!</h3>
+                        <span class="modal-close" style="color:white;">×</span>
+                    </div>
+                    <div class="modal-body">
+                        <div style="text-align:center;">
+                            <div style="font-size:2rem;">🏆</div>
+                            <div style="font-size:1rem; font-weight:600;">${tierName} Member</div>
+                            <div style="font-size:1.8rem; color:#d4af37; font-weight:700;">${discountPercent}% OFF</div>
+                            <div style="font-size:0.75rem;">${tripsCompleted} trip(s) completed</div>
+                        </div>
+                        <div class="loyalty-card" style="background: linear-gradient(135deg, #3498db, #2980b9);">
+                            <h4>🌟 Next Tier: Silver (3% off)</h4>
+                            <div class="progress-bar"><div class="progress-fill" style="width: ${(tripsCompleted / 3) * 100}%;"></div></div>
+                            <div class="next-tier">${needed} more trip(s) to reach Silver</div>
+                        </div>
+                        <div style="margin-top:12px; padding:8px; background:#f8f9fa; border-radius:8px; font-size:0.75rem;">
+                            <div style="display:flex; justify-content:space-between;"><span>💰 Total Spent:</span><strong>$${totalSpent.toFixed(2)}</strong></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer"><button class="modal-btn modal-btn-primary" id="modal-continue">Continue →</button></div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            const close = () => overlay.remove();
+            overlay.querySelector('.modal-close').onclick = close;
+            overlay.querySelector('#modal-continue').onclick = close;
+            overlay.onclick = (e) => { if (e.target === overlay) close(); };
+        }
+
+        // Global elements
+        const pAmount = document.getElementById('phase-amount');
+        const pCheckout = document.getElementById('phase-checkout');
+        const pReceipt = document.getElementById('phase-receipt');
+        const sSub = document.getElementById('sum-sub');
+        const sTax = document.getElementById('sum-tax');
+        const sTotal = document.getElementById('sum-total');
+        const sDisc = document.getElementById('sum-discount');
+        const discRow = document.getElementById('discount-row');
+
+        // Proceed with booking
+        function proceedWithBooking(amount, userName, discountRate, discountPercent, tierName, tripsCompleted, btn, originalText) {
+            const discAmt = amount * discountRate;
+            const taxableAmt = amount - discAmt;
+            const tax = taxableAmt * 0.10;
+            const finalTotal = taxableAmt + tax;
+
+            sSub.innerText = `$${amount.toFixed(2)}`;
+            if (discountRate > 0) {
+                discRow.style.display = 'flex';
+                sDisc.innerText = `-$${discAmt.toFixed(2)} (${tierName}: ${discountPercent}% off)`;
+            } else {
+                discRow.style.display = 'none';
+            }
+            sTax.innerText = `$${tax.toFixed(2)}`;
+            sTotal.innerText = `$${finalTotal.toFixed(2)}`;
+
+            localStorage.setItem("finalAmount", finalTotal.toFixed(2));
+            localStorage.setItem("discountApplied", discountRate);
+            localStorage.setItem("discountPercent", discountPercent);
+            localStorage.setItem("userName", userName);
+            localStorage.setItem("tierName", tierName);
+            localStorage.setItem("tripsCompleted", tripsCompleted);
+
+            document.getElementById('cardName').value = userName;
+            btn.innerText = originalText;
+            btn.disabled = false;
+
+            pAmount.style.display = 'none';
+            pCheckout.style.display = 'block';
+            document.getElementById('step2').classList.add('active');
+
+            if (discountRate > 0) {
+                showNotification('🎉 Loyalty Discount Applied!', `${discountPercent}% OFF as a ${tierName} member!`, 'success', 3500);
+            } else {
+                showNotification('👋 Welcome!', 'Complete 3 trips to get 3% discount!', 'info', 3500);
+            }
+        }
+
+        // Check discount
+        document.getElementById('btnProceed').onclick = async () => {
+            const amount = parseFloat(document.getElementById('inputAmount').value);
+            const userName = document.getElementById('inputUserName').value.trim();
+            
+            if (!amount || amount <= 0) {
+                showNotification('Invalid Amount', 'Please enter a valid booking amount.', 'error');
+                return;
+            }
+            if (!userName) {
+                showNotification('Name Required', 'Please enter your full name.', 'warning');
+                return;
+            }
+
+            const btn = document.getElementById('btnProceed');
+            const originalText = btn.innerText;
+            btn.innerText = '🔄 Checking...';
+            btn.disabled = true;
+
+            let discountRate = 0, discountPercent = 0, tierName = "Bronze", tripsCompleted = 0, totalSpent = 0, userFound = false;
+            
+            try {
+                const response = await fetch('../backend/get-loyalty-discount.php?name=' + encodeURIComponent(userName));
+                const data = await response.json();
+                if (data.success) {
+                    userFound = true;
+                    discountRate = data.discount_decimal;
+                    discountPercent = data.discount_percent;
+                    tierName = data.tier_name;
+                    tripsCompleted = data.trips_completed;
+                    totalSpent = data.total_spent || 0;
+                }
+            } catch(e) { console.error("Error:", e); }
+            
+            if (!userFound) {
+                showModal('New Customer', `Welcome "${userName}"! 👋\n\nYou'll start with 0% discount (Bronze tier).\n\nComplete 3 trips to get 3% discount!\n\nContinue with this booking?`,
+                    () => proceedWithBooking(amount, userName, 0, 0, 'Bronze', 0, btn, originalText),
+                    () => { btn.innerText = originalText; btn.disabled = false; }
+                );
+                return;
+            }
+            
+            showLoyaltyInfo(userName, discountPercent, tierName, tripsCompleted, totalSpent);
+            const checkModal = setInterval(() => {
+                if (!document.querySelector('.modal-overlay')) {
+                    clearInterval(checkModal);
+                    proceedWithBooking(amount, userName, discountRate, discountPercent, tierName, tripsCompleted, btn, originalText);
+                }
+            }, 500);
+        };
+
+        // Tab switching
+        const tabs = document.querySelectorAll('.tab-btn');
+        const views = { 
+            card: document.getElementById('form-card'), 
+            telebirr: document.getElementById('view-telebirr'), 
+            paypal: document.getElementById('view-paypal'), 
+            mobile: document.getElementById('view-mobile'), 
+            cash: document.getElementById('view-cash') 
+        };
+        tabs.forEach(t => {
+            t.onclick = () => {
+                tabs.forEach(btn => btn.classList.remove('active'));
+                t.classList.add('active');
+                Object.values(views).forEach(v => { if(v) v.style.display = 'none'; });
+                if(views[t.dataset.method]) views[t.dataset.method].style.display = 'block';
+            };
+        });
+
+        // Save booking to database
+        async function saveBookingToDatabase(packageName, amount, paymentMethod, transactionRef) {
+            let userName = localStorage.getItem("userName");
+            if (!userName) userName = document.getElementById('cardName').value;
+            
+            const travelDate = new Date();
+            travelDate.setDate(travelDate.getDate() + 30);
+            
+            const bookingData = {
+                package_name: packageName,
+                package_price: parseFloat(localStorage.getItem("selectedPrice")) || 350,
+                final_amount: parseFloat(localStorage.getItem("finalAmount")),
+                travel_date: travelDate.toISOString().split('T')[0],
+                travelers: 1,
+                payment_method: paymentMethod,
+                transaction_id: transactionRef,
+                user_name: userName
+            };
+            
+            try {
+                const response = await fetch('../backend/save-booking.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(bookingData)
+                });
+                const result = await response.json();
+                return result.success ? { success: true, booking_id: result.booking_id, trips_completed: result.trips_completed } : { success: false, error: result.message };
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
+        }
+
+        // Finalize payment
+        async function finalize(method, userReference = null, buttonElement = null) {
+            const name = localStorage.getItem("userName") || document.getElementById('cardName').value;
+            const selectedPkg = localStorage.getItem("selectedPackage") || "EthioTrip Booking";
+            const finalAmount = localStorage.getItem("finalAmount") || sTotal.innerText.replace('$', '');
+            const tierName = localStorage.getItem("tierName") || "Bronze";
+            const discountPercent = parseFloat(localStorage.getItem("discountPercent")) || 0;
+            const tripsBefore = parseInt(localStorage.getItem("tripsCompleted")) || 0;
+            const date = new Date().toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+            const finalRef = userReference || "ET-" + Math.floor(Math.random()*900000 + 100000);
+            
+            if (buttonElement) {
+                buttonElement.disabled = true;
+                buttonElement.innerHTML = '<span class="loading-spinner"></span> Processing...';
+            }
+            
+            const saveResult = await saveBookingToDatabase(selectedPkg, finalAmount, method, finalRef);
+            
+            pCheckout.style.display = 'none';
+            pReceipt.style.display = 'block';
+            document.getElementById('step3').classList.add('active');
+            
+            const tripsAfter = saveResult.success ? (tripsBefore + 1) : tripsBefore;
+            
+            pReceipt.innerHTML = `
+                <div class="receipt">
+                    <div style="background:#27ae60; color:white; padding:12px; border-radius:10px 10px 0 0; margin:-30px -30px 20px -30px;">
+                        <h2 style="margin:0;">✅ Payment Confirmed</h2>
+                    </div>
+                    <p>Your journey is booked, <strong>${name}</strong>!</p>
+                    ${saveResult.success ? '<p style="color:green;">✓ Booking saved!</p>' : '<p style="color:red;">⚠ Booking not saved. Contact support.</p>'}
+                    <div style="text-align:left; background:#f9f9f9; padding:15px; border-radius:12px; margin:15px 0; font-size:0.85rem;">
+                        <p><strong>Package:</strong> ${selectedPkg}</p>
+                        <p><strong>Method:</strong> ${method}</p>
+                        <p><strong>Discount:</strong> ${discountPercent}% OFF (${tierName})</p>
+                        <p><strong>Total Paid:</strong> <strong>$${finalAmount}</strong></p>
+                        <p><strong>Ref:</strong> ${finalRef}</p>
+                        ${saveResult.success ? `<p><strong>Booking ID:</strong> #${saveResult.booking_id}</p>` : ''}
+                        <p><strong>Date:</strong> ${date}</p>
+                    </div>
+                    <button class="btn-primary" style="width:auto; padding:10px 25px; margin:5px;" onclick="window.print()">🖨 Print</button>
+                    <button class="btn-primary" style="width:auto; padding:10px 25px; background:#2d3436; margin:5px;" onclick="window.location.href='../backend/bookings.php'">📋 My Bookings</button>
+                    <button class="btn-primary" style="width:auto; padding:10px 25px; background:#d4af37; margin:5px;" onclick="window.location.href='home.html'">🏠 Home</button>
+                </div>
+            `;
+            
+            localStorage.removeItem("selectedPackage");
+            localStorage.removeItem("selectedPrice");
+            localStorage.removeItem("finalAmount");
+            localStorage.removeItem("discountApplied");
+            localStorage.removeItem("discountPercent");
+            localStorage.removeItem("userName");
+            localStorage.removeItem("tierName");
+            localStorage.removeItem("tripsCompleted");
+        }
+
+        // Event bindings
+        document.getElementById('form-card').onsubmit = async (e) => {
+            e.preventDefault();
+            await finalize('Credit Card', null, e.target.querySelector('button[type="submit"]'));
+        };
+        document.getElementById('btnTelebirr').onclick = async () => {
+            const phone = document.getElementById('telePhone').value;
+            if(phone.length < 10) return showNotification('Invalid Number', 'Enter 10-digit number', 'error');
+            await finalize('Telebirr', null, document.getElementById('btnTelebirr'));
+        };
+        document.getElementById('btnPaypal').onclick = async () => {
+            const ref = document.getElementById('paypalRef').value || "P-ID-" + Date.now();
+            await finalize('PayPal', ref, document.getElementById('btnPaypal'));
+        };
+        document.getElementById('btnMobile').onclick = async () => {
+            const ref = document.getElementById('bankRef').value;
+            if(!ref) return showNotification('Reference Required', 'Enter transaction reference', 'warning');
+            await finalize('Bank Transfer', ref, document.getElementById('btnMobile'));
+        };
+        document.getElementById('btnCash').onclick = async () => {
+            await finalize('Cash at Office', null, document.getElementById('btnCash'));
+        };
+        document.getElementById('cardNumber').oninput = (e) => {
+            let v = e.target.value.replace(/\D/g, '').match(/.{1,4}/g);
+            e.target.value = v ? v.join(' ') : '';
+        };
+    </script>
 </body>
 </html>
