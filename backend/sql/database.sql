@@ -1,19 +1,13 @@
--- =============================================
--- ETHIOTRIP DATABASE - COMPLETE SCHEMA
--- =============================================
+-- Drop the entire database
+DROP DATABASE IF EXISTS ethiotrip_db;
 
--- Create database (if not exists)
-CREATE DATABASE IF NOT EXISTS ethiotrip_db;
+-- Create fresh database
+CREATE DATABASE ethiotrip_db;
 USE ethiotrip_db;
 
 -- =============================================
--- 1. USERS TABLE (with correct columns)
+-- 1. USERS TABLE
 -- =============================================
-DROP TABLE IF EXISTS bookings;
-DROP TABLE IF EXISTS destinations;
-DROP TABLE IF EXISTS packages;
-DROP TABLE IF EXISTS users;
-
 CREATE TABLE users (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
@@ -23,12 +17,26 @@ CREATE TABLE users (
     role ENUM('user', 'admin') DEFAULT 'user',
     trips_completed INT DEFAULT 0,
     total_spent DECIMAL(10,2) DEFAULT 0.00,
-    loyalty_discount DECIMAL(3,2) DEFAULT 0.00,
+    loyalty_discount DECIMAL(5,2) DEFAULT 0.00,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- =============================================
--- 2. PACKAGES TABLE
+-- 2. DISCOUNT TIERS TABLE
+-- =============================================
+CREATE TABLE discount_tiers (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    min_trips INT NOT NULL,
+    max_trips INT NULL,
+    discount_percent DECIMAL(5,2) NOT NULL,
+    tier_name VARCHAR(50) NOT NULL,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- =============================================
+-- 3. PACKAGES TABLE
 -- =============================================
 CREATE TABLE packages (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -43,7 +51,7 @@ CREATE TABLE packages (
 );
 
 -- =============================================
--- 3. DESTINATIONS TABLE
+-- 4. DESTINATIONS TABLE
 -- =============================================
 CREATE TABLE destinations (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -57,7 +65,7 @@ CREATE TABLE destinations (
 );
 
 -- =============================================
--- 4. BOOKINGS TABLE
+-- 5. BOOKINGS TABLE
 -- =============================================
 CREATE TABLE bookings (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -80,7 +88,7 @@ CREATE TABLE bookings (
 );
 
 -- =============================================
--- 5. REVIEWS TABLE
+-- 6. REVIEWS TABLE
 -- =============================================
 CREATE TABLE reviews (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -95,7 +103,17 @@ CREATE TABLE reviews (
 );
 
 -- =============================================
--- 6. INSERT SAMPLE PACKAGES
+-- 7. INSERT DISCOUNT TIERS
+-- =============================================
+INSERT INTO discount_tiers (min_trips, max_trips, discount_percent, tier_name) VALUES
+(0, 2, 0.00, 'Bronze'),
+(3, 4, 3.00, 'Silver'),
+(5, 7, 5.00, 'Gold'),
+(8, 10, 8.00, 'Platinum'),
+(11, NULL, 12.00, 'Diamond');
+
+-- =============================================
+-- 8. INSERT PACKAGES
 -- =============================================
 INSERT INTO packages (name, price, duration, description, features, category) VALUES
 ('Meskerem Journey', 350.00, '3 Days / 2 Nights', 
@@ -129,7 +147,7 @@ INSERT INTO packages (name, price, duration, description, features, category) VA
  'nature');
 
 -- =============================================
--- 7. INSERT SAMPLE DESTINATIONS
+-- 9. INSERT DESTINATIONS
 -- =============================================
 INSERT INTO destinations (name, location, description, best_time, activities) VALUES
 ('Lalibela', 'Amhara Region', 'Famous for its 11 monolithic rock-hewn churches, a UNESCO World Heritage site.', 'Oct - Mar', 'Church exploration, hiking, coffee ceremony'),
@@ -142,59 +160,127 @@ INSERT INTO destinations (name, location, description, best_time, activities) VA
 ('Sof Omar Cave', 'Oromia Region', 'One of the largest cave systems in the world.', 'Dec - Apr', 'Cave exploration, hiking, photography');
 
 -- =============================================
--- 8. INSERT SAMPLE USERS
+-- 10. INSERT ONLY ADMIN USER (NO SAMPLE USERS)
 -- =============================================
--- Password for all users is: password123
--- Hash: $2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi
-
+-- Password: password123
 INSERT INTO users (name, email, password, phone, role, trips_completed, total_spent, loyalty_discount) VALUES
-('Admin User', 'admin@ethiotrip.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '0912345678', 'admin', 15, 15000.00, 0.15),
-('John Doe', 'john@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '0912345678', 'user', 5, 2500.00, 0.10),
-('Jane Smith', 'jane@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '0987654321', 'user', 2, 700.00, 0.05),
-('Test User', 'test@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '0911223344', 'user', 0, 0.00, 0.00);
+('Admin', 'admin@ethiotrip.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '0912345678', 'admin', 0, 0.00, 0.00);
 
 -- =============================================
--- 9. INSERT SAMPLE BOOKINGS
+-- 11. VERIFY EVERYTHING IS CLEAN
 -- =============================================
-INSERT INTO bookings (user_id, package_id, package_name, travel_date, number_of_travelers, total_amount, discount_amount, final_amount, payment_method, payment_status, status) VALUES
-(2, 1, 'Meskerem Journey', DATE_ADD(CURDATE(), INTERVAL 30 DAY), 2, 700.00, 70.00, 630.00, 'credit_card', 'completed', 'confirmed'),
-(2, 2, 'Gojo Expedition', DATE_ADD(CURDATE(), INTERVAL 45 DAY), 1, 550.00, 55.00, 495.00, 'telebirr', 'completed', 'confirmed'),
-(3, 1, 'Meskerem Journey', DATE_ADD(CURDATE(), INTERVAL 15 DAY), 3, 1050.00, 52.50, 997.50, 'paypal', 'completed', 'confirmed'),
-(3, 3, 'Negus Luxury', DATE_ADD(CURDATE(), INTERVAL 60 DAY), 2, 2000.00, 100.00, 1900.00, 'bank_transfer', 'pending', 'pending'),
-(4, 5, 'Tizita Express', DATE_ADD(CURDATE(), INTERVAL 10 DAY), 1, 200.00, 0.00, 200.00, 'cash', 'pending', 'pending');
-
--- =============================================
--- 10. INSERT SAMPLE REVIEWS
--- =============================================
-INSERT INTO reviews (user_id, package_id, user_name, rating, comment) VALUES
-(2, 1, 'John Doe', 5, 'Amazing experience! The historical sites were breathtaking and the guide was very knowledgeable.'),
-(2, 2, 'John Doe', 4, 'Great adventure tour. The off-road experience was thrilling. Would recommend!'),
-(3, 1, 'Jane Smith', 5, 'Beautiful landscapes and wonderful hospitality. The coffee ceremony was a highlight.'),
-(3, 3, 'Jane Smith', 5, 'Absolutely luxurious! The private flight was incredible. Worth every penny.');
-
--- =============================================
--- 11. VERIFY ALL TABLES
--- =============================================
-SELECT '✅ Users table' AS Status, COUNT(*) AS Count FROM users
-UNION ALL
-SELECT '✅ Packages table', COUNT(*) FROM packages
-UNION ALL
-SELECT '✅ Destinations table', COUNT(*) FROM destinations
-UNION ALL
-SELECT '✅ Bookings table', COUNT(*) FROM bookings
-UNION ALL
-SELECT '✅ Reviews table', COUNT(*) FROM reviews;
-
--- =============================================
--- 12. DISPLAY LOGIN INFO
--- =============================================
-SELECT '=========================================' AS '';
-SELECT 'DATABASE SETUP COMPLETE!' AS '';
-SELECT '=========================================' AS '';
-SELECT 'Default Login Credentials:' AS '';
+SELECT '=== DATABASE SETUP COMPLETE ===' AS 'Status';
 SELECT '-----------------------------------------' AS '';
-SELECT 'Email: admin@ethiotrip.com | Password: password123 | Role: Admin' AS '';
-SELECT 'Email: john@example.com | Password: password123 | Role: User' AS '';
-SELECT 'Email: jane@example.com | Password: password123 | Role: User' AS '';
-SELECT 'Email: test@example.com | Password: password123 | Role: User' AS '';
+
+SELECT '✅ USERS TABLE:' AS '';
+SELECT COUNT(*) as total_users FROM users;
+SELECT id, name, email, role, trips_completed, total_spent, loyalty_discount FROM users;
+
+SELECT '-----------------------------------------' AS '';
+SELECT '✅ DISCOUNT TIERS:' AS '';
+SELECT * FROM discount_tiers;
+
+SELECT '-----------------------------------------' AS '';
+SELECT '✅ PACKAGES:' AS '';
+SELECT id, name, price, duration, category FROM packages;
+
+SELECT '-----------------------------------------' AS '';
+SELECT '✅ DESTINATIONS:' AS '';
+SELECT id, name, location, best_time FROM destinations;
+
+SELECT '-----------------------------------------' AS '';
+SELECT '✅ BOOKINGS:' AS '';
+SELECT COUNT(*) as total_bookings FROM bookings;
+
+SELECT '-----------------------------------------' AS '';
+SELECT '✅ REVIEWS:' AS '';
+SELECT COUNT(*) as total_reviews FROM reviews;
+
+-- =============================================
+-- 12. DISPLAY LOYALTY TIER INFORMATION
+-- =============================================
+SELECT '=========================================' AS '';
+SELECT 'LOYALTY PROGRAM DETAILS' AS '';
+SELECT '=========================================' AS '';
+SELECT 
+    tier_name,
+    CASE 
+        WHEN min_trips = 0 THEN '0'
+        ELSE CAST(min_trips AS CHAR)
+    END as 'Min Trips',
+    CASE 
+        WHEN max_trips IS NULL THEN 'Unlimited'
+        ELSE CAST(max_trips AS CHAR)
+    END as 'Max Trips',
+    CONCAT(discount_percent, '%') as 'Discount',
+    CASE WHEN is_active = 1 THEN 'Active' ELSE 'Inactive' END as 'Status'
+FROM discount_tiers 
+ORDER BY min_trips ASC;
+
+-- =============================================
+-- 13. LOGIN INFORMATION
+-- =============================================
+SELECT '=========================================' AS '';
+SELECT 'LOGIN CREDENTIALS' AS '';
+SELECT '=========================================' AS '';
+SELECT 'Admin Login:' AS '';
+SELECT 'Email: admin@ethiotrip.com' AS '';
+SELECT 'Password: password123' AS '';
+SELECT '=========================================' AS '';
+SELECT 'All new users start with 0 trips and 0% discount.' AS '';
+SELECT 'Discounts increase automatically as they complete more tours.' AS '';
+SELECT '=========================================' AS '';
+
+-- =============================================
+-- 14. HOW TO ADJUST DISCOUNTS FOR INFLATION/DEFLATION
+-- =============================================
+SELECT '=========================================' AS '';
+SELECT 'INFLATION/DEFLATION ADJUSTMENT EXAMPLES' AS '';
+SELECT '=========================================' AS '';
+SELECT '-- Increase all discounts by 2% (Inflation):' AS 'SQL Command:';
+SELECT 'UPDATE discount_tiers SET discount_percent = discount_percent + 2 WHERE is_active = 1;' AS '';
+SELECT ' ' AS '';
+SELECT '-- Decrease all discounts by 2% (Deflation):' AS 'SQL Command:';
+SELECT 'UPDATE discount_tiers SET discount_percent = discount_percent - 2 WHERE is_active = 1;' AS '';
+SELECT ' ' AS '';
+SELECT '-- Update specific tier:' AS 'SQL Command:';
+SELECT 'UPDATE discount_tiers SET discount_percent = 15 WHERE tier_name = "Diamond";' AS '';
+SELECT '=========================================' AS '';
+
+-- =============================================
+-- 15. SAMPLE QUERIES FOR TESTING
+-- =============================================
+SELECT '=========================================' AS '';
+SELECT 'SAMPLE TEST QUERIES' AS '';
+SELECT '=========================================' AS '';
+
+-- Test: Create a test user (uncomment to use)
+-- INSERT INTO users (name, email, password, phone, role) 
+-- VALUES ('Test User', 'test@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '0912345678', 'user');
+
+-- Test: Get discount for a user with 3 trips
+SELECT 'Discount for user with 3 trips:' AS '';
+SELECT discount_percent, tier_name 
+FROM discount_tiers 
+WHERE 3 BETWEEN min_trips AND IFNULL(max_trips, 999) 
+AND is_active = 1;
+
+-- Test: Get next tier for a user with 3 trips
+SELECT 'Next tier for user with 3 trips:' AS '';
+SELECT min_trips, tier_name, discount_percent 
+FROM discount_tiers 
+WHERE min_trips > 3 AND is_active = 1 
+ORDER BY min_trips ASC LIMIT 1;
+
+-- =============================================
+-- 16. FINAL VERIFICATION
+-- =============================================
+SELECT '=========================================' AS '';
+SELECT 'DATABASE IS READY FOR USE!' AS '';
+SELECT '=========================================' AS '';
+SELECT 'All tables created successfully.' AS '';
+SELECT 'Admin user created.' AS '';
+SELECT 'Discount tiers configured.' AS '';
+SELECT 'Packages and destinations loaded.' AS '';
+SELECT 'Ready to accept bookings!' AS '';
 SELECT '=========================================' AS '';

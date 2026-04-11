@@ -47,11 +47,18 @@ function updateLoyaltyDiscount($user_id) {
     $user = mysqli_fetch_assoc($result);
     
     $trips = $user['trips_completed'];
-    $discount = 0;
     
-    if ($trips >= 10) $discount = 0.15;
-    elseif ($trips >= 5) $discount = 0.10;
-    elseif ($trips >= 3) $discount = 0.05;
+    $tier_query = "SELECT discount_percent FROM discount_tiers 
+                   WHERE is_active = 1 
+                   AND min_trips <= ? 
+                   AND (max_trips IS NULL OR max_trips >= ?)
+                   ORDER BY min_trips DESC LIMIT 1";
+    $stmt = mysqli_prepare($conn, $tier_query);
+    mysqli_stmt_bind_param($stmt, "ii", $trips, $trips);
+    mysqli_stmt_execute($stmt);
+    $tier_result = mysqli_stmt_get_result($stmt);
+    $tier = mysqli_fetch_assoc($tier_result);
+    $discount = $tier ? floatval($tier['discount_percent']) / 100 : 0;
     
     $update = "UPDATE users SET loyalty_discount = ? WHERE id = ?";
     $stmt = mysqli_prepare($conn, $update);
@@ -60,6 +67,7 @@ function updateLoyaltyDiscount($user_id) {
     return $discount;
 }
 
+// Only ONE sanitize function
 function sanitize($data) {
     global $conn;
     return mysqli_real_escape_string($conn, htmlspecialchars(trim($data)));

@@ -1,0 +1,37 @@
+2026-04-11 19:55:24 - Received: Array
+(
+    [package_name] => Abyssinia Trek
+    [package_price] => 825
+    [final_amount] => 825
+    [travel_date] => 2026-05-11
+    [travelers] => 1
+    [payment_method] => Cash at Office
+    [transaction_id] => ET-750272
+    [user_name] => zemedkun
+)
+
+User name: zemedkun, Package: Abyssinia Trek, Amount: 825
+Existing user found: ID=2, Trips=1
+Calculation: Subtotal=825, Discount=0, Tax=82.5, Total=907.5
+Booking inserted: ID=2
+User updated: New trips=2
+2026-04-11 20:10:27 - Received: Array
+(
+    [package_name] => Gojo Expedition
+    [package_price] => 550
+    [final_amount] => 605
+    [travel_date] => 2026-05-11
+    [travelers] => 1
+    [payment_method] => Cash at Office
+    [transaction_id] => ET-558518
+    [user_name] => zemedkun
+)
+
+User name from payment: zemedkun
+Session user_id: 4
+Session user_name: zemedkun workalem
+Using logged-in user ID: 4
+Logged-in user found: Name=zemedkun workalem, Trips=0
+Calculation: Subtotal=550, Discount=0, Tax=55, Total=605
+Booking inserted: ID=3
+User updated: New trips=1, New total spent=605
