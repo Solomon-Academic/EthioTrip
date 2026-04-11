@@ -1,5 +1,6 @@
--- Drop the entire database
-DROP DATABASE IF EXISTS ethiotrip_db;
+-- =============================================
+-- ETHIOTRIP DATABASE - COMPLETE SCHEMA
+-- =============================================
 
 -- Create fresh database
 CREATE DATABASE ethiotrip_db;
@@ -64,6 +65,23 @@ CREATE TABLE destinations (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- ===========================================
+-- SAMPLE DATA (For testing)
+-- ===========================================
+
+-- Insert sample packages (matching your frontend)
+INSERT INTO packages (name, price, duration, tag, features) VALUES
+('Meskerem Journey', 350.00, '3 Days / 2 Nights', 'Common Choice', '["Tourist Coaster & Local Travel", "Comfortable 4-star Habesha hospitality", "Historical site guides & entrance"]'),
+('Gojo Expedition', 550.00, '4 Days / 3 Nights', 'Vibrant Adventure', '["Private Transport", "Traditional gear & Habesha cook", "Off-road community permits"]'),
+('Negus Luxury', 1000.00, '2 Days / 1 Night', 'VIP / Premium', '["Private Air Flight or Business Class", "Elite Royal Resort & Lodge stay", "VIP private guide & sunset dinner"]'),
+('Gadaa Heritage', 800.00, '5 Days / 4 Nights', 'Cultural Roots', '["Private Land Cruiser", "Authentic Village homestays", "Traditional ceremony participation"]'),
+('Tizita Express', 200.00, '24 to 36 Hours', 'Short Escape', '["Quick Flight & Airport Shuttle", "1 Night premium city stay", "Focused 1-day historical tour"]'),
+('Abyssinia Trek', 750.00, '6 Days / 5 Nights', 'Eco & Nature', '["Local Bus & Mule trekking", "Eco-lodge stay & nature fees", "Endemic wildlife tracking guide"]');
+
+-- Insert sample user (password: 'password123' - you'll need to hash this properly)
+-- For testing, use: password_hash('password123', PASSWORD_DEFAULT)
+INSERT INTO users (name, email, password, phone, role, loyalty_discount, trips_completed) VALUES
+('Test User', 'test@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '0912345678', 'user', 0.00, 0);
 -- =============================================
 -- 5. BOOKINGS TABLE
 -- =============================================

@@ -1,6 +1,109 @@
 <?php
-// This file only contains functions NOT in auth.php
+function sanitize($data) {
+    global $conn;
+    return mysqli_real_escape_string($conn, htmlspecialchars(trim($data)));
+}
 
+function validateEmail($email) {
+    return filter_var($email, FILTER_VALIDATE_EMAIL);
+}
+
+function validatePassword($password) {
+    return strlen($password) >= 6;
+}
+
+function displayError($errors, $field) {
+    if (isset($errors[$field])) {
+        return '<span class="error">' . $errors[$field] . '</span>';
+    }
+    return '';
+}
+
+// ===========================================
+// LOYALTY DISCOUNT (Chapter 2)
+// ===========================================
+
+/**
+ * Calculate loyalty discount based on completed trips
+ * @param int $trips_completed - Number of trips
+ * @return float - Discount rate (0.05, 0.10, 0.15)
+ */
+function calculateLoyaltyDiscount($trips_completed) {
+    if ($trips_completed >= 10) {
+        return 0.15;  // 15% off
+    } elseif ($trips_completed >= 5) {
+        return 0.10;  // 10% off
+    } elseif ($trips_completed >= 3) {
+        return 0.05;  // 5% off
+    }
+    return 0.00;
+}
+
+// ===========================================
+// DATE FORMATTING
+// ===========================================
+
+/**
+ * Format date for display
+ * @param string $date - MySQL date
+ * @param string $format - PHP date format
+ * @return string - Formatted date
+ */
+function formatDate($date, $format = 'M d, Y') {
+    if (empty($date)) return 'N/A';
+    return date($format, strtotime($date));
+}
+
+// ===========================================
+// CSRF PROTECTION (Security)
+// ===========================================
+
+/**
+ * Generate CSRF token
+ */
+function generateCSRFToken() {
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf_token'];
+}
+
+/**
+ * Verify CSRF token
+ * @param string $token - Token from form
+ * @return bool - True if valid
+ */
+function verifyCSRFToken($token) {
+    return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
+}
+
+// ===========================================
+// PAGINATION (Chapter 4 - LIMIT)
+// ===========================================
+
+/**
+ * Get pagination data
+ * @param int $current_page - Current page number
+ * @param int $total_records - Total records
+ * @param int $per_page - Records per page
+ * @return array - Pagination data
+ */
+function getPaginationData($current_page, $total_records, $per_page = 10) {
+    $total_pages = ceil($total_records / $per_page);
+    $offset = ($current_page - 1) * $per_page;
+    $prev_page = $current_page > 1 ? $current_page - 1 : 1;
+    $next_page = $current_page < $total_pages ? $current_page + 1 : $total_pages;
+    
+    return [
+        'current_page' => $current_page,
+        'total_pages' => $total_pages,
+        'offset' => $offset,
+        'per_page' => $per_page,
+        'prev_page' => $prev_page,
+        'next_page' => $next_page,
+        'has_prev' => $current_page > 1,
+        'has_next' => $current_page < $total_pages
+    ];
 function calculateBookingTotal($price, $travelers, $discount_rate = 0) {
     $subtotal = $price * $travelers;
     $discount = $subtotal * $discount_rate;
