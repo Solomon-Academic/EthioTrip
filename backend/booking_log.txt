@@ -35,3 +35,53 @@ Logged-in user found: Name=zemedkun workalem, Trips=0
 Calculation: Subtotal=550, Discount=0, Tax=55, Total=605
 Booking inserted: ID=3
 User updated: New trips=1, New total spent=605
+2026-04-11 20:27:53 - Received: Array
+(
+    [package_name] => Gadaa Heritage
+    [package_price] => 800
+    [final_amount] => 880
+    [travel_date] => 2026-05-11
+    [travelers] => 1
+    [payment_method] => Cash at Office
+    [transaction_id] => ET-787601
+    [user_name] => zemedkun
+)
+
+User name from payment: zemedkun
+Session user_id: 4
+Session user_name: zemedkun workalem
+Using logged-in user ID: 4
+Logged-in user found: Name=zemedkun workalem, Trips=1
+Calculation: Subtotal=800, Discount=0, Tax=80, Total=880
+Booking inserted: ID=4
+User updated: New trips=2, New total spent=1485
+2026-04-12 20:04:04 - Received: Array
+(
+    [package_name] => Negus Luxury
+    [package_price] => 1000
+    [final_amount] => 1100
+    [travel_date] => 2026-05-12
+    [travelers] => 1
+    [payment_method] => Cash at Office
+    [transaction_id] => ET-891424
+    [user_name] => zemedkun
+)
+
+User name from payment: zemedkun
+Session user_id: 5
+Session user_name: zemedkun workalem
+Using logged-in user ID: 5
+Logged-in user found: Name=zemedkun workalem, Trips=0
+Calculation: Subtotal=1000, Discount=0, Tax=100, Total=1100
+Booking inserted: ID=5
+User updated: New trips=1, New total spent=1100
+2026-04-12 20:05:27 - Received: 
+User name from payment: 
+Session user_id: 5
+Session user_name: zemedkun workalem
+ERROR: Package name required
+2026-04-12 20:05:41 - Received: 
+User name from payment: 
+Session user_id: 5
+Session user_name: zemedkun workalem
+ERROR: Package name required

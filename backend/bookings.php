@@ -3,13 +3,41 @@ session_start();
 require_once 'config/database.php';
 
 // Check if user is logged in
-if (!isset($_SESSION['user_id']) || empty($_SESSION['user_id'])) {
-    header('Location: login.php');
+$user_id = $_SESSION['user_id'] ?? null;
+$user_name = $_SESSION['user_name'] ?? '';
+
+// If not logged in, show login message
+if (!$user_id) {
+    ?>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>My Bookings - EthioTrip</title>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <style>
+            body { font-family: 'Poppins', sans-serif; background: #f5f7fa; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+            .login-card { background: white; padding: 40px; border-radius: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 400px; }
+            .login-card i { font-size: 3rem; color: #d4af37; margin-bottom: 20px; }
+            .login-card h2 { color: #2d3436; margin-bottom: 10px; }
+            .login-card p { color: #666; margin-bottom: 20px; }
+            .btn-primary { display: inline-block; padding: 12px 30px; background: #d4af37; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; }
+        </style>
+    </head>
+    <body>
+        <div class="login-card">
+            <i class="fas fa-lock"></i>
+            <h2>Please Login First</h2>
+            <p>You need to be logged in to view your bookings.</p>
+            <a href="login.php" class="btn-primary">Login to Continue</a>
+        </div>
+    </body>
+    </html>
+    <?php
     exit();
 }
-
-$user_id = $_SESSION['user_id'];
-$user_name = $_SESSION['user_name'] ?? '';
 
 // Get all bookings for this user
 $query = "SELECT * FROM bookings WHERE user_id = ? ORDER BY created_at DESC";
