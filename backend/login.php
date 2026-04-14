@@ -1,30 +1,4 @@
 <?php
-/**
- * logout.php - Destroy user session and logout
- */
-
-session_start();
-
-// Destroy all session data
-$_SESSION = array();
-
-// Delete session cookie
-if (ini_get("session.use_cookies")) {
-    $params = session_get_cookie_params();
-    setcookie(session_name(), '', time() - 42000,
-        $params["path"], $params["domain"],
-        $params["secure"], $params["httponly"]
-    );
-}
-
-// Destroy session
-session_destroy();
-
-// Redirect to home page
-header('Location: ../../frontend/home.html');
-exit();
-?>
-session_start();
 require_once 'config/database.php';
 
 if (isset($_SESSION['user_id'])) {
@@ -41,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($email) || empty($password)) {
         $error = 'Please fill in all fields';
     } else {
-        $query = "SELECT id, name, email, password FROM users WHERE email = ?";
+        $query = "SELECT id, name, email, password, role FROM users WHERE email = ?";
         $stmt = mysqli_prepare($conn, $query);
         mysqli_stmt_bind_param($stmt, "s", $email);
         mysqli_stmt_execute($stmt);
@@ -51,7 +25,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($user && password_verify($password, $user['password'])) {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_name'] = $user['name'];
-            header('Location: dashboard.php');
+            $_SESSION['user_role'] = $user['role'];
+            
+            // Check for return URL from frontend
+            if (isset($_SESSION['return_url'])) {
+                $return_url = $_SESSION['return_url'];
+                unset($_SESSION['return_url']);
+                header('Location: ' . $return_url);
+            } else {
+                header('Location: dashboard.php');
+            }
             exit();
         } else {
             $error = 'Invalid email or password';
@@ -76,7 +59,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .form-group { margin-bottom: 20px; }
         label { display: block; margin-bottom: 8px; color: #555; font-weight: 500; }
         input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
-        .btn-login { width: 100%; padding: 12px; background: #d4af37; border: none; border-radius: 8px; color: white; font-weight: 600; font-size: 16px; cursor: pointer; }
+        input:focus { outline: none; border-color: #d4af37; }
+        .btn-login { width: 100%; padding: 12px; background: #d4af37; border: none; border-radius: 8px; color: white; font-weight: 600; font-size: 16px; cursor: pointer; transition: 0.3s; }
         .btn-login:hover { background: #c09c2c; }
         .register-link { text-align: center; margin-top: 20px; color: #666; }
         .register-link a { color: #d4af37; text-decoration: none; }
@@ -84,6 +68,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .input-icon { position: relative; }
         .input-icon i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #999; }
         .input-icon input { padding-left: 35px; }
+        .back-home { text-align: center; margin-top: 15px; }
+        .back-home a { color: #999; text-decoration: none; font-size: 0.8rem; }
+        .back-home a:hover { color: #d4af37; }
+        .error { color: #e74c3c; font-size: 12px; margin-top: 5px; display: block; }
     </style>
 </head>
 <body>
@@ -94,26 +82,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="alert"><?php echo $error; ?></div>
         <?php endif; ?>
         
-        <form method="POST" action="">
+        <form method="POST" action="" onsubmit="return validateLoginForm()">
             <div class="form-group">
                 <label>Email Address</label>
                 <div class="input-icon">
                     <i class="fas fa-envelope"></i>
-                    <input type="email" name="email" required>
+                    <input type="email" name="email" id="email" required>
                 </div>
+                <span id="email-error" class="error"></span>
             </div>
             <div class="form-group">
                 <label>Password</label>
                 <div class="input-icon">
                     <i class="fas fa-lock"></i>
-                    <input type="password" name="password" required>
+                    <input type="password" name="password" id="password" required>
                 </div>
+                <span id="password-error" class="error"></span>
             </div>
             <button type="submit" class="btn-login">Sign In</button>
         </form>
         <div class="register-link">
             Don't have an account? <a href="registration.php">Create Account</a>
         </div>
+        <div class="back-home">
+            <a href="../frontend/home.html"><i class="fas fa-arrow-left"></i> Back to Home</a>
+        </div>
     </div>
+
+    <script src="../frontend/js/validation.js"></script>
 </body>
 </html>

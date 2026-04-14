@@ -1,9 +1,5 @@
 <?php
-/**
- * logout.php - Destroy user session and logout
- */
-
-session_start();
+require_once 'config/database.php';
 
 // Destroy all session data
 $_SESSION = array();
@@ -21,7 +17,6 @@ if (ini_get("session.use_cookies")) {
 session_destroy();
 
 // Redirect to home page
-header('Location: ../../frontend/home.html');
-header('Location: login.php');
+header('Location: ../frontend/home.html');
 exit();
 ?>

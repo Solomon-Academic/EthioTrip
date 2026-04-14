@@ -3,41 +3,13 @@ session_start();
 require_once 'config/database.php';
 
 // Check if user is logged in
-$user_id = $_SESSION['user_id'] ?? null;
-$user_name = $_SESSION['user_name'] ?? '';
-
-// If not logged in, show login message
-if (!$user_id) {
-    ?>
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>My Bookings - EthioTrip</title>
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        <style>
-            body { font-family: 'Poppins', sans-serif; background: #f5f7fa; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-            .login-card { background: white; padding: 40px; border-radius: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 400px; }
-            .login-card i { font-size: 3rem; color: #d4af37; margin-bottom: 20px; }
-            .login-card h2 { color: #2d3436; margin-bottom: 10px; }
-            .login-card p { color: #666; margin-bottom: 20px; }
-            .btn-primary { display: inline-block; padding: 12px 30px; background: #d4af37; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; }
-        </style>
-    </head>
-    <body>
-        <div class="login-card">
-            <i class="fas fa-lock"></i>
-            <h2>Please Login First</h2>
-            <p>You need to be logged in to view your bookings.</p>
-            <a href="login.php" class="btn-primary">Login to Continue</a>
-        </div>
-    </body>
-    </html>
-    <?php
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
     exit();
 }
+
+$user_id = $_SESSION['user_id'];
+$user_name = $_SESSION['user_name'] ?? '';
 
 // Get all bookings for this user
 $query = "SELECT * FROM bookings WHERE user_id = ? ORDER BY created_at DESC";
@@ -102,6 +74,9 @@ if ($bookings && mysqli_num_rows($bookings) > 0) {
         .btn-primary:hover { background: #c09c2c; transform: translateY(-2px); }
         .btn-secondary { display: inline-block; padding: 10px 20px; background: #2d3436; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 0.9rem; transition: 0.3s; }
         .btn-secondary:hover { background: #1a1a1a; transform: translateY(-2px); }
+        .btn-danger { background: #e74c3c; }
+        .btn-danger:hover { background: #c0392b; }
+        .btn-small { padding: 5px 12px; font-size: 0.75rem; margin: 0 2px; display: inline-block; }
         
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
         .stat-card { background: white; padding: 1.5rem; border-radius: 15px; display: flex; align-items: center; gap: 1rem; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
@@ -193,6 +168,7 @@ if ($bookings && mysqli_num_rows($bookings) > 0) {
                             <th>Status</th>
                             <th>Payment</th>
                             <th>Booked On</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -206,6 +182,12 @@ if ($bookings && mysqli_num_rows($bookings) > 0) {
                             <td><span class="status status-<?php echo $booking['status']; ?>"><?php echo ucfirst($booking['status']); ?></span></td>
                             <td><span class="status status-<?php echo $booking['payment_status']; ?>"><?php echo ucfirst($booking['payment_status']); ?></span></td>
                             <td><?php echo date('M d, Y', strtotime($booking['created_at'])); ?></td>
+                            <td>
+                                <?php if ($booking['status'] == 'pending'): ?>
+                                    <a href="edit-booking.php?id=<?php echo $booking['id']; ?>" class="btn-small btn-primary" style="background: #3498db;"><i class="fas fa-edit"></i></a>
+                                    <a href="delete-booking.php?id=<?php echo $booking['id']; ?>" class="btn-small btn-danger" onclick="return confirm('Cancel this booking?')"><i class="fas fa-trash"></i></a>
+                                <?php endif; ?>
+                             </td>
                         </tr>
                         <?php endwhile; ?>
                     </tbody>

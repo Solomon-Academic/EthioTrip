@@ -69,7 +69,7 @@ CREATE TABLE destinations (
 -- SAMPLE DATA (For testing)
 -- ===========================================
 
--- Insert sample packages (matching your frontend)
+-- Insert sample packages 
 INSERT INTO packages (name, price, duration, tag, features) VALUES
 ('Meskerem Journey', 350.00, '3 Days / 2 Nights', 'Common Choice', '["Tourist Coaster & Local Travel", "Comfortable 4-star Habesha hospitality", "Historical site guides & entrance"]'),
 ('Gojo Expedition', 550.00, '4 Days / 3 Nights', 'Vibrant Adventure', '["Private Transport", "Traditional gear & Habesha cook", "Off-road community permits"]'),
@@ -78,8 +78,7 @@ INSERT INTO packages (name, price, duration, tag, features) VALUES
 ('Tizita Express', 200.00, '24 to 36 Hours', 'Short Escape', '["Quick Flight & Airport Shuttle", "1 Night premium city stay", "Focused 1-day historical tour"]'),
 ('Abyssinia Trek', 750.00, '6 Days / 5 Nights', 'Eco & Nature', '["Local Bus & Mule trekking", "Eco-lodge stay & nature fees", "Endemic wildlife tracking guide"]');
 
--- Insert sample user (password: 'password123' - you'll need to hash this properly)
--- For testing, use: password_hash('password123', PASSWORD_DEFAULT)
+-- Insert sample user 
 INSERT INTO users (name, email, password, phone, role, loyalty_discount, trips_completed) VALUES
 ('Test User', 'test@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '0912345678', 'user', 0.00, 0);
 -- =============================================
@@ -178,7 +177,7 @@ INSERT INTO destinations (name, location, description, best_time, activities) VA
 ('Sof Omar Cave', 'Oromia Region', 'One of the largest cave systems in the world.', 'Dec - Apr', 'Cave exploration, hiking, photography');
 
 -- =============================================
--- 10. INSERT ONLY ADMIN USER (NO SAMPLE USERS)
+-- 10. INSERT ONLY ADMIN USER 
 -- =============================================
 -- Password: password123
 INSERT INTO users (name, email, password, phone, role, trips_completed, total_spent, loyalty_discount) VALUES

@@ -1,5 +1,4 @@
 <?php
-session_start();
 require_once 'config/database.php';
 
 if (!isset($_SESSION['user_id'])) {
@@ -29,9 +28,10 @@ $stats_data = mysqli_fetch_assoc($stats);
 $total_bookings = $stats_data['total'] ?? 0;
 $total_spent = $stats_data['spent'] ?? 0;
 $discount_percent = ($user['loyalty_discount'] ?? 0) * 100;
+$trips = $user['trips_completed'] ?? 0;
+$is_admin = ($user['role'] ?? 'user') === 'admin';
 
 // Get next tier info
-$trips = $user['trips_completed'] ?? 0;
 $next_tier_query = "SELECT min_trips, tier_name, discount_percent FROM discount_tiers 
                      WHERE is_active = 1 AND min_trips > ? 
                      ORDER BY min_trips ASC LIMIT 1";
@@ -70,6 +70,7 @@ $next_tier = mysqli_fetch_assoc($next_tier_result);
         .nav-links a { text-decoration: none; color: #2d3436; font-weight: 500; transition: 0.3s; }
         .nav-links a:hover { color: #d4af37; }
         .welcome-badge { background: linear-gradient(135deg, #d4af37, #f39c12); padding: 0.5rem 1rem; border-radius: 50px; color: white; font-weight: 600; font-size: 0.9rem; }
+        .admin-badge { background: #e74c3c; margin-left: 10px; font-size: 0.7rem; padding: 3px 8px; }
         
         .dashboard-container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
         .hero-section { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; padding: 2rem; margin-bottom: 2rem; color: white; }
@@ -106,14 +107,17 @@ $next_tier = mysqli_fetch_assoc($next_tier_result);
             <li><a href="../frontend/Destination.html">Destinations</a></li>
             <li><a href="../frontend/packages.html">Packages</a></li>
             <li><a href="bookings.php">My Bookings</a></li>
+            <?php if ($is_admin): ?>
+                <li><a href="discounts.php">Admin Panel</a></li>
+            <?php endif; ?>
             <li><a href="logout.php">Logout</a></li>
-            <li><span class="welcome-badge">Welcome, <?php echo htmlspecialchars($user_name); ?></span></li>
+            <li><span class="welcome-badge"><?php echo htmlspecialchars($user_name); ?></span></li>
         </ul>
     </nav>
 
     <div class="dashboard-container">
         <div class="hero-section">
-            <h1>Welcome back, <?php echo htmlspecialchars($user_name); ?>! 👋</h1>
+            <h1>Welcome, <?php echo htmlspecialchars($user_name); ?>! 👋</h1>
             <p>Your Ethiopian adventure dashboard - manage your journeys and track rewards.</p>
         </div>
 
@@ -178,6 +182,12 @@ $next_tier = mysqli_fetch_assoc($next_tier_result);
                 <i class="fas fa-calendar-alt"></i>
                 <span>My Bookings</span>
             </a>
+            <?php if ($is_admin): ?>
+            <a href="discounts.php" class="action-card">
+                <i class="fas fa-tags"></i>
+                <span>Manage Discounts</span>
+            </a>
+            <?php endif; ?>
             <a href="logout.php" class="action-card">
                 <i class="fas fa-sign-out-alt"></i>
                 <span>Sign Out</span>

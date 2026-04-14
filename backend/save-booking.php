@@ -3,16 +3,12 @@ session_start();
 require_once 'config/database.php';
 header('Content-Type: application/json');
 
-// Enable error reporting
+// Enable error reporting for debugging
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', 0); // Don't display errors in JSON output
 
 // Get POST data
 $data = json_decode(file_get_contents('php://input'), true);
-
-// Log for debugging
-$log = fopen("booking_log.txt", "a");
-fwrite($log, date('Y-m-d H:i:s') . " - Received: " . print_r($data, true) . "\n");
 
 $package_name = $data['package_name'] ?? '';
 $package_price = floatval($data['package_price'] ?? 0);
@@ -23,14 +19,8 @@ $transaction_id = $data['transaction_id'] ?? 'TXN-' . time();
 $final_amount = floatval($data['final_amount'] ?? $package_price);
 $user_name = trim($data['user_name'] ?? '');
 
-fwrite($log, "User name from payment: $user_name\n");
-fwrite($log, "Session user_id: " . ($_SESSION['user_id'] ?? 'NOT SET') . "\n");
-fwrite($log, "Session user_name: " . ($_SESSION['user_name'] ?? 'NOT SET') . "\n");
-
 // Validate
 if (empty($package_name)) {
-    fwrite($log, "ERROR: Package name required\n");
-    fclose($log);
     echo json_encode(['success' => false, 'message' => 'Package name is required']);
     exit();
 }
@@ -43,7 +33,6 @@ $total_spent_before = 0;
 if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
     // User is logged in - use their ID
     $user_id = $_SESSION['user_id'];
-    fwrite($log, "Using logged-in user ID: $user_id\n");
     
     // Get user details from database
     $find_user = "SELECT id, name, trips_completed, total_spent FROM users WHERE id = ?";
@@ -57,25 +46,18 @@ if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
         $trips_before = intval($user['trips_completed']);
         $total_spent_before = floatval($user['total_spent']);
         $user_name = $user['name'];
-        fwrite($log, "Logged-in user found: Name=$user_name, Trips=$trips_before\n");
     } else {
-        fwrite($log, "ERROR: Logged-in user not found in database\n");
-        fclose($log);
         echo json_encode(['success' => false, 'message' => 'User not found']);
         exit();
     }
 } else {
     // Not logged in - find or create user by name
-    fwrite($log, "User not logged in, using name: $user_name\n");
-    
     if (empty($user_name)) {
-        fwrite($log, "ERROR: User name required for non-logged-in user\n");
-        fclose($log);
         echo json_encode(['success' => false, 'message' => 'User name is required']);
         exit();
     }
     
-    $find_user = "SELECT id, name, trips_completed, total_spent FROM users WHERE name = ?";
+    $find_user = "SELECT id, name, trips_completed, total_spent FROM users WHERE LOWER(name) = LOWER(?)";
     $stmt = mysqli_prepare($conn, $find_user);
     mysqli_stmt_bind_param($stmt, "s", $user_name);
     mysqli_stmt_execute($stmt);
@@ -86,7 +68,6 @@ if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
         $user_id = $user['id'];
         $trips_before = intval($user['trips_completed']);
         $total_spent_before = floatval($user['total_spent']);
-        fwrite($log, "Existing user found: ID=$user_id, Trips=$trips_before\n");
     } else {
         // Create new user
         $temp_email = strtolower(str_replace(' ', '', $user_name)) . '@ethiotrip.com';
@@ -101,11 +82,8 @@ if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
             $user_id = mysqli_insert_id($conn);
             $trips_before = 0;
             $total_spent_before = 0;
-            fwrite($log, "New user created: ID=$user_id, Name=$user_name\n");
         } else {
-            fwrite($log, "ERROR: Failed to create user: " . mysqli_error($conn) . "\n");
-            fclose($log);
-            echo json_encode(['success' => false, 'message' => 'Failed to create user']);
+            echo json_encode(['success' => false, 'message' => 'Failed to create user: ' . mysqli_error($conn)]);
             exit();
         }
     }
@@ -135,8 +113,6 @@ $total_after_discount = $subtotal - $discount_amount;
 $tax = $total_after_discount * 0.10;
 $grand_total = $total_after_discount + $tax;
 
-fwrite($log, "Calculation: Subtotal=$subtotal, Discount=$discount_amount, Tax=$tax, Total=$grand_total\n");
-
 // Insert booking
 $query = "INSERT INTO bookings (user_id, package_name, travel_date, number_of_travelers, 
           total_amount, discount_amount, final_amount, payment_method, transaction_id, 
@@ -151,7 +127,6 @@ mysqli_stmt_bind_param($stmt, "issidddss",
 
 if (mysqli_stmt_execute($stmt)) {
     $booking_id = mysqli_insert_id($conn);
-    fwrite($log, "Booking inserted: ID=$booking_id\n");
     
     // Update user stats
     $new_trips = $trips_before + 1;
@@ -161,7 +136,6 @@ if (mysqli_stmt_execute($stmt)) {
     $stmt2 = mysqli_prepare($conn, $update_user);
     mysqli_stmt_bind_param($stmt2, "dii", $new_total_spent, $new_trips, $user_id);
     mysqli_stmt_execute($stmt2);
-    fwrite($log, "User updated: New trips=$new_trips, New total spent=$new_total_spent\n");
     
     // Get new discount based on updated trips
     $new_tier_query = "SELECT discount_percent, tier_name FROM discount_tiers 
@@ -183,8 +157,6 @@ if (mysqli_stmt_execute($stmt)) {
     mysqli_stmt_bind_param($stmt4, "di", $new_discount, $user_id);
     mysqli_stmt_execute($stmt4);
     
-    fclose($log);
-    
     echo json_encode([
         'success' => true,
         'message' => 'Booking saved successfully!',
@@ -198,8 +170,6 @@ if (mysqli_stmt_execute($stmt)) {
         'new_discount' => $new_discount * 100
     ]);
 } else {
-    fwrite($log, "ERROR: Insert failed: " . mysqli_error($conn) . "\n");
-    fclose($log);
     echo json_encode(['success' => false, 'message' => 'Failed to save booking: ' . mysqli_error($conn)]);
 }
 

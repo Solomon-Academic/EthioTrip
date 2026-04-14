@@ -1,38 +1,27 @@
 <?php
 session_start();
-require_once '../config/database.php';
+require_once 'config/database.php';
+header('Content-Type: application/json');
 
-// Simple admin check
-$is_admin = false;
-if (isset($_SESSION['user_id'])) {
-    $check = mysqli_query($conn, "SELECT role FROM users WHERE id = " . $_SESSION['user_id']);
-    $user = mysqli_fetch_assoc($check);
-    $is_admin = ($user && $user['role'] === 'admin');
-}
+$name = isset($_GET['name']) ? trim($_GET['name']) : '';
 
-if (!$is_admin) {
-    header('Location: ../login.php');
-    exit();
-}
-
-$adjustment = floatval($_POST['adjustment'] ?? 0);
-
-if ($adjustment != 0) {
-    // Update all active tiers
-    $query = "UPDATE discount_tiers SET discount_percent = discount_percent + ? WHERE is_active = 1";
+// If user is logged in, use their session name
+if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
+    $user_id = $_SESSION['user_id'];
+    $query = "SELECT id, name, trips_completed, total_spent, loyalty_discount FROM users WHERE id = ?";
     $stmt = mysqli_prepare($conn, $query);
-    mysqli_stmt_bind_param($stmt, "d", $adjustment);
+    mysqli_stmt_bind_param($stmt, "i", $user_id);
     mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $user = mysqli_fetch_assoc($result);
     
-    // Ensure no negative discounts
-    mysqli_query($conn, "UPDATE discount_tiers SET discount_percent = 0 WHERE discount_percent < 0");
-    
-    // Recalculate all user discounts
-    $users = mysqli_query($conn, "SELECT id, trips_completed FROM users");
-    while ($user = mysqli_fetch_assoc($users)) {
-        $trips = $user['trips_completed'];
+    if ($user) {
+        $trips = (int)$user['trips_completed'];
+        $discount_decimal = floatval($user['loyalty_discount']);
+        $discount_percent = $discount_decimal * 100;
         
-        $tier_query = "SELECT discount_percent FROM discount_tiers 
+        // Get tier name
+        $tier_query = "SELECT tier_name FROM discount_tiers 
                        WHERE is_active = 1 
                        AND min_trips <= ? 
                        AND (max_trips IS NULL OR max_trips >= ?)
@@ -40,20 +29,76 @@ if ($adjustment != 0) {
         $stmt = mysqli_prepare($conn, $tier_query);
         mysqli_stmt_bind_param($stmt, "ii", $trips, $trips);
         mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
-        $tier = mysqli_fetch_assoc($result);
+        $tier_result = mysqli_stmt_get_result($stmt);
+        $tier = mysqli_fetch_assoc($tier_result);
+        $tier_name = $tier ? $tier['tier_name'] : 'Bronze';
         
-        $discount = $tier ? floatval($tier['discount_percent']) / 100 : 0;
-        
-        $update = "UPDATE users SET loyalty_discount = ? WHERE id = ?";
-        $stmt = mysqli_prepare($conn, $update);
-        mysqli_stmt_bind_param($stmt, "di", $discount, $user['id']);
-        mysqli_stmt_execute($stmt);
+        echo json_encode([
+            'success' => true,
+            'user_id' => $user['id'],
+            'name' => $user['name'],
+            'trips_completed' => $trips,
+            'total_spent' => floatval($user['total_spent']),
+            'discount_percent' => $discount_percent,
+            'discount_decimal' => $discount_decimal,
+            'tier_name' => $tier_name
+        ]);
+        exit();
     }
-    
-    $_SESSION['message'] = "Discounts adjusted by " . ($adjustment > 0 ? '+' : '') . $adjustment . "%";
 }
 
-header('Location: discounts.php');
-exit();
+// If not logged in or user not found, search by name
+if (empty($name)) {
+    echo json_encode(['success' => false, 'message' => 'Name required', 'discount_decimal' => 0]);
+    exit();
+}
+
+$query = "SELECT id, name, trips_completed, total_spent, loyalty_discount FROM users WHERE LOWER(name) = LOWER(?)";
+$stmt = mysqli_prepare($conn, $query);
+mysqli_stmt_bind_param($stmt, "s", $name);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+$user = mysqli_fetch_assoc($result);
+
+if (!$user) {
+    echo json_encode([
+        'success' => false, 
+        'message' => 'New user - no trips completed yet',
+        'discount_decimal' => 0,
+        'discount_percent' => 0,
+        'trips_completed' => 0,
+        'total_spent' => 0,
+        'tier_name' => 'Bronze'
+    ]);
+    exit();
+}
+
+$trips = (int)$user['trips_completed'];
+$discount_decimal = floatval($user['loyalty_discount']);
+$discount_percent = $discount_decimal * 100;
+
+$tier_query = "SELECT tier_name FROM discount_tiers 
+               WHERE is_active = 1 
+               AND min_trips <= ? 
+               AND (max_trips IS NULL OR max_trips >= ?)
+               ORDER BY min_trips DESC LIMIT 1";
+$stmt = mysqli_prepare($conn, $tier_query);
+mysqli_stmt_bind_param($stmt, "ii", $trips, $trips);
+mysqli_stmt_execute($stmt);
+$tier_result = mysqli_stmt_get_result($stmt);
+$tier = mysqli_fetch_assoc($tier_result);
+$tier_name = $tier ? $tier['tier_name'] : 'Bronze';
+
+echo json_encode([
+    'success' => true,
+    'user_id' => $user['id'],
+    'name' => $user['name'],
+    'trips_completed' => $trips,
+    'total_spent' => floatval($user['total_spent']),
+    'discount_percent' => $discount_percent,
+    'discount_decimal' => $discount_decimal,
+    'tier_name' => $tier_name
+]);
+
+mysqli_close($conn);
 ?>

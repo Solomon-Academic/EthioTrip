@@ -1,5 +1,4 @@
 <?php
-session_start();
 require_once 'config/database.php';
 
 if (isset($_SESSION['user_id'])) {
@@ -41,7 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($errors)) {
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
         
-        // Using 'name' column (matches your database)
         $query = "INSERT INTO users (name, email, password, phone, role) VALUES (?, ?, ?, ?, 'user')";
         $stmt = mysqli_prepare($conn, $query);
         mysqli_stmt_bind_param($stmt, "ssss", $name, $email, $hashed_password, $phone);
@@ -50,6 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $user_id = mysqli_insert_id($conn);
             $_SESSION['user_id'] = $user_id;
             $_SESSION['user_name'] = $name;
+            $_SESSION['user_role'] = 'user';
             header('Location: dashboard.php');
             exit();
         } else {
@@ -95,60 +94,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="alert"><?php echo $errors['general']; ?></div>
         <?php endif; ?>
 
-        <form method="POST" action="">
+        <form method="POST" action="" onsubmit="return validateRegistrationForm()">
             <div class="form-group">
                 <label>Full Name *</label>
                 <div class="input-icon">
                     <i class="fas fa-user"></i>
-                    <input type="text" name="name" value="<?php echo htmlspecialchars($_POST['name'] ?? ''); ?>" required>
+                    <input type="text" name="name" id="name" value="<?php echo htmlspecialchars($_POST['name'] ?? ''); ?>" required>
                 </div>
-                <?php if (isset($errors['name'])): ?>
-                    <span class="error"><?php echo $errors['name']; ?></span>
-                <?php endif; ?>
+                <span id="name-error" class="error"><?php echo $errors['name'] ?? ''; ?></span>
             </div>
 
             <div class="form-group">
                 <label>Email Address *</label>
                 <div class="input-icon">
                     <i class="fas fa-envelope"></i>
-                    <input type="email" name="email" value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>" required>
+                    <input type="email" name="email" id="email" value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>" required>
                 </div>
-                <?php if (isset($errors['email'])): ?>
-                    <span class="error"><?php echo $errors['email']; ?></span>
-                <?php endif; ?>
+                <span id="email-error" class="error"><?php echo $errors['email'] ?? ''; ?></span>
             </div>
 
             <div class="form-group">
                 <label>Phone Number *</label>
                 <div class="input-icon">
                     <i class="fas fa-phone"></i>
-                    <input type="text" name="phone" value="<?php echo htmlspecialchars($_POST['phone'] ?? ''); ?>" required>
+                    <input type="text" name="phone" id="phone" value="<?php echo htmlspecialchars($_POST['phone'] ?? ''); ?>" required>
                 </div>
-                <?php if (isset($errors['phone'])): ?>
-                    <span class="error"><?php echo $errors['phone']; ?></span>
-                <?php endif; ?>
+                <span id="phone-error" class="error"><?php echo $errors['phone'] ?? ''; ?></span>
             </div>
 
             <div class="form-group">
                 <label>Password * (min. 6 characters)</label>
                 <div class="input-icon">
                     <i class="fas fa-lock"></i>
-                    <input type="password" name="password" required>
+                    <input type="password" name="password" id="password" required>
                 </div>
-                <?php if (isset($errors['password'])): ?>
-                    <span class="error"><?php echo $errors['password']; ?></span>
-                <?php endif; ?>
+                <span id="password-error" class="error"><?php echo $errors['password'] ?? ''; ?></span>
             </div>
 
             <div class="form-group">
                 <label>Confirm Password *</label>
                 <div class="input-icon">
                     <i class="fas fa-lock"></i>
-                    <input type="password" name="confirm_password" required>
+                    <input type="password" name="confirm_password" id="confirm_password" required>
                 </div>
-                <?php if (isset($errors['confirm_password'])): ?>
-                    <span class="error"><?php echo $errors['confirm_password']; ?></span>
-                <?php endif; ?>
+                <span id="confirm_password-error" class="error"><?php echo $errors['confirm_password'] ?? ''; ?></span>
             </div>
 
             <button type="submit" class="btn-register">Create Account</button>
@@ -158,5 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             Already have an account? <a href="login.php">Sign In</a>
         </div>
     </div>
+
+    <script src="../frontend/js/validation.js"></script>
 </body>
 </html>

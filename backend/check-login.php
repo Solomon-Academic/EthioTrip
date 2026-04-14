@@ -1,13 +1,25 @@
 <?php
+// Set session cookie parameters to work across entire site
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => '/',
+    'domain' => '',
+    'secure' => false,
+    'httponly' => true,
+    'samesite' => 'Lax'
+]);
 session_start();
+
 header('Content-Type: application/json');
 
-$response = ['logged_in' => false];
-if (isset($_SESSION['user_id'])) {
-    $response['logged_in'] = true;
-    $response['user_id'] = $_SESSION['user_id'];
-    $response['user_name'] = $_SESSION['user_name'];
+if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
+    echo json_encode([
+        'logged_in' => true,
+        'user_id' => $_SESSION['user_id'],
+        'user_name' => $_SESSION['user_name'],
+        'user_role' => $_SESSION['user_role'] ?? 'user'
+    ]);
+} else {
+    echo json_encode(['logged_in' => false]);
 }
-
-echo json_encode($response);
 ?>
