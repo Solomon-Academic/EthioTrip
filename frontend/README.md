@@ -1,9 +1,9 @@
-# EthioTrip Web Platform 🌍  
+# EthioTrip Web Platform 🌍
 **A Premium Digital Gateway to Ethiopia – The Land of Origins**
 
 ---
 
-##  Executive Summary
+## Executive Summary
 
 **EthioTrip** is a modern, responsive travel and tourism web platform designed to promote Ethiopia as the **“Land of Origins.”**  
 The platform delivers a curated digital experience that blends Ethiopia’s rich cultural heritage with contemporary web technologies. It provides users with immersive destination discovery, intelligent storytelling, and a centralized user authentication system.
@@ -12,29 +12,81 @@ EthioTrip is built with scalability, usability, and visual elegance in mind, tar
 
 ---
 
-##  Technical Stack
+## Technical Stack
 
-### Frontend
+## Project Folder Structure
+
+```text
+IP2_travel/
+├── backend/
+│   ├── config/
+│   ├── css/
+│   ├── includes/
+│   │   ├── auth.php
+│   │   ├── footer.php
+│   │   └── header.php
+│   ├── js/
+│   ├── sql/
+│   ├── bookings.php
+│   ├── create-booking.php
+│   ├── dashboard.php
+│   ├── delete-booking.php
+│   ├── edit-booking.php
+│   ├── login.php
+│   ├── logout.php
+│   ├── registration.php
+│   └── testdb.php
+├── frontend/
+│   ├── dest_images/
+│   ├── home_images/
+│   ├── .gitignore
+│   ├── about.css
+│   ├── about.html
+│   ├── about.js
+│   ├── destination.css
+│   ├── Destination.html
+│   ├── Home.css
+│   ├── home.html
+│   ├── home.js
+│   ├── LICENSE
+│   ├── packages.css
+│   ├── packages.html
+│   ├── packages.js
+│   ├── payment.css
+│   ├── Payment.html
+│   └── payment.js
+├── .gitignore
+└── README.md
+```
+---
+
+# 🎨 Frontend
 - **HTML5** – Semantic and accessible structure  
 - **CSS3** – Flexbox, Grid, CSS Variables, and 3D transforms  
 - **JavaScript (ES6+)** – Modular, event-driven logic  
 
-### Design & Assets
+---
+
+# 🖌 Design & Assets
 - **Typography:** Google Fonts (Poppins)  
 - **Icons:** Font Awesome 6.4.0  
 
-### Animations & Interactivity
-- **CSS 3D Transforms**
+---
+
+# ⚡ Animations & Interactivity
+- **CSS 3D Transforms**  
 - **RequestAnimationFrame API** for smooth animations  
 
-### Data Persistence
+---
+
+# 💾 Data Persistence
 - **Browser LocalStorage** for authentication state and session management  
 
 ---
 
-##  Core Features
+# 🚀 Core Features
 
-### 1. Interactive Hero Experience
+## 1. Interactive Hero Experience
 The homepage features a **3D Card Stack Carousel** that visually showcases key Ethiopian destinations.
 
 **Key Capabilities:**
@@ -42,14 +94,14 @@ The homepage features a **3D Card Stack Carousel** that visually showcases key E
 - Automatic rotation fallback after 2 seconds of inactivity  
 - Smooth performance using frame-based animation control  
 
-Featured destinations include:
+**Featured destinations:**
 - Afar Depression  
 - Harar Jugol  
 - Omo Valley  
 
 ---
 
-### 2. Journey Planner (Destinations Module)
+## 2. Journey Planner (Destinations Module)
 A comprehensive destination catalog designed for travel planning and discovery.
 
 **Highlights:**
@@ -59,20 +111,18 @@ A comprehensive destination catalog designed for travel planning and discovery.
 
 ---
 
-### 3. Dynamic Statistics & User Engagement
+## 3. Dynamic Statistics & User Engagement
 The **About** page features animated statistics powered by the Intersection Observer pattern.
 
-Displayed metrics:
+**Displayed metrics:**
 - **Trips Completed:** 250+  
 - **Happy Travelers:** 1,200+  
 - **Destinations Covered:** 35  
 - **Recognitions:** 10  
 
-Animations trigger only when the section becomes visible, ensuring performance efficiency.
-
 ---
 
-### 4. User Authentication System
+## 4. User Authentication System
 A centralized authentication system maintains user state across the platform.
 
 **Features:**
@@ -82,7 +132,7 @@ A centralized authentication system maintains user state across the platform.
 
 ---
 
-##  Site Map & Navigation
+# 🗺 Site Map & Navigation
 
 | Page | Purpose | Key Components |
 |-----|--------|----------------|
@@ -92,7 +142,7 @@ A centralized authentication system maintains user state across the platform.
 
 ---
 
-## Script Overview
+# 📜 Script Overview
 
 ### `home.js`
 - Controls the 3D destination carousel  
@@ -107,19 +157,16 @@ A centralized authentication system maintains user state across the platform.
 
 ---
 
-##  Sustainable Tourism Philosophy
-
+# 🌱 Sustainable Tourism Philosophy
 EthioTrip is built on the principles of **Sustainable Tourism**, emphasizing:
 - Support for local communities  
 - Protection of natural and cultural heritage  
 - Ethical travel practices  
 - The Ethiopian value of **Medemer** (togetherness)
 
-Every journey promoted through EthioTrip aims to respect and preserve Ethiopia’s identity while empowering its people.
-
 ---
 
-##  Future Enhancements
+# 🔮 Future Enhancements
 - Backend integration (Node.js / Express)  
 - Database support (MongoDB or PostgreSQL)  
 - Payment gateway integration  
@@ -128,15 +175,12 @@ Every journey promoted through EthioTrip aims to respect and preserve Ethiopia�
 
 ---
 
-##  License
+# ⚖ License
 This project is intended for **educational and demonstration purposes**.  
 Licensing details can be added as needed.
 
 ---
 
-##  Author
+# 🧑‍💻 Author
 **EthioTrip Web Platform**  
 Crafted to celebrate Ethiopia through technology and storytelling.
-
----
-

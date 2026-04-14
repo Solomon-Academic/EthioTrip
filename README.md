@@ -17,36 +17,147 @@ topic :-**TOUR MANAGEMENT SYSTEM**
 EthioTrip is a modern, responsive travel and tourism platform designed to showcase Ethiopia as the “Land of Origins.” The platform provides a seamless digital experience for travelers, integrating curated destination information, cultural activities, user accounts, bookings, and interactive feedback. The system consists of: **Frontend** – User interface for browsing destinations, submitting inquiries, and interacting with travel content. **Backend** – Server-side system built with PHP, managing authentication, data processing, and communication with the database.
 
 ## Technology Stack
-**Frontend**: HTML, CSS, JavaScript, responsive design, interactive UI components.  
-**Backend**: PHP – server-side scripting, MySQL/MariaDB – relational database, JWT (JSON Web Tokens) – secure authentication, bcrypt – password hashing.  
-**API & Communication**: RESTful API endpoints, JSON-based data exchange between frontend and backend.
+## Project Folder Structure
 
-## Core Features
-**User Authentication**: Registration and login, password encryption with bcrypt, JWT-based session management, role-based access (Traveler/Administrator), logout functionality.  
-**Destination Management**: Create, update, retrieve, and search destinations; store data such as name, region, description, activities, travel season, images, and cultural highlights.  
-**Travel Experience Data**: Cultural activities and local guides, recommended travel routes, safety tips, travel recommendations.  
-**Contact & Feedback**: Submit inquiries via contact form, store messages for administrative review.  
-**Administrative Management**: Manage destinations and user accounts, review contact messages, monitor platform statistics.
+```text
+IP2_travel/
+├── backend/
+│   ├── config/
+│   ├── css/
+│   ├── includes/
+│   │   ├── auth.php
+│   │   ├── footer.php
+│   │   └── header.php
+│   ├── js/
+│   ├── sql/
+│   ├── bookings.php
+│   ├── create-booking.php
+│   ├── dashboard.php
+│   ├── delete-booking.php
+│   ├── edit-booking.php
+│   ├── login.php
+│   ├── logout.php
+│   ├── registration.php
+│   └── testdb.php
+├── frontend/
+│   ├── dest_images/
+│   ├── home_images/
+│   ├── .gitignore
+│   ├── about.css
+│   ├── about.html
+│   ├── about.js
+│   ├── destination.css
+│   ├── Destination.html
+│   ├── Home.css
+│   ├── home.html
+│   ├── home.js
+│   ├── LICENSE
+│   ├── packages.css
+│   ├── packages.html
+│   ├── packages.js
+│   ├── payment.css
+│   ├── Payment.html
+│   └── payment.js
+├── .gitignore
+└── README.md
+Frontend
+HTML5 – Semantic and accessible structure
+CSS3 – Flexbox, Grid, CSS Variables, and 3D transforms
+JavaScript (ES6+) – Modular, event-driven logic
+Design & Assets
+Typography: Google Fonts (Poppins)
+Icons: Font Awesome 6.4.0
+Animations & Interactivity
+CSS 3D Transforms
+RequestAnimationFrame API for smooth animations
+Data Persistence
+Browser LocalStorage for authentication state and session management
+Core Features
 
-## Database Structure (Conceptual)
-**Users**: User ID, Name, Email, Password (hashed), Role, Date created.  
-**Destinations**: Destination ID, Name, Location, Description, Activities, Best travel season, Images.  
-**Messages**: Message ID, User name, Email, Content, Date submitted.
+1. Interactive Hero Experience
 
-## API Endpoints
-| Endpoint | Method | Purpose |
-| --- | --- | --- |
-| `/api/auth/register.php` | POST | Create new user |
-| `/api/auth/login.php` | POST | Authenticate user |
-| `/api/destinations.php` | GET | Retrieve all destinations |
-| `/api/destinations.php?id=` | GET | Retrieve a specific destination |
-| `/api/messages.php` | POST | Submit contact form |
+The homepage features a 3D Card Stack Carousel that visually showcases key Ethiopian destinations.
 
-## Security Considerations
-Password hashing using bcrypt, JWT authentication for secure sessions, input validation and sanitization, protected admin routes, secure handling of sensitive data.
+Key Capabilities:
 
-## Future Enhancements
-Online booking system, payment integration, multi-language support, AI-driven travel recommendations, analytics dashboard for tourism insights.
+Mouse-based horizontal rotation for interactive exploration
+Automatic rotation fallback after 2 seconds of inactivity
+Smooth performance using frame-based animation control
 
-## Conclusion
-EthioTrip combines a robust frontend interface with a secure PHP backend to provide travelers with an immersive and interactive experience of Ethiopia’s cultural heritage. The platform is scalable, secure, and ready to evolve into a complete digital tourism solution.
+Featured destinations:
+
+Afar Depression
+Harar Jugol
+Omo Valley
+2. Journey Planner (Destinations Module)
+
+A comprehensive destination catalog designed for travel planning and discovery.
+
+Highlights:
+
+Best-time-to-visit indicators (e.g., Lalibela: October–March)
+Curated activity lists (e.g., Hyena Feeding in Harar)
+Personnel directory featuring local historians and wildlife specialists
+3. Dynamic Statistics & User Engagement
+
+The About page features animated statistics powered by the Intersection Observer pattern.
+
+Displayed metrics:
+
+Trips Completed: 250+
+Happy Travelers: 1,200+
+Destinations Covered: 35
+Recognitions: 10
+
+Animations trigger only when the section becomes visible, ensuring performance efficiency.
+
+4. User Authentication System
+
+A centralized authentication system maintains user state across the platform.
+
+Features:
+
+Tabbed Sign In / Sign Up modal (no page reloads)
+Persistent login state using LocalStorage
+Dynamic UI updates with a User Profile Dropdown and Sign Out option
+Site Map & Navigation
+Page	Purpose	Key Components
+home.html	Brand introduction and engagement	3D Slider, Traveler Stories, Auth Modal
+destination.html	Travel planning and exploration	Infinite Viewport, Activity Lists, Personnel Grid
+about.html	Mission, values, and contact	Animated Stats, Value Cards, Contact Form
+Script Overview
+home.js
+Controls the 3D destination carousel
+Manages user authentication lifecycle
+Toggles login and signup forms
+Maintains session persistence using LocalStorage
+about.js
+Implements animated count-up statistics
+Handles asynchronous contact form submission
+Resets form state after successful interaction
+Sustainable Tourism Philosophy
+
+EthioTrip is built on the principles of Sustainable Tourism, emphasizing:
+
+Support for local communities
+Protection of natural and cultural heritage
+Ethical travel practices
+The Ethiopian value of Medemer (togetherness)
+
+Every journey promoted through EthioTrip aims to respect and preserve Ethiopia’s identity while empowering its people.
+
+Future Enhancements
+Backend integration (Node.js / Express)
+Database support (MongoDB or PostgreSQL)
+Payment gateway integration
+Multilingual support
+Admin dashboard for content management
+License
+
+This project is intended for educational and demonstration purposes.
+Licensing details can be added as needed.
+
+Author
+
+EthioTrip Web Platform
+Crafted to celebrate Ethiopia through technology and storytelling.

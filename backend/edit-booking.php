@@ -1,4 +1,5 @@
 <?php 
+
 session_start();
 require_once 'config/database.php';
 
@@ -17,6 +18,7 @@ if ($booking_id <= 0) {
     exit();
 }
 
+
 $query = "SELECT * FROM bookings WHERE id = ? AND user_id = ?";
 $stmt = mysqli_prepare($conn, $query);
 mysqli_stmt_bind_param($stmt, "ii", $booking_id, $user_id);
@@ -32,10 +34,12 @@ if (!$booking) {
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
     
-    $travel_date = trim($_POST['travel_date'] ?? '');
+ $travel_date = trim($_POST['travel_date'] ?? '');
     $travelers = (int)($_POST['travelers'] ?? 1);
     $special_requests = trim($_POST['special_requests'] ?? '');
+
     
     if (empty($travel_date)) {
         $errors['travel_date'] = 'Travel date is required';
@@ -134,7 +138,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h1><i class="fas fa-edit"></i> Edit Booking #<?php echo $booking['id']; ?></h1>
         
         <?php if (isset($errors['general'])): ?>
+
             <div style="background: #f8d7da; color: #721c24; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;"><?php echo $errors['general']; ?></div>
+
         <?php endif; ?>
         
         <form method="POST" action="">
@@ -145,7 +151,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             <div class="form-group">
                 <label>Travel Date *</label>
+
                 <input type="date" name="travel_date" value="<?php echo $_POST['travel_date'] ?? $booking['travel_date']; ?>" required>
+
                 <?php if (isset($errors['travel_date'])): ?>
                     <span class="error"><?php echo $errors['travel_date']; ?></span>
                 <?php endif; ?>
@@ -153,7 +161,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             <div class="form-group">
                 <label>Number of Travelers *</label>
+
                 <input type="number" name="travelers" min="1" max="20" value="<?php echo $_POST['travelers'] ?? $booking['number_of_travelers']; ?>" required>
+
+               
                 <?php if (isset($errors['travelers'])): ?>
                     <span class="error"><?php echo $errors['travelers']; ?></span>
                 <?php endif; ?>
