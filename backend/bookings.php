@@ -16,23 +16,25 @@ $query = "SELECT * FROM bookings WHERE user_id = ? ORDER BY created_at DESC";
 $stmt = mysqli_prepare($conn, $query);
 mysqli_stmt_bind_param($stmt, "i", $user_id);
 mysqli_stmt_execute($stmt);
-$bookings = mysqli_stmt_get_result($stmt);
+$result = mysqli_stmt_get_result($stmt);
 
-// Calculate stats
+// Store data in array 
+$bookings = [];
 $total_bookings = 0;
 $total_spent = 0;
 $active_bookings = 0;
 
-if ($bookings && mysqli_num_rows($bookings) > 0) {
-    mysqli_data_seek($bookings, 0);
-    while($stat = mysqli_fetch_assoc($bookings)) {
+if ($result && mysqli_num_rows($result) > 0) {
+    while ($row = mysqli_fetch_assoc($result)) {
+        $bookings[] = $row;
+
         $total_bookings++;
-        $total_spent += $stat['final_amount'];
-        if ($stat['status'] == 'confirmed') {
+        $total_spent += $row['final_amount'];
+
+        if ($row['status'] == 'confirmed') {
             $active_bookings++;
         }
     }
-    mysqli_data_seek($bookings, 0);
 }
 ?>
 
@@ -139,6 +141,7 @@ if ($bookings && mysqli_num_rows($bookings) > 0) {
                     <p>Total Bookings</p>
                 </div>
             </div>
+
             <div class="stat-card">
                 <div class="stat-icon"><i class="fas fa-plane-departure"></i></div>
                 <div class="stat-info">
@@ -146,6 +149,7 @@ if ($bookings && mysqli_num_rows($bookings) > 0) {
                     <p>Active Trips</p>
                 </div>
             </div>
+
             <div class="stat-card">
                 <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
                 <div class="stat-info">
@@ -155,7 +159,7 @@ if ($bookings && mysqli_num_rows($bookings) > 0) {
             </div>
         </div>
 
-        <?php if ($bookings && mysqli_num_rows($bookings) > 0): ?>
+        <?php if (count($bookings) > 0): ?>
             <div class="bookings-table">
                 <table>
                     <thead>
@@ -172,13 +176,13 @@ if ($bookings && mysqli_num_rows($bookings) > 0) {
                         </tr>
                     </thead>
                     <tbody>
-                        <?php while($booking = mysqli_fetch_assoc($bookings)): ?>
+                        <?php foreach($bookings as $booking): ?>
                         <tr>
                             <td><span style="font-weight: 600;">#<?php echo $booking['id']; ?></span></td>
                             <td><strong><?php echo htmlspecialchars($booking['package_name']); ?></strong></td>
-                            <td><i class="fas fa-calendar-alt" style="color: #d4af37; margin-right: 5px;"></i><?php echo date('M d, Y', strtotime($booking['travel_date'])); ?></td>
-                            <td><i class="fas fa-users" style="color: #d4af37; margin-right: 5px;"></i><?php echo $booking['number_of_travelers']; ?> person(s)</td>
-                            <td><span style="color: #d4af37; font-weight: 600;">$<?php echo number_format($booking['final_amount'], 2); ?></span></td>
+                            <td><?php echo date('M d, Y', strtotime($booking['travel_date'])); ?></td>
+                            <td><?php echo $booking['number_of_travelers']; ?> person(s)</td>
+                            <td>$<?php echo number_format($booking['final_amount'], 2); ?></td>
                             <td><span class="status status-<?php echo $booking['status']; ?>"><?php echo ucfirst($booking['status']); ?></span></td>
                             <td><span class="status status-<?php echo $booking['payment_status']; ?>"><?php echo ucfirst($booking['payment_status']); ?></span></td>
                             <td><?php echo date('M d, Y', strtotime($booking['created_at'])); ?></td>
@@ -189,7 +193,7 @@ if ($bookings && mysqli_num_rows($bookings) > 0) {
                                 <?php endif; ?>
                              </td>
                         </tr>
-                        <?php endwhile; ?>
+                        <?php endforeach; ?>
                     </tbody>
                 </table>
             </div>
@@ -197,8 +201,7 @@ if ($bookings && mysqli_num_rows($bookings) > 0) {
             <div class="empty-state">
                 <i class="fas fa-suitcase"></i>
                 <p>You haven't made any bookings yet.</p>
-                <p style="font-size: 0.8rem; margin-top: 5px;">Start your Ethiopian adventure today!</p>
-                <a href="../frontend/packages.html" class="btn-primary" style="margin-top: 1rem;"><i class="fas fa-search"></i> Browse Packages</a>
+                <a href="../frontend/packages.html" class="btn-primary">Browse Packages</a>
             </div>
         <?php endif; ?>
     </div>
