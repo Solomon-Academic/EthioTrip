@@ -17,7 +17,6 @@
             --shadow: 0 15px 35px rgba(0,0,0,0.1);
         }
 
-        /* Notification Styles */
         .notification-container {
             position: fixed;
             top: 20px;
@@ -63,7 +62,6 @@
         .notification-message { font-size: 0.8rem; color: #636e72; line-height: 1.4; }
         .notification-close { cursor: pointer; color: #999; font-size: 0.8rem; }
 
-        /* Modal Styles */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.5); z-index: 10001;
@@ -77,10 +75,6 @@
             width: 100%; max-height: 90vh; overflow-y: auto;
             animation: modalSlideIn 0.3s ease;
         }
-        .modal-container::-webkit-scrollbar { width: 5px; }
-        .modal-container::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
-        .modal-container::-webkit-scrollbar-thumb { background: #d4af37; border-radius: 10px; }
-
         .modal-header { padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; position: sticky; top: 0; background: white; }
         .modal-header h3 { font-size: 1.1rem; font-weight: 600; }
         .modal-close { cursor: pointer; font-size: 1.2rem; color: #999; }
@@ -100,7 +94,6 @@
         .loyalty-card .progress-fill { background: #d4af37; width: 0%; height: 100%; }
         .loyalty-card .next-tier { font-size: 0.7rem; opacity: 0.9; }
 
-        /* Main Styles */
         .navbar { padding: 1.2rem 0; background: white; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
         .header-flex { display: flex; justify-content: space-between; align-items: center; }
         .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
@@ -108,6 +101,7 @@
         .logo span { color: #d4af37; }
         .nav-links { display: flex; gap: 25px; align-items: center; }
         .nav-links a { text-decoration: none; color: #2d3436; font-size: 0.9rem; font-weight: 500; }
+        .nav-links a:hover { color: #d4af37; }
 
         .stepper-bar { background: white; padding: 15px 0; border-bottom: 1px solid #eee; margin-bottom: 30px; }
         .stepper { display: flex; justify-content: center; gap: 40px; }
@@ -123,33 +117,36 @@
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 0.8rem; margin-bottom: 6px; font-weight: 600; color: #2d3436; }
         .form-group input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #eee; font-size: 0.9rem; outline: none; }
+        .form-group input:focus { border-color: #d4af37; }
         .split { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
         .method-tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-        .tab-btn { padding: 10px 16px; border-radius: 8px; border: 1px solid #eee; background: white; cursor: pointer; font-weight: 600; font-size: 0.8rem; }
+        .tab-btn { padding: 10px 16px; border-radius: 8px; border: 1px solid #eee; background: white; cursor: pointer; font-weight: 600; font-size: 0.8rem; transition: 0.3s; }
         .tab-btn.active { background: #2d3436; color: white; }
 
         .payment-view { background: white; padding: 25px; border-radius: 20px; box-shadow: var(--shadow); min-height: 350px; }
         .checkout-grid { display: grid; grid-template-columns: 1fr 320px; gap: 25px; margin-top: 25px; }
-        .summary-card { background: #2d3436; color: white; padding: 25px; border-radius: 20px; height: fit-content; }
+        .summary-card { background: #2d3436; color: white; padding: 25px; border-radius: 20px; height: fit-content; position: sticky; top: 100px; }
+        .summary-card h3 { margin-bottom: 20px; border-bottom: 1px solid #444; padding-bottom: 12px; }
         .row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.9rem; }
         .total { font-size: 1.2rem; font-weight: 600; border-top: 1px solid #444; padding-top: 15px; margin-top: 12px; color: #d4af37; }
 
-        .btn-primary { width: 100%; padding: 14px; border-radius: 8px; border: none; background: #d4af37; color: white; font-weight: 600; cursor: pointer; font-size: 0.95rem; }
+        .btn-primary { width: 100%; padding: 14px; border-radius: 8px; border: none; background: #d4af37; color: white; font-weight: 600; cursor: pointer; font-size: 0.95rem; transition: 0.3s; }
         .btn-primary:hover { opacity: 0.9; transform: translateY(-2px); }
-        button:disabled { opacity: 0.7; cursor: not-allowed; }
+        button:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
 
         .receipt { background: white; padding: 30px; border-radius: 20px; box-shadow: var(--shadow); max-width: 650px; margin: 0 auto; text-align: center; }
 
         .footer { padding: 60px 0 30px; margin-top: 80px; background: #1a1a1a; color: white; }
         .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; }
-        .footer-col h4 { font-size: 0.9rem; margin-bottom: 20px; text-transform: uppercase; }
+        .footer-col h4 { font-size: 0.9rem; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1.5px; }
         .footer-col ul { list-style: none; }
         .footer-col li { margin-bottom: 10px; }
-        .footer-col a { text-decoration: none; color: #bbb; font-size: 0.85rem; }
+        .footer-col a { text-decoration: none; color: #bbb; font-size: 0.85rem; transition: 0.3s; }
         .footer-col a:hover { color: #d4af37; }
         .social-links { display: flex; gap: 12px; margin-top: 20px; }
-        .social-links a { width: 35px; height: 35px; border-radius: 50%; background: #2d3436; display: flex; align-items: center; justify-content: center; color: white; }
+        .social-links a { width: 35px; height: 35px; border-radius: 50%; background: #2d3436; display: flex; align-items: center; justify-content: center; color: white; transition: 0.3s; }
+        .social-links a:hover { background: #d4af37; color: #2d3436; transform: translateY(-3px); }
         .footer-bottom { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #333; color: #7f8c8d; font-size: 0.8rem; }
 
         @media (max-width: 850px) {
@@ -160,6 +157,8 @@
 
         .loading-spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; margin-right: 8px; }
         @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .error { color: #e74c3c; font-size: 12px; margin-top: 5px; display: block; }
     </style>
 </head>
 <body>
@@ -170,6 +169,8 @@
                 <a href="home.html"><i class="fas fa-home"></i> Home</a>
                 <a href="Destination.html">Destinations</a>
                 <a href="packages.html">Packages</a>
+                <a href="about.html">About</a>
+                <a href="../backend/bookings.php">My Bookings</a>
             </nav>
         </div>
     </header>
@@ -177,7 +178,7 @@
     <div class="stepper-bar">
         <div class="container">
             <div class="stepper">
-                <div class="step active" id="step1">1. Amount</div>
+                <div class="step active" id="step1">1. Details</div>
                 <div class="step" id="step2">2. Payment</div>
                 <div class="step" id="step3">3. Receipt</div>
             </div>
@@ -186,23 +187,27 @@
 
     <main class="container">
         <section id="phase-amount" class="card-panel text-center">
-            <h1>Welcome to EthioTrip</h1>
-            <p style="font-size: 0.85rem;">Please enter your booking details to begin.</p>
+            <h1>Complete Your Booking</h1>
+            <p style="font-size: 0.85rem; margin-bottom: 20px;">Please enter your details to continue.</p>
             
             <div class="form-group" style="max-width: 350px; margin: 0 auto 15px auto;">
                 <label style="display: block; text-align: left; font-weight: bold;">Booking Amount ($)</label>
                 <div class="input-lockup">
                     <span class="currency-label">$</span>
-                    <input type="number" id="inputAmount" placeholder="0.00">
+                    <input type="number" id="inputAmount" placeholder="0.00" step="0.01">
                 </div>
             </div>
 
             <div class="form-group" style="max-width: 350px; margin: 0 auto 15px auto;">
                 <label style="display: block; text-align: left; font-weight: bold;">Full Name</label>
                 <input type="text" id="inputUserName" placeholder="Enter your full name">
+                <span id="name-error" class="error"></span>
             </div>
 
             <button class="btn-primary" id="btnProceed">Check Discount & Proceed</button>
+            <p style="font-size: 0.7rem; margin-top: 15px; color: #999;">
+                <i class="fas fa-shield-alt"></i> Sign in to get loyalty discounts and track your bookings
+            </p>
         </section>
 
         <section id="phase-checkout" style="display: none;">
@@ -222,28 +227,28 @@
                         <div class="form-group"><label>Card Number</label><input type="text" id="cardNumber" placeholder="0000 0000 0000 0000" maxlength="19" required></div>
                         <div class="split">
                             <div class="form-group"><label>Expiry</label><input type="text" id="expiry" placeholder="MM/YY" maxlength="5" required></div>
-                            <div class="form-group"><label>CVV</label><input type="password" placeholder="***" maxlength="3" required></div>
+                            <div class="form-group"><label>CVV</label><input type="password" id="cvv" placeholder="***" maxlength="3" required></div>
                         </div>
                         <button type="submit" class="btn-primary">Pay Securely</button>
                     </form>
 
                     <div id="view-telebirr" class="payment-view" style="display:none;">
-                        <div style="background:#00a1e4; color:white; padding:12px; border-radius:8px; text-align:center; font-weight:bold;">Telebirr Digital Wallet</div>
+                        <div style="background:#00a1e4; color:white; padding:12px; border-radius:8px; text-align:center; font-weight:bold; margin-bottom:20px;">Telebirr Digital Wallet</div>
                         <div class="form-group"><label>Mobile Number</label><input type="text" id="telePhone" placeholder="09XXXXXXXX" maxlength="10"></div>
                         <button type="button" class="btn-primary" id="btnTelebirr" style="background:#00a1e4;">Confirm Payment</button>
                     </div>
 
                     <div id="view-paypal" class="payment-view" style="display:none;">
                         <h3>PayPal Transfer</h3>
-                        <p style="font-size: 0.8rem;">Send funds to: <strong>payments@ethiotrip.com</strong></p>
+                        <p style="font-size: 0.8rem; margin-bottom: 15px;">Send funds to: <strong>payments@ethiotrip.com</strong></p>
                         <div class="form-group"><label>Transaction ID</label><input type="text" id="paypalRef" placeholder="Enter Transaction ID"></div>
                         <button type="button" class="btn-primary" id="btnPaypal" style="background:#ffc439; color:black;">Verify Payment</button>
                     </div>
 
                     <div id="view-mobile" class="payment-view" style="display:none;">
                         <h3>Bank Transfer</h3>
-                        <div style="background:#f8f9fa; padding:12px; border-radius:8px; font-size:0.8rem; border-left:3px solid #d4af37;">
-                            <p><strong>Bank:</strong> CBE</p>
+                        <div style="background:#f8f9fa; padding:12px; border-radius:8px; font-size:0.8rem; border-left:3px solid #d4af37; margin-bottom:15px;">
+                            <p><strong>Bank:</strong> Commercial Bank of Ethiopia</p>
                             <p><strong>Account:</strong> EthioTrip Travel & Tours</p>
                             <p><strong>Account No:</strong> 1000456982341</p>
                         </div>
@@ -253,8 +258,9 @@
 
                     <div id="view-cash" class="payment-view" style="display:none; text-align: center;">
                         <h3>Pay at Our Office</h3>
-                        <p>Visit our headquarters in Addis Ababa (Bole Atlas)</p>
-                        <button type="button" class="btn-primary" id="btnCash">Confirm Booking</button>
+                        <p style="margin: 15px 0;">Visit our headquarters in Addis Ababa (Bole Atlas Road)</p>
+                        <p style="font-size: 0.8rem; color: #666;">Monday - Friday: 9:00 AM - 5:00 PM</p>
+                        <button type="button" class="btn-primary" id="btnCash" style="margin-top: 15px;">Confirm Booking</button>
                     </div>
                 </div>
 
@@ -264,6 +270,7 @@
                     <div id="discount-row" class="row" style="display:none; color:#d4af37;"><span>Loyalty Discount</span><span id="sum-discount">-$0.00</span></div>
                     <div class="row"><span>VAT (10%)</span><span id="sum-tax">$0.00</span></div>
                     <div class="row total"><span>Total Payable</span><span id="sum-total">$0.00</span></div>
+                    
                 </aside>
             </div>
         </section>
@@ -274,7 +281,7 @@
     <footer class="footer">
         <div class="container footer-grid">
             <div class="footer-col">
-                <a href="#" class="logo">Ethio<span>Trip</span></a>
+                <a href="home.html" class="logo" style="color:white;">Ethio<span>Trip</span></a>
                 <p style="margin-top:12px; color:#bbb; font-size:0.8rem;">Authentic Ethiopian journeys curated for the modern explorer.</p>
                 <div class="social-links">
                     <a href="#"><i class="fab fa-instagram"></i></a>
@@ -295,11 +302,35 @@
     </footer>
 
     <script>
-        // Auto-fill amount from packages page
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedPrice = localStorage.getItem("selectedPrice");
-            if (savedPrice) document.getElementById('inputAmount').value = savedPrice;
-        });
+        // Check if user is already logged in via backend session
+        async function checkExistingSession() {
+            try {
+                const response = await fetch('../backend/check-login.php');
+                const data = await response.json();
+                
+                if (data.logged_in) {
+                    // User is logged in - auto-fill name
+                    const userNameInput = document.getElementById('inputUserName');
+                    if (userNameInput && data.user_name) {
+                        userNameInput.value = data.user_name;
+                        userNameInput.readOnly = true;
+                        userNameInput.style.background = '#f0f0f0';
+                        
+                        // Show notification
+                        showNotification('Welcome Back!', `Logged in as ${data.user_name}`, 'success', 3000);
+                    }
+                } else {
+                    // Not logged in - check for return URL
+                    const returnUrl = localStorage.getItem('returnAfterLogin');
+                    if (returnUrl) {
+                        localStorage.removeItem('returnAfterLogin');
+                        showNotification('Sign In Required', 'Please sign in to continue with your booking', 'warning', 4000);
+                    }
+                }
+            } catch(e) {
+                console.error("Session check failed:", e);
+            }
+        }
 
         // Notification System
         function showNotification(title, message, type = 'info', duration = 4000) {
@@ -356,10 +387,13 @@
             overlay.onclick = (e) => { if (e.target === overlay) close(); };
         }
 
-        function showLoyaltyInfo(userName, discountPercent, tierName, tripsCompleted, totalSpent) {
+        function showLoyaltyInfo(userName, discountPercent, tierName, tripsCompleted, totalSpent, nextTierData) {
             const overlay = document.createElement('div');
             overlay.className = 'modal-overlay';
-            const needed = Math.max(3 - tripsCompleted, 0);
+            const needed = nextTierData ? nextTierData.trips_needed : (Math.max(3 - tripsCompleted, 0));
+            const nextTierName = nextTierData ? nextTierData.tier_name : 'Silver';
+            const nextDiscount = nextTierData ? nextTierData.discount_percent : 3;
+            
             overlay.innerHTML = `
                 <div class="modal-container">
                     <div class="modal-header" style="background: linear-gradient(135deg, #667eea, #764ba2); color:white;">
@@ -374,9 +408,9 @@
                             <div style="font-size:0.75rem;">${tripsCompleted} trip(s) completed</div>
                         </div>
                         <div class="loyalty-card" style="background: linear-gradient(135deg, #3498db, #2980b9);">
-                            <h4>🌟 Next Tier: Silver (3% off)</h4>
-                            <div class="progress-bar"><div class="progress-fill" style="width: ${(tripsCompleted / 3) * 100}%;"></div></div>
-                            <div class="next-tier">${needed} more trip(s) to reach Silver</div>
+                            <h4>🌟 Next Tier: ${nextTierName} (${nextDiscount}% off)</h4>
+                            <div class="progress-bar"><div class="progress-fill" style="width: ${Math.min((tripsCompleted / (tripsCompleted + needed)) * 100, 100)}%;"></div></div>
+                            <div class="next-tier">${needed} more trip(s) to reach ${nextTierName}</div>
                         </div>
                         <div style="margin-top:12px; padding:8px; background:#f8f9fa; border-radius:8px; font-size:0.75rem;">
                             <div style="display:flex; justify-content:space-between;"><span>💰 Total Spent:</span><strong>$${totalSpent.toFixed(2)}</strong></div>
@@ -402,7 +436,7 @@
         const sDisc = document.getElementById('sum-discount');
         const discRow = document.getElementById('discount-row');
 
-        // Proceed with booking
+        // Proceed with booking after discount check
         function proceedWithBooking(amount, userName, discountRate, discountPercent, tierName, tripsCompleted, btn, originalText) {
             const discAmt = amount * discountRate;
             const taxableAmt = amount - discAmt;
@@ -425,6 +459,7 @@
             localStorage.setItem("userName", userName);
             localStorage.setItem("tierName", tierName);
             localStorage.setItem("tripsCompleted", tripsCompleted);
+            localStorage.setItem("baseAmount", amount.toFixed(2));
 
             document.getElementById('cardName').value = userName;
             btn.innerText = originalText;
@@ -441,7 +476,7 @@
             }
         }
 
-        // Check discount
+        // Check discount via backend API
         document.getElementById('btnProceed').onclick = async () => {
             const amount = parseFloat(document.getElementById('inputAmount').value);
             const userName = document.getElementById('inputUserName').value.trim();
@@ -457,14 +492,25 @@
 
             const btn = document.getElementById('btnProceed');
             const originalText = btn.innerText;
-            btn.innerText = '🔄 Checking...';
+            btn.innerText = '🔄 Checking loyalty status...';
             btn.disabled = true;
 
             let discountRate = 0, discountPercent = 0, tierName = "Bronze", tripsCompleted = 0, totalSpent = 0, userFound = false;
+            let nextTierData = null;
             
             try {
-                const response = await fetch('../backend/get-loyalty-discount.php?name=' + encodeURIComponent(userName));
+                // First check if user is logged in via session
+                const sessionResponse = await fetch('../backend/check-login.php');
+                const sessionData = await sessionResponse.json();
+                
+                let apiUrl = '../backend/get-loyalty-discount.php';
+                if (!sessionData.logged_in) {
+                    apiUrl += '?name=' + encodeURIComponent(userName);
+                }
+                
+                const response = await fetch(apiUrl);
                 const data = await response.json();
+                
                 if (data.success) {
                     userFound = true;
                     discountRate = data.discount_decimal;
@@ -473,7 +519,19 @@
                     tripsCompleted = data.trips_completed;
                     totalSpent = data.total_spent || 0;
                 }
-            } catch(e) { console.error("Error:", e); }
+                
+                // Try to get next tier info
+                try {
+                    const nextResponse = await fetch('../backend/get-next-tier.php?trips=' + tripsCompleted);
+                    const nextData = await nextResponse.json();
+                    if (nextData.success) {
+                        nextTierData = nextData;
+                    }
+                } catch(e) { console.log("Next tier fetch optional"); }
+                
+            } catch(e) { 
+                console.error("Error fetching discount:", e);
+            }
             
             if (!userFound) {
                 showModal('New Customer', `Welcome "${userName}"! 👋\n\nYou'll start with 0% discount (Bronze tier).\n\nComplete 3 trips to get 3% discount!\n\nContinue with this booking?`,
@@ -483,7 +541,7 @@
                 return;
             }
             
-            showLoyaltyInfo(userName, discountPercent, tierName, tripsCompleted, totalSpent);
+            showLoyaltyInfo(userName, discountPercent, tierName, tripsCompleted, totalSpent, nextTierData);
             const checkModal = setInterval(() => {
                 if (!document.querySelector('.modal-overlay')) {
                     clearInterval(checkModal);
@@ -518,10 +576,16 @@
             const travelDate = new Date();
             travelDate.setDate(travelDate.getDate() + 30);
             
+            const baseAmount = parseFloat(localStorage.getItem("baseAmount")) || amount;
+            const discountRate = parseFloat(localStorage.getItem("discountApplied")) || 0;
+            const discountAmount = baseAmount * discountRate;
+            const taxableAmount = baseAmount - discountAmount;
+            const finalAmount = parseFloat(localStorage.getItem("finalAmount")) || (taxableAmount + (taxableAmount * 0.10));
+            
             const bookingData = {
                 package_name: packageName,
-                package_price: parseFloat(localStorage.getItem("selectedPrice")) || 350,
-                final_amount: parseFloat(localStorage.getItem("finalAmount")),
+                package_price: baseAmount,
+                final_amount: finalAmount,
                 travel_date: travelDate.toISOString().split('T')[0],
                 travelers: 1,
                 payment_method: paymentMethod,
@@ -538,6 +602,7 @@
                 const result = await response.json();
                 return result.success ? { success: true, booking_id: result.booking_id, trips_completed: result.trips_completed } : { success: false, error: result.message };
             } catch (error) {
+                console.error("Save booking error:", error);
                 return { success: false, error: error.message };
             }
         }
@@ -558,33 +623,35 @@
                 buttonElement.innerHTML = '<span class="loading-spinner"></span> Processing...';
             }
             
-            const saveResult = await saveBookingToDatabase(selectedPkg, finalAmount, method, finalRef);
+            showNotification('Processing', 'Saving your booking...', 'info', 2000);
+            
+            const saveResult = await saveBookingToDatabase(selectedPkg, parseFloat(finalAmount), method, finalRef);
             
             pCheckout.style.display = 'none';
             pReceipt.style.display = 'block';
             document.getElementById('step3').classList.add('active');
             
-            const tripsAfter = saveResult.success ? (tripsBefore + 1) : tripsBefore;
-            
             pReceipt.innerHTML = `
                 <div class="receipt">
                     <div style="background:#27ae60; color:white; padding:12px; border-radius:10px 10px 0 0; margin:-30px -30px 20px -30px;">
-                        <h2 style="margin:0;">✅ Payment Confirmed</h2>
+                        <h2 style="margin:0;">✅ Booking Confirmed</h2>
                     </div>
-                    <p>Your journey is booked, <strong>${name}</strong>!</p>
-                    ${saveResult.success ? '<p style="color:green;">✓ Booking saved!</p>' : '<p style="color:red;">⚠ Booking not saved. Contact support.</p>'}
+                    <p>Your journey is booked, <strong>${escapeHtml(name)}</strong>!</p>
+                    ${saveResult.success ? '<p style="color:green;">✓ Booking saved to your account!</p>' : '<p style="color:#e74c3c;">⚠ Booking record issue. Please contact support with your reference number.</p>'}
                     <div style="text-align:left; background:#f9f9f9; padding:15px; border-radius:12px; margin:15px 0; font-size:0.85rem;">
-                        <p><strong>Package:</strong> ${selectedPkg}</p>
-                        <p><strong>Method:</strong> ${method}</p>
-                        <p><strong>Discount:</strong> ${discountPercent}% OFF (${tierName})</p>
-                        <p><strong>Total Paid:</strong> <strong>$${finalAmount}</strong></p>
-                        <p><strong>Ref:</strong> ${finalRef}</p>
+                        <p><strong>Package:</strong> ${escapeHtml(selectedPkg)}</p>
+                        <p><strong>Payment Method:</strong> ${method}</p>
+                        <p><strong>Loyalty Discount:</strong> ${discountPercent}% OFF (${tierName})</p>
+                        <p><strong>Total Paid:</strong> <strong style="color:#d4af37;">$${parseFloat(finalAmount).toFixed(2)}</strong></p>
+                        <p><strong>Reference Number:</strong> ${finalRef}</p>
                         ${saveResult.success ? `<p><strong>Booking ID:</strong> #${saveResult.booking_id}</p>` : ''}
                         <p><strong>Date:</strong> ${date}</p>
                     </div>
-                    <button class="btn-primary" style="width:auto; padding:10px 25px; margin:5px;" onclick="window.print()">🖨 Print</button>
-                    <button class="btn-primary" style="width:auto; padding:10px 25px; background:#2d3436; margin:5px;" onclick="window.location.href='../backend/bookings.php'">📋 My Bookings</button>
-                    <button class="btn-primary" style="width:auto; padding:10px 25px; background:#d4af37; margin:5px;" onclick="window.location.href='home.html'">🏠 Home</button>
+                    <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                        <button class="btn-primary" style="width:auto; padding:10px 25px;" onclick="window.print()">🖨 Print Receipt</button>
+                        <button class="btn-primary" style="width:auto; padding:10px 25px; background:#2d3436;" onclick="window.location.href='../backend/bookings.php'">📋 My Bookings</button>
+                        <button class="btn-primary" style="width:auto; padding:10px 25px; background:#d4af37;" onclick="window.location.href='home.html'">🏠 Home</button>
+                    </div>
                 </div>
             `;
             
@@ -596,34 +663,81 @@
             localStorage.removeItem("userName");
             localStorage.removeItem("tierName");
             localStorage.removeItem("tripsCompleted");
+            localStorage.removeItem("baseAmount");
+            localStorage.removeItem("returnAfterLogin");
+        }
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
         }
 
         // Event bindings
         document.getElementById('form-card').onsubmit = async (e) => {
             e.preventDefault();
+            const cardName = document.getElementById('cardName').value;
+            const cardNum = document.getElementById('cardNumber').value;
+            if (!cardName || !cardNum) {
+                showNotification('Missing Info', 'Please fill in card details', 'warning');
+                return;
+            }
             await finalize('Credit Card', null, e.target.querySelector('button[type="submit"]'));
         };
+        
         document.getElementById('btnTelebirr').onclick = async () => {
             const phone = document.getElementById('telePhone').value;
-            if(phone.length < 10) return showNotification('Invalid Number', 'Enter 10-digit number', 'error');
+            if(phone.length < 10) {
+                showNotification('Invalid Number', 'Enter valid 10-digit Telebirr number', 'error');
+                return;
+            }
             await finalize('Telebirr', null, document.getElementById('btnTelebirr'));
         };
+        
         document.getElementById('btnPaypal').onclick = async () => {
             const ref = document.getElementById('paypalRef').value || "P-ID-" + Date.now();
             await finalize('PayPal', ref, document.getElementById('btnPaypal'));
         };
+        
         document.getElementById('btnMobile').onclick = async () => {
             const ref = document.getElementById('bankRef').value;
-            if(!ref) return showNotification('Reference Required', 'Enter transaction reference', 'warning');
+            if(!ref) {
+                showNotification('Reference Required', 'Please enter bank transaction reference', 'warning');
+                return;
+            }
             await finalize('Bank Transfer', ref, document.getElementById('btnMobile'));
         };
+        
         document.getElementById('btnCash').onclick = async () => {
             await finalize('Cash at Office', null, document.getElementById('btnCash'));
         };
+        
         document.getElementById('cardNumber').oninput = (e) => {
             let v = e.target.value.replace(/\D/g, '').match(/.{1,4}/g);
             e.target.value = v ? v.join(' ') : '';
         };
+        
+        document.getElementById('expiry').oninput = (e) => {
+            let v = e.target.value.replace(/\D/g, '');
+            if (v.length >= 2) {
+                e.target.value = v.slice(0,2) + '/' + v.slice(2,4);
+            } else {
+                e.target.value = v;
+            }
+        };
+
+        // Check session on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            checkExistingSession();
+            
+            // Auto-fill package price
+            const savedPrice = localStorage.getItem("selectedPrice");
+            if (savedPrice) document.getElementById('inputAmount').value = savedPrice;
+        });
     </script>
 </body>
 </html>

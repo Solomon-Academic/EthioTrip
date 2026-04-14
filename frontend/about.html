@@ -479,33 +479,37 @@
     </footer>
 
     <footer class="footer">
-        <div class="footer-grid">
-            <div class="footer-col">
-                <a href="#" class="logo">Ethio<span>Trip</span></a>
-                <p style="margin-top: 15px; color: #bbb;">Authentic Ethiopian journeys curated for the modern explorer.</p>
-                <div class="social-links">
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                </div>
-            </div>
-            <div class="footer-col">
-                <h4>Explore</h4>
-                <ul>
-                    <li><a href="Destination.html">Destinations</a></li>
-                    <li><a href="packages.html">Package</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Connect</h4>
-                <ul>
-                    <li><a href="#">About Us</a></li>
-                    <li><a href="#">Contact Us</a></li>
-                </ul>
+    <div class="footer-grid">
+        <div class="footer-col">
+            <a href="#" class="logo">Ethio<span>Trip</span></a>
+            <p style="margin-top: 15px; color: #bbb;">Authentic Ethiopian journeys curated for the modern explorer.</p>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-linkedin-in"></i></a>
             </div>
         </div>
-        <div class="footer-bottom">© 2025 EthioTrip Ethiopia. All rights reserved.</div>
-    </footer>
+        <div class="footer-col">
+            <h4>Explore</h4>
+            <ul>
+                <li><a href="Destination.html">Destinations</a></li>
+                <li><a href="packages.html">Package</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4>Connect</h4>
+            <ul>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="about.html">Contact Us</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">© <span id="currentYear"></span> EthioTrip Ethiopia. All rights reserved.</div>
+</footer>
+
+<script>
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+</script>
 
     <script src="about.js"></script>
 </body>

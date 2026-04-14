@@ -290,6 +290,7 @@
             <li><a href="home.html"><i class="fas fa-home"></i> Home</a></li>
             <li><a href="Destination.html">Destinations</a></li>
             <li><a href="packages.html">Packages</a></li>
+            <li><a href="about.html">About</a></li>
         </ul>
     </nav>
 
@@ -299,7 +300,7 @@
     </header>
 
     <div class="packages-container" id="packageList">
-        <div class="pkg-card" onclick="selectPkg(this, 'Meskerem Journey')">
+        <div class="pkg-card" onclick="selectPkg(this, 'Meskerem Journey', 350)">
             <span class="pkg-tag">Common Choice</span>
             <h3>Meskerem Journey</h3>
             <div class="pkg-price">$350<span>/person</span></div>
@@ -312,7 +313,7 @@
             <button class="btn-pkg">Select Meskerem</button>
         </div>
 
-        <div class="pkg-card" onclick="selectPkg(this, 'Gojo Expedition')">
+        <div class="pkg-card" onclick="selectPkg(this, 'Gojo Expedition', 550)">
             <span class="pkg-tag">Vibrant Adventure</span>
             <h3>Gojo Expedition</h3>
             <div class="pkg-price">$550<span>/person</span></div>
@@ -325,7 +326,7 @@
             <button class="btn-pkg">Select Gojo</button>
         </div>
 
-        <div class="pkg-card" onclick="selectPkg(this, 'Negus Luxury')">
+        <div class="pkg-card" onclick="selectPkg(this, 'Negus Luxury', 1000)">
             <span class="pkg-tag">VIP / Premium</span>
             <h3>Negus Luxury</h3>
             <div class="pkg-price">$1000<span>/person</span></div>
@@ -338,7 +339,7 @@
             <button class="btn-pkg">Select Negus</button>
         </div>
 
-        <div class="pkg-card" onclick="selectPkg(this, 'Gadaa Heritage')">
+        <div class="pkg-card" onclick="selectPkg(this, 'Gadaa Heritage', 800)">
             <span class="pkg-tag">Cultural Roots</span>
             <h3>Gadaa Heritage</h3>
             <div class="pkg-price">$800<span>/person</span></div>
@@ -351,7 +352,7 @@
             <button class="btn-pkg">Select Gadaa</button>
         </div>
 
-        <div class="pkg-card" onclick="selectPkg(this, 'Tizita Express')">
+        <div class="pkg-card" onclick="selectPkg(this, 'Tizita Express', 200)">
             <span class="pkg-tag">Short Escape</span>
             <h3>Tizita Express</h3>
             <div class="pkg-price">$200<span>/person</span></div>
@@ -364,7 +365,7 @@
             <button class="btn-pkg">Select Tizita</button>
         </div>
 
-        <div class="pkg-card" onclick="selectPkg(this, 'Abyssinia Trek')">
+        <div class="pkg-card" onclick="selectPkg(this, 'Abyssinia Trek', 750)">
             <span class="pkg-tag">Eco & Nature</span>
             <h3>Abyssinia Trek</h3>
             <div class="pkg-price">$750<span>/person</span></div>
@@ -379,69 +380,67 @@
     </div>
 
     <footer class="footer">
-        <div class="footer-grid">
-            <div class="footer-col">
-                <a href="#" class="logo">Ethio<span>Trip</span></a>
-                <p style="margin-top: 15px; color: #bbb">Authentic Ethiopian journeys curated for the modern explorer.</p>
-                <div class="social-links">
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                </div>
-            </div>
-            <div class="footer-col">
-                <h4>Explore</h4>
-                <ul>
-                    <li><a href="Destination.html">Destinations</a></li>
-                    <li><a href="packages.html">Packages</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Connect</h4>
-                <ul>
-                    <li><a href="about.html">About Us</a></li>
-                    <li><a href="about.html">Contact Us</a></li>
-                </ul>
+    <div class="footer-grid">
+        <div class="footer-col">
+            <a href="#" class="logo">Ethio<span>Trip</span></a>
+            <p style="margin-top: 15px; color: #bbb;">Authentic Ethiopian journeys curated for the modern explorer.</p>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-linkedin-in"></i></a>
             </div>
         </div>
-        <div class="footer-bottom">© 2025 EthioTrip Ethiopia. All rights reserved.</div>
-    </footer>
+        <div class="footer-col">
+            <h4>Explore</h4>
+            <ul>
+                <li><a href="Destination.html">Destinations</a></li>
+                <li><a href="packages.html">Package</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4>Connect</h4>
+            <ul>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="about.html">Contact Us</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">© <span id="currentYear"></span> EthioTrip Ethiopia. All rights reserved.</div>
+</footer>
 
+<script>
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+</script>
     <div class="selection-toast" id="toast">Package Selected!</div>
 
     <script>
-        function selectPkg(element, pkgName) {
-            const priceText = element.querySelector(".pkg-price").innerText;
-            const priceValue = priceText.replace(/[^0-9]/g, "");
-            const duration = element.querySelector(".pkg-duration")?.innerText || "";
-            
-            const features = [];
-            element.querySelectorAll(".pkg-features li").forEach(li => {
-                features.push(li.innerText);
-            });
-            
+        async function selectPkg(element, pkgName, pkgPrice) {
             localStorage.setItem("selectedPackage", pkgName);
-            localStorage.setItem("selectedPrice", priceValue);
-            localStorage.setItem("selectedDuration", duration);
-            localStorage.setItem("selectedFeatures", JSON.stringify(features));
+            localStorage.setItem("selectedPrice", pkgPrice);
             
-            fetch('../backend/check-login.php', {
-                method: 'GET',
-                credentials: 'same-origin'
-            })
-            .then(response => response.json())
-            .then(data => {
+            // Check login status via backend session
+            try {
+                const response = await fetch('../backend/check-login.php');
+                const data = await response.json();
+                
                 if (data.logged_in) {
+                    // User is logged in - go to payment
                     window.location.href = "Payment.html";
                 } else {
-                    if (confirm("Please log in to book a package. Click OK to login.")) {
+                    // Not logged in - show modal with options
+                    if (confirm("🔐 You are not signed in!\n\nSign in to get loyalty discounts and track your bookings.\n\nClick OK to sign in, or Cancel to continue as guest.")) {
+                        // Save return URL
+                        localStorage.setItem("returnAfterLogin", "Payment.html");
                         window.location.href = "../backend/login.php";
+                    } else {
+                        // Continue as guest
+                        window.location.href = "Payment.html";
                     }
                 }
-            })
-            .catch(() => {
+            } catch(e) {
+                // If check fails, still allow booking
                 window.location.href = "Payment.html";
-            });
+            }
         }
     </script>
 </body>
