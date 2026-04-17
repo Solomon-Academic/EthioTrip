@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once 'config/database.php';
 
 if (isset($_SESSION['user_id'])) {
@@ -9,54 +10,71 @@ if (isset($_SESSION['user_id'])) {
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
     $name = mysqli_real_escape_string($conn, trim($_POST['name'] ?? ''));
     $email = mysqli_real_escape_string($conn, trim($_POST['email'] ?? ''));
     $phone = mysqli_real_escape_string($conn, trim($_POST['phone'] ?? ''));
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
-    
-    // Validation
+
     if (empty($name)) $errors['name'] = 'Full name is required';
-    if (empty($email)) $errors['email'] = 'Email is required';
-    elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors['email'] = 'Valid email is required';
+
+    if (empty($email)) {
+        $errors['email'] = 'Email is required';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors['email'] = 'Valid email is required';
+    }
+
     if (empty($phone)) $errors['phone'] = 'Phone number is required';
-    if (empty($password)) $errors['password'] = 'Password is required';
-    elseif (strlen($password) < 6) $errors['password'] = 'Password must be at least 6 characters';
-    if ($password !== $confirm_password) $errors['confirm_password'] = 'Passwords do not match';
-    
+
+    if (empty($password)) {
+        $errors['password'] = 'Password is required';
+    } elseif (strlen($password) < 6) {
+        $errors['password'] = 'Password must be at least 6 characters';
+    }
+
+    if ($password !== $confirm_password) {
+        $errors['confirm_password'] = 'Passwords do not match';
+    }
+
     if (empty($errors)) {
-        // Check if email exists
         $check = "SELECT id FROM users WHERE email = ?";
         $stmt = mysqli_prepare($conn, $check);
         mysqli_stmt_bind_param($stmt, "s", $email);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_store_result($stmt);
-        
+
         if (mysqli_stmt_num_rows($stmt) > 0) {
             $errors['email'] = 'Email already registered';
         }
     }
-    
+
     if (empty($errors)) {
+
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-        
+
         $query = "INSERT INTO users (name, email, password, phone, role) VALUES (?, ?, ?, ?, 'user')";
         $stmt = mysqli_prepare($conn, $query);
         mysqli_stmt_bind_param($stmt, "ssss", $name, $email, $hashed_password, $phone);
-        
+
         if (mysqli_stmt_execute($stmt)) {
+
             $user_id = mysqli_insert_id($conn);
+
             $_SESSION['user_id'] = $user_id;
             $_SESSION['user_name'] = $name;
             $_SESSION['user_role'] = 'user';
+
             header('Location: dashboard.php');
             exit();
+
         } else {
-            $errors['general'] = 'Registration failed: ' . mysqli_error($conn);
+            $errors['general'] = 'Registration failed. Please try again.';
         }
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -89,19 +107,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="register-container">
         <a href="../frontend/home.html" class="logo">Ethio<span>Trip</span></a>
-        
+
         <?php if (isset($errors['general'])): ?>
             <div class="alert"><?php echo $errors['general']; ?></div>
         <?php endif; ?>
 
         <form method="POST" action="" onsubmit="return validateRegistrationForm()">
+
             <div class="form-group">
                 <label>Full Name *</label>
                 <div class="input-icon">
                     <i class="fas fa-user"></i>
                     <input type="text" name="name" id="name" value="<?php echo htmlspecialchars($_POST['name'] ?? ''); ?>" required>
                 </div>
-                <span id="name-error" class="error"><?php echo $errors['name'] ?? ''; ?></span>
+                <span class="error"><?php echo $errors['name'] ?? ''; ?></span>
             </div>
 
             <div class="form-group">
@@ -110,7 +129,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <i class="fas fa-envelope"></i>
                     <input type="email" name="email" id="email" value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>" required>
                 </div>
-                <span id="email-error" class="error"><?php echo $errors['email'] ?? ''; ?></span>
+                <span class="error"><?php echo $errors['email'] ?? ''; ?></span>
             </div>
 
             <div class="form-group">
@@ -119,16 +138,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <i class="fas fa-phone"></i>
                     <input type="text" name="phone" id="phone" value="<?php echo htmlspecialchars($_POST['phone'] ?? ''); ?>" required>
                 </div>
-                <span id="phone-error" class="error"><?php echo $errors['phone'] ?? ''; ?></span>
+                <span class="error"><?php echo $errors['phone'] ?? ''; ?></span>
             </div>
 
             <div class="form-group">
-                <label>Password * (min. 6 characters)</label>
+                <label>Password *</label>
                 <div class="input-icon">
                     <i class="fas fa-lock"></i>
                     <input type="password" name="password" id="password" required>
                 </div>
-                <span id="password-error" class="error"><?php echo $errors['password'] ?? ''; ?></span>
+                <span class="error"><?php echo $errors['password'] ?? ''; ?></span>
             </div>
 
             <div class="form-group">
@@ -137,7 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <i class="fas fa-lock"></i>
                     <input type="password" name="confirm_password" id="confirm_password" required>
                 </div>
-                <span id="confirm_password-error" class="error"><?php echo $errors['confirm_password'] ?? ''; ?></span>
+                <span class="error"><?php echo $errors['confirm_password'] ?? ''; ?></span>
             </div>
 
             <button type="submit" class="btn-register">Create Account</button>
@@ -151,3 +170,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script src="../frontend/js/validation.js"></script>
 </body>
 </html>
+
