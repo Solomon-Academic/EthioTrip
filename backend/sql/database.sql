@@ -1,14 +1,10 @@
--- =============================================
 -- ETHIOTRIP DATABASE - COMPLETE SCHEMA
--- =============================================
 
 -- Create fresh database
 CREATE DATABASE ethiotrip_db;
 USE ethiotrip_db;
 
--- =============================================
 -- 1. USERS TABLE
--- =============================================
 CREATE TABLE users (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
@@ -22,9 +18,7 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- =============================================
 -- 2. DISCOUNT TIERS TABLE
--- =============================================
 CREATE TABLE discount_tiers (
     id INT PRIMARY KEY AUTO_INCREMENT,
     min_trips INT NOT NULL,
@@ -36,9 +30,8 @@ CREATE TABLE discount_tiers (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- =============================================
+
 -- 3. PACKAGES TABLE
--- =============================================
 CREATE TABLE packages (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
@@ -51,9 +44,9 @@ CREATE TABLE packages (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- =============================================
+
 -- 4. DESTINATIONS TABLE
--- =============================================
+
 CREATE TABLE destinations (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
@@ -65,9 +58,8 @@ CREATE TABLE destinations (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- ===========================================
+
 -- SAMPLE DATA (For testing)
--- ===========================================
 
 -- Insert sample packages 
 INSERT INTO packages (name, price, duration, tag, features) VALUES
@@ -81,9 +73,8 @@ INSERT INTO packages (name, price, duration, tag, features) VALUES
 -- Insert sample user 
 INSERT INTO users (name, email, password, phone, role, loyalty_discount, trips_completed) VALUES
 ('Test User', 'test@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '0912345678', 'user', 0.00, 0);
--- =============================================
+
 -- 5. BOOKINGS TABLE
--- =============================================
 CREATE TABLE bookings (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
@@ -104,9 +95,8 @@ CREATE TABLE bookings (
     FOREIGN KEY (package_id) REFERENCES packages(id) ON DELETE SET NULL
 );
 
--- =============================================
+
 -- 6. REVIEWS TABLE
--- =============================================
 CREATE TABLE reviews (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
@@ -119,9 +109,7 @@ CREATE TABLE reviews (
     FOREIGN KEY (package_id) REFERENCES packages(id) ON DELETE SET NULL
 );
 
--- =============================================
 -- 7. INSERT DISCOUNT TIERS
--- =============================================
 INSERT INTO discount_tiers (min_trips, max_trips, discount_percent, tier_name) VALUES
 (0, 2, 0.00, 'Bronze'),
 (3, 4, 3.00, 'Silver'),
@@ -129,9 +117,8 @@ INSERT INTO discount_tiers (min_trips, max_trips, discount_percent, tier_name) V
 (8, 10, 8.00, 'Platinum'),
 (11, NULL, 12.00, 'Diamond');
 
--- =============================================
+
 -- 8. INSERT PACKAGES
--- =============================================
 INSERT INTO packages (name, price, duration, description, features, category) VALUES
 ('Meskerem Journey', 350.00, '3 Days / 2 Nights', 
  'Experience the beauty of Ethiopia with our Meskerem Journey package.', 
@@ -163,9 +150,7 @@ INSERT INTO packages (name, price, duration, description, features, category) VA
  '["Local Bus & Mule trekking", "Eco-lodge stay & nature fees", "Endemic wildlife tracking guide"]',
  'nature');
 
--- =============================================
 -- 9. INSERT DESTINATIONS
--- =============================================
 INSERT INTO destinations (name, location, description, best_time, activities) VALUES
 ('Lalibela', 'Amhara Region', 'Famous for its 11 monolithic rock-hewn churches, a UNESCO World Heritage site.', 'Oct - Mar', 'Church exploration, hiking, coffee ceremony'),
 ('Axum', 'Tigray Region', 'Ancient city known for its obelisks and as the supposed home of the Ark of the Covenant.', 'Sep - May', 'Obelisk tour, palace visit, museum tour'),
@@ -176,16 +161,13 @@ INSERT INTO destinations (name, location, description, best_time, activities) VA
 ('Danakil Depression', 'Afar Region', 'One of the hottest places on Earth with active volcanoes.', 'Nov - Jan', 'Volcano hike, salt flats, sulfur springs'),
 ('Sof Omar Cave', 'Oromia Region', 'One of the largest cave systems in the world.', 'Dec - Apr', 'Cave exploration, hiking, photography');
 
--- =============================================
 -- 10. INSERT ONLY ADMIN USER 
--- =============================================
 -- Password: password123
 INSERT INTO users (name, email, password, phone, role, trips_completed, total_spent, loyalty_discount) VALUES
 ('Admin', 'admin@ethiotrip.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '0912345678', 'admin', 0, 0.00, 0.00);
 
--- =============================================
+
 -- 11. VERIFY EVERYTHING IS CLEAN
--- =============================================
 SELECT '=== DATABASE SETUP COMPLETE ===' AS 'Status';
 SELECT '-----------------------------------------' AS '';
 
@@ -213,9 +195,8 @@ SELECT '-----------------------------------------' AS '';
 SELECT '✅ REVIEWS:' AS '';
 SELECT COUNT(*) as total_reviews FROM reviews;
 
--- =============================================
+
 -- 12. DISPLAY LOYALTY TIER INFORMATION
--- =============================================
 SELECT '=========================================' AS '';
 SELECT 'LOYALTY PROGRAM DETAILS' AS '';
 SELECT '=========================================' AS '';
@@ -234,9 +215,7 @@ SELECT
 FROM discount_tiers 
 ORDER BY min_trips ASC;
 
--- =============================================
 -- 13. LOGIN INFORMATION
--- =============================================
 SELECT '=========================================' AS '';
 SELECT 'LOGIN CREDENTIALS' AS '';
 SELECT '=========================================' AS '';
@@ -248,9 +227,7 @@ SELECT 'All new users start with 0 trips and 0% discount.' AS '';
 SELECT 'Discounts increase automatically as they complete more tours.' AS '';
 SELECT '=========================================' AS '';
 
--- =============================================
 -- 14. HOW TO ADJUST DISCOUNTS FOR INFLATION/DEFLATION
--- =============================================
 SELECT '=========================================' AS '';
 SELECT 'INFLATION/DEFLATION ADJUSTMENT EXAMPLES' AS '';
 SELECT '=========================================' AS '';
@@ -264,9 +241,8 @@ SELECT '-- Update specific tier:' AS 'SQL Command:';
 SELECT 'UPDATE discount_tiers SET discount_percent = 15 WHERE tier_name = "Diamond";' AS '';
 SELECT '=========================================' AS '';
 
--- =============================================
+
 -- 15. SAMPLE QUERIES FOR TESTING
--- =============================================
 SELECT '=========================================' AS '';
 SELECT 'SAMPLE TEST QUERIES' AS '';
 SELECT '=========================================' AS '';
@@ -289,9 +265,8 @@ FROM discount_tiers
 WHERE min_trips > 3 AND is_active = 1 
 ORDER BY min_trips ASC LIMIT 1;
 
--- =============================================
+
 -- 16. FINAL VERIFICATION
--- =============================================
 SELECT '=========================================' AS '';
 SELECT 'DATABASE IS READY FOR USE!' AS '';
 SELECT '=========================================' AS '';

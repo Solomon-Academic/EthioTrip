@@ -19,15 +19,8 @@ function displayError($errors, $field) {
     return '';
 }
 
-// ===========================================
-// LOYALTY DISCOUNT (Chapter 2)
-// ===========================================
+// Calculate loyalty discount based on completed trips
 
-/**
- * Calculate loyalty discount based on completed trips
- * @param int $trips_completed - Number of trips
- * @return float - Discount rate (0.05, 0.10, 0.15)
- */
 function calculateLoyaltyDiscount($trips_completed) {
     if ($trips_completed >= 10) {
         return 0.15;  // 15% off
@@ -39,28 +32,17 @@ function calculateLoyaltyDiscount($trips_completed) {
     return 0.00;
 }
 
-// ===========================================
-// DATE FORMATTING
-// ===========================================
 
-/**
- * Format date for display
- * @param string $date - MySQL date
- * @param string $format - PHP date format
- * @return string - Formatted date
- */
+// DATE FORMATTING
+// Format date for display
 function formatDate($date, $format = 'M d, Y') {
     if (empty($date)) return 'N/A';
     return date($format, strtotime($date));
 }
 
-// ===========================================
-// CSRF PROTECTION (Security)
-// ===========================================
 
-/**
- * Generate CSRF token
- */
+// Generate CSRF token
+ 
 function generateCSRFToken() {
     if (empty($_SESSION['csrf_token'])) {
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -68,26 +50,14 @@ function generateCSRFToken() {
     return $_SESSION['csrf_token'];
 }
 
-/**
- * Verify CSRF token
- * @param string $token - Token from form
- * @return bool - True if valid
- */
+//Verify CSRF token
+ 
 function verifyCSRFToken($token) {
     return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
 }
 
-// ===========================================
-// PAGINATION (Chapter 4 - LIMIT)
-// ===========================================
-
-/**
- * Get pagination data
- * @param int $current_page - Current page number
- * @param int $total_records - Total records
- * @param int $per_page - Records per page
- * @return array - Pagination data
- */
+// Get pagination data
+ 
 function getPaginationData($current_page, $total_records, $per_page = 10) {
     $total_pages = ceil($total_records / $per_page);
     $offset = ($current_page - 1) * $per_page;
@@ -104,6 +74,8 @@ function getPaginationData($current_page, $total_records, $per_page = 10) {
         'has_prev' => $current_page > 1,
         'has_next' => $current_page < $total_pages
     ];
+}
+
 function calculateBookingTotal($price, $travelers, $discount_rate = 0) {
     $subtotal = $price * $travelers;
     $discount = $subtotal * $discount_rate;
