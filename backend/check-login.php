@@ -1,5 +1,4 @@
 <?php
-// Set session cookie parameters to work across entire site
 session_set_cookie_params([
     'lifetime' => 0,
     'path' => '/',

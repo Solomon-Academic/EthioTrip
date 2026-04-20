@@ -3,9 +3,8 @@ session_start();
 require_once 'config/database.php';
 header('Content-Type: application/json');
 
-$name = $_GET['name'] ?? '';
+$name = isset($_GET['name']) ? trim($_GET['name']) : '';
 
-// If user is logged in, use their session name
 if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
     $query = "SELECT id, name, trips_completed, total_spent, loyalty_discount FROM users WHERE id = ?";
@@ -20,7 +19,6 @@ if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
         $discount_decimal = floatval($user['loyalty_discount']);
         $discount_percent = $discount_decimal * 100;
         
-        // Get tier name
         $tier_query = "SELECT tier_name FROM discount_tiers 
                        WHERE is_active = 1 
                        AND min_trips <= ? 
@@ -47,13 +45,12 @@ if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
     }
 }
 
-// If not logged in or user not found, search by name
 if (empty($name)) {
     echo json_encode(['success' => false, 'message' => 'Name required', 'discount_decimal' => 0]);
     exit();
 }
 
-$query = "SELECT id, name, trips_completed, total_spent, loyalty_discount FROM users WHERE name = ?";
+$query = "SELECT id, name, trips_completed, total_spent, loyalty_discount FROM users WHERE LOWER(name) = LOWER(?)";
 $stmt = mysqli_prepare($conn, $query);
 mysqli_stmt_bind_param($stmt, "s", $name);
 mysqli_stmt_execute($stmt);
@@ -67,6 +64,7 @@ if (!$user) {
         'discount_decimal' => 0,
         'discount_percent' => 0,
         'trips_completed' => 0,
+        'total_spent' => 0,
         'tier_name' => 'Bronze'
     ]);
     exit();

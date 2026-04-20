@@ -1,40 +1,49 @@
 <?php
-session_start();
 require_once 'config/database.php';
 header('Content-Type: application/json');
 
-// Enable error reporting for debugging
 error_reporting(E_ALL);
-ini_set('display_errors', 0); // Don't display errors in JSON output
+ini_set('display_errors', 0);
 
-// Get POST data
 $data = json_decode(file_get_contents('php://input'), true);
 
 $package_name = $data['package_name'] ?? '';
 $package_price = floatval($data['package_price'] ?? 0);
-$travel_date = $data['travel_date'] ?? date('Y-m-d', strtotime('+30 days'));
+$destination = $data['destination'] ?? '';
+$start_date = $data['start_date'] ?? '';
+$end_date = $data['end_date'] ?? '';
 $number_of_travelers = intval($data['travelers'] ?? 1);
 $payment_method = $data['payment_method'] ?? 'credit_card';
 $transaction_id = $data['transaction_id'] ?? 'TXN-' . time();
 $final_amount = floatval($data['final_amount'] ?? $package_price);
 $user_name = trim($data['user_name'] ?? '');
 
-// Validate
+// Calculate duration
+$duration_days = 0;
+if (!empty($start_date) && !empty($end_date)) {
+    $start = new DateTime($start_date);
+    $end = new DateTime($end_date);
+    $interval = $start->diff($end);
+    $duration_days = $interval->days;
+}
+
 if (empty($package_name)) {
     echo json_encode(['success' => false, 'message' => 'Package name is required']);
     exit();
 }
 
-// PRIORITY: Use logged-in user ID if available
+if (empty($start_date) || empty($end_date)) {
+    echo json_encode(['success' => false, 'message' => 'Travel dates are required']);
+    exit();
+}
+
 $user_id = null;
 $trips_before = 0;
 $total_spent_before = 0;
 
 if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
-    // User is logged in - use their ID
     $user_id = $_SESSION['user_id'];
     
-    // Get user details from database
     $find_user = "SELECT id, name, trips_completed, total_spent FROM users WHERE id = ?";
     $stmt = mysqli_prepare($conn, $find_user);
     mysqli_stmt_bind_param($stmt, "i", $user_id);
@@ -51,7 +60,6 @@ if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
         exit();
     }
 } else {
-    // Not logged in - find or create user by name
     if (empty($user_name)) {
         echo json_encode(['success' => false, 'message' => 'User name is required']);
         exit();
@@ -69,7 +77,6 @@ if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
         $trips_before = intval($user['trips_completed']);
         $total_spent_before = floatval($user['total_spent']);
     } else {
-        // Create new user
         $temp_email = strtolower(str_replace(' ', '', $user_name)) . '@ethiotrip.com';
         $temp_password = password_hash('changeme123', PASSWORD_DEFAULT);
         $temp_phone = '0000000000';
@@ -83,7 +90,7 @@ if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
             $trips_before = 0;
             $total_spent_before = 0;
         } else {
-            echo json_encode(['success' => false, 'message' => 'Failed to create user: ' . mysqli_error($conn)]);
+            echo json_encode(['success' => false, 'message' => 'Failed to create user']);
             exit();
         }
     }
@@ -91,8 +98,7 @@ if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
 
 // Get discount based on trips
 $discount_rate = 0;
-$discount_percent = 0;
-$tier_query = "SELECT discount_percent, tier_name FROM discount_tiers 
+$tier_query = "SELECT discount_percent FROM discount_tiers 
                WHERE is_active = 1 
                AND min_trips <= ? 
                AND (max_trips IS NULL OR max_trips >= ?)
@@ -103,26 +109,25 @@ mysqli_stmt_execute($stmt);
 $tier_result = mysqli_stmt_get_result($stmt);
 $tier = mysqli_fetch_assoc($tier_result);
 $discount_rate = $tier ? floatval($tier['discount_percent']) / 100 : 0;
-$discount_percent = $discount_rate * 100;
-$tier_name = $tier ? $tier['tier_name'] : 'Bronze';
 
-// Calculate amounts
-$subtotal = $package_price * $number_of_travelers;
+// Calculate amounts (daily rate based on package price / 3 days standard)
+$daily_rate = $package_price / 3;
+$subtotal = $daily_rate * $duration_days * $number_of_travelers;
 $discount_amount = $subtotal * $discount_rate;
 $total_after_discount = $subtotal - $discount_amount;
 $tax = $total_after_discount * 0.10;
 $grand_total = $total_after_discount + $tax;
 
-// Insert booking
-$query = "INSERT INTO bookings (user_id, package_name, travel_date, number_of_travelers, 
-          total_amount, discount_amount, final_amount, payment_method, transaction_id, 
+// Insert booking with date range
+$query = "INSERT INTO bookings (user_id, package_name, destination, start_date, end_date, duration_days, 
+          number_of_travelers, total_amount, discount_amount, final_amount, payment_method, transaction_id, 
           payment_status, status, created_at) 
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'completed', 'confirmed', NOW())";
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'completed', 'confirmed', NOW())";
 
 $stmt = mysqli_prepare($conn, $query);
-mysqli_stmt_bind_param($stmt, "issidddss", 
-    $user_id, $package_name, $travel_date, $number_of_travelers,
-    $subtotal, $discount_amount, $grand_total, $payment_method, $transaction_id
+mysqli_stmt_bind_param($stmt, "issssiidddss", 
+    $user_id, $package_name, $destination, $start_date, $end_date, $duration_days,
+    $number_of_travelers, $subtotal, $discount_amount, $grand_total, $payment_method, $transaction_id
 );
 
 if (mysqli_stmt_execute($stmt)) {
@@ -137,25 +142,46 @@ if (mysqli_stmt_execute($stmt)) {
     mysqli_stmt_bind_param($stmt2, "dii", $new_total_spent, $new_trips, $user_id);
     mysqli_stmt_execute($stmt2);
     
-    // Get new discount based on updated trips
-    $new_tier_query = "SELECT discount_percent, tier_name FROM discount_tiers 
+    // Update or insert user_destination record
+    if (!empty($destination)) {
+        $check_dest = "SELECT id, visit_count FROM user_destinations WHERE user_id = ? AND destination = ?";
+        $stmt3 = mysqli_prepare($conn, $check_dest);
+        mysqli_stmt_bind_param($stmt3, "is", $user_id, $destination);
+        mysqli_stmt_execute($stmt3);
+        $dest_result = mysqli_stmt_get_result($stmt3);
+        $existing_dest = mysqli_fetch_assoc($dest_result);
+        
+        if ($existing_dest) {
+            $new_count = $existing_dest['visit_count'] + 1;
+            $update_dest = "UPDATE user_destinations SET visit_count = ?, last_visited = ? WHERE id = ?";
+            $stmt4 = mysqli_prepare($conn, $update_dest);
+            mysqli_stmt_bind_param($stmt4, "isi", $new_count, $start_date, $existing_dest['id']);
+            mysqli_stmt_execute($stmt4);
+        } else {
+            $insert_dest = "INSERT INTO user_destinations (user_id, destination, visit_count, last_visited) VALUES (?, ?, 1, ?)";
+            $stmt4 = mysqli_prepare($conn, $insert_dest);
+            mysqli_stmt_bind_param($stmt4, "iss", $user_id, $destination, $start_date);
+            mysqli_stmt_execute($stmt4);
+        }
+    }
+    
+    // Get new discount
+    $new_tier_query = "SELECT discount_percent FROM discount_tiers 
                        WHERE is_active = 1 
                        AND min_trips <= ? 
                        AND (max_trips IS NULL OR max_trips >= ?)
                        ORDER BY min_trips DESC LIMIT 1";
-    $stmt3 = mysqli_prepare($conn, $new_tier_query);
-    mysqli_stmt_bind_param($stmt3, "ii", $new_trips, $new_trips);
-    mysqli_stmt_execute($stmt3);
-    $new_tier_result = mysqli_stmt_get_result($stmt3);
+    $stmt5 = mysqli_prepare($conn, $new_tier_query);
+    mysqli_stmt_bind_param($stmt5, "ii", $new_trips, $new_trips);
+    mysqli_stmt_execute($stmt5);
+    $new_tier_result = mysqli_stmt_get_result($stmt5);
     $new_tier = mysqli_fetch_assoc($new_tier_result);
     $new_discount = $new_tier ? floatval($new_tier['discount_percent']) / 100 : 0;
-    $new_tier_name = $new_tier ? $new_tier['tier_name'] : 'Bronze';
     
-    // Update loyalty discount in users table
     $update_discount = "UPDATE users SET loyalty_discount = ? WHERE id = ?";
-    $stmt4 = mysqli_prepare($conn, $update_discount);
-    mysqli_stmt_bind_param($stmt4, "di", $new_discount, $user_id);
-    mysqli_stmt_execute($stmt4);
+    $stmt6 = mysqli_prepare($conn, $update_discount);
+    mysqli_stmt_bind_param($stmt6, "di", $new_discount, $user_id);
+    mysqli_stmt_execute($stmt6);
     
     echo json_encode([
         'success' => true,
@@ -164,10 +190,10 @@ if (mysqli_stmt_execute($stmt)) {
         'trips_completed' => $new_trips,
         'total_spent' => $new_total_spent,
         'final_amount' => $grand_total,
-        'discount_applied' => $discount_percent,
-        'tier_name' => $tier_name,
-        'new_tier_name' => $new_tier_name,
-        'new_discount' => $new_discount * 100
+        'destination' => $destination,
+        'duration_days' => $duration_days,
+        'start_date' => $start_date,
+        'end_date' => $end_date
     ]);
 } else {
     echo json_encode(['success' => false, 'message' => 'Failed to save booking: ' . mysqli_error($conn)]);

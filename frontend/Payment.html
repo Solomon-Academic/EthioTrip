@@ -99,7 +99,7 @@
         .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
         .logo { font-size: 1.5rem; font-weight: 600; text-decoration: none; color: #2d3436; }
         .logo span { color: #d4af37; }
-        .nav-links { display: flex; gap: 25px; align-items: center; }
+        .nav-links { display: flex; gap: 25px; align-items: center; list-style: none; }
         .nav-links a { text-decoration: none; color: #2d3436; font-size: 0.9rem; font-weight: 500; }
         .nav-links a:hover { color: #d4af37; }
 
@@ -119,6 +119,7 @@
         .form-group input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #eee; font-size: 0.9rem; outline: none; }
         .form-group input:focus { border-color: #d4af37; }
         .split { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .date-range-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
         .method-tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
         .tab-btn { padding: 10px 16px; border-radius: 8px; border: 1px solid #eee; background: white; cursor: pointer; font-weight: 600; font-size: 0.8rem; transition: 0.3s; }
@@ -126,10 +127,13 @@
 
         .payment-view { background: white; padding: 25px; border-radius: 20px; box-shadow: var(--shadow); min-height: 350px; }
         .checkout-grid { display: grid; grid-template-columns: 1fr 320px; gap: 25px; margin-top: 25px; }
+        
         .summary-card { background: #2d3436; color: white; padding: 25px; border-radius: 20px; height: fit-content; position: sticky; top: 100px; }
         .summary-card h3 { margin-bottom: 20px; border-bottom: 1px solid #444; padding-bottom: 12px; }
         .row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.9rem; }
         .total { font-size: 1.2rem; font-weight: 600; border-top: 1px solid #444; padding-top: 15px; margin-top: 12px; color: #d4af37; }
+        .dest-row { margin-bottom: 15px; color: #d4af37; border-bottom: 1px dashed #444; padding-bottom: 12px; }
+        .duration-row { margin-bottom: 10px; font-size: 0.8rem; color: #ccc; }
 
         .btn-primary { width: 100%; padding: 14px; border-radius: 8px; border: none; background: #d4af37; color: white; font-weight: 600; cursor: pointer; font-size: 0.95rem; transition: 0.3s; }
         .btn-primary:hover { opacity: 0.9; transform: translateY(-2px); }
@@ -159,19 +163,20 @@
         @keyframes spin { to { transform: rotate(360deg); } }
         
         .error { color: #e74c3c; font-size: 12px; margin-top: 5px; display: block; }
+        .info-text { font-size: 0.7rem; color: #666; margin-top: 5px; display: block; }
     </style>
 </head>
 <body>
     <header class="navbar">
         <div class="container header-flex">
             <a href="home.html" class="logo">Ethio<span>Trip</span></a>
-            <nav class="nav-links">
-                <a href="home.html"><i class="fas fa-home"></i> Home</a>
-                <a href="Destination.html">Destinations</a>
-                <a href="packages.html">Packages</a>
-                <a href="about.html">About</a>
-                <a href="../backend/bookings.php">My Bookings</a>
-            </nav>
+            <ul class="nav-links">
+                <li><a href="home.html"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="Destination.html">Destinations</a></li>
+                <li><a href="packages.html">Packages</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="../backend/bookings.php">My Bookings</a></li>
+            </ul>
         </div>
     </header>
 
@@ -194,7 +199,7 @@
                 <label style="display: block; text-align: left; font-weight: bold;">Booking Amount ($)</label>
                 <div class="input-lockup">
                     <span class="currency-label">$</span>
-                    <input type="number" id="inputAmount" placeholder="0.00" step="0.01">
+                    <input type="number" id="inputAmount" placeholder="0.00" step="0.01" readonly style="background: #f5f5f5;">
                 </div>
             </div>
 
@@ -202,6 +207,21 @@
                 <label style="display: block; text-align: left; font-weight: bold;">Full Name</label>
                 <input type="text" id="inputUserName" placeholder="Enter your full name">
                 <span id="name-error" class="error"></span>
+            </div>
+
+            <div class="form-group" style="max-width: 350px; margin: 0 auto 15px auto;">
+                <label style="display: block; text-align: left; font-weight: bold;">Travel Dates *</label>
+                <div class="date-range-group">
+                    <div>
+                        <label style="font-size: 0.7rem;">Start Date</label>
+                        <input type="date" id="startDate" onchange="updateDuration()">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.7rem;">End Date</label>
+                        <input type="date" id="endDate" onchange="updateDuration()">
+                    </div>
+                </div>
+                <div id="durationInfo" class="info-text"></div>
             </div>
 
             <button class="btn-primary" id="btnProceed">Check Discount & Proceed</button>
@@ -266,11 +286,22 @@
 
                 <aside class="summary-card">
                     <h3>Invoice Summary</h3>
+                    <div id="destination-row" class="row dest-row" style="display: none;">
+                        <span><i class="fas fa-map-marker-alt"></i> Destination</span>
+                        <span id="dest-name">Not selected</span>
+                    </div>
+                    <div id="dates-row" class="row" style="display: none;">
+                        <span><i class="fas fa-calendar-alt"></i> Travel Dates</span>
+                        <span id="dates-display"></span>
+                    </div>
+                    <div id="duration-row" class="row duration-row" style="display: none;">
+                        <span><i class="fas fa-clock"></i> Duration</span>
+                        <span id="duration-display"></span>
+                    </div>
                     <div class="row"><span>Subtotal</span><span id="sum-sub">$0.00</span></div>
                     <div id="discount-row" class="row" style="display:none; color:#d4af37;"><span>Loyalty Discount</span><span id="sum-discount">-$0.00</span></div>
                     <div class="row"><span>VAT (10%)</span><span id="sum-tax">$0.00</span></div>
                     <div class="row total"><span>Total Payable</span><span id="sum-total">$0.00</span></div>
-                    
                 </aside>
             </div>
         </section>
@@ -298,33 +329,80 @@
                 <ul><li><a href="about.html">About Us</a></li><li><a href="about.html">Contact Us</a></li></ul>
             </div>
         </div>
-        <div class="footer-bottom">© 2025 EthioTrip Ethiopia. All rights reserved.</div>
+        <div class="footer-bottom">© <span id="currentYear"></span> EthioTrip Ethiopia. All rights reserved.</div>
     </footer>
 
     <script>
-        // Check if user is already logged in via backend session
+        // Dynamic year
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        let currentPackagePrice = 0;
+        let currentPackageName = '';
+        let selectedDestination = null;
+        let discountRate = 0;
+        let discountPercent = 0;
+        let durationDays = 0;
+
+        // Load data from localStorage
+        const savedPrice = localStorage.getItem("selectedPrice");
+        if (savedPrice) {
+            document.getElementById('inputAmount').value = savedPrice;
+            currentPackagePrice = parseFloat(savedPrice);
+        }
+        
+        currentPackageName = localStorage.getItem("selectedPackage") || "EthioTrip Package";
+        
+        const savedDest = localStorage.getItem('selectedDestinationName');
+        if (savedDest) {
+            selectedDestination = savedDest;
+            const destRow = document.getElementById('destination-row');
+            const destNameSpan = document.getElementById('dest-name');
+            if (destRow && destNameSpan) {
+                destNameSpan.innerHTML = `<strong>${savedDest}</strong>`;
+                destRow.style.display = 'flex';
+            }
+        }
+
+        // Calculate duration between dates
+        function updateDuration() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const durationInfo = document.getElementById('durationInfo');
+            
+            if (startDate && endDate) {
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+                const diffTime = Math.abs(end - start);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                if (diffDays > 0) {
+                    durationDays = diffDays;
+                    durationInfo.innerHTML = `<i class="fas fa-calendar-week"></i> Trip duration: ${diffDays} days`;
+                    durationInfo.style.color = "#27ae60";
+                } else if (diffDays === 0) {
+                    durationInfo.innerHTML = `<i class="fas fa-exclamation-triangle"></i> End date must be after start date`;
+                    durationInfo.style.color = "#e74c3c";
+                    durationDays = 0;
+                }
+            } else {
+                durationInfo.innerHTML = '';
+                durationDays = 0;
+            }
+        }
+
+        // Check if user is already logged in
         async function checkExistingSession() {
             try {
                 const response = await fetch('../backend/check-login.php');
                 const data = await response.json();
                 
                 if (data.logged_in) {
-                    // User is logged in - auto-fill name
                     const userNameInput = document.getElementById('inputUserName');
                     if (userNameInput && data.user_name) {
                         userNameInput.value = data.user_name;
                         userNameInput.readOnly = true;
                         userNameInput.style.background = '#f0f0f0';
-                        
-                        // Show notification
                         showNotification('Welcome Back!', `Logged in as ${data.user_name}`, 'success', 3000);
-                    }
-                } else {
-                    // Not logged in - check for return URL
-                    const returnUrl = localStorage.getItem('returnAfterLogin');
-                    if (returnUrl) {
-                        localStorage.removeItem('returnAfterLogin');
-                        showNotification('Sign In Required', 'Please sign in to continue with your booking', 'warning', 4000);
                     }
                 }
             } catch(e) {
@@ -437,29 +515,54 @@
         const discRow = document.getElementById('discount-row');
 
         // Proceed with booking after discount check
-        function proceedWithBooking(amount, userName, discountRate, discountPercent, tierName, tripsCompleted, btn, originalText) {
-            const discAmt = amount * discountRate;
-            const taxableAmt = amount - discAmt;
+        function proceedWithBooking(amount, userName, discountRateVal, discountPercentVal, tierName, tripsCompleted, btn, originalText) {
+            // Calculate based on daily rate (standard package = 3 days)
+            const dailyRate = currentPackagePrice / 3;
+            const subtotal = dailyRate * durationDays * 1;
+            const discAmt = subtotal * discountRateVal;
+            const taxableAmt = subtotal - discAmt;
             const tax = taxableAmt * 0.10;
             const finalTotal = taxableAmt + tax;
 
-            sSub.innerText = `$${amount.toFixed(2)}`;
-            if (discountRate > 0) {
+            sSub.innerText = `$${subtotal.toFixed(2)}`;
+            if (discountRateVal > 0) {
                 discRow.style.display = 'flex';
-                sDisc.innerText = `-$${discAmt.toFixed(2)} (${tierName}: ${discountPercent}% off)`;
+                sDisc.innerText = `-$${discAmt.toFixed(2)} (${tierName}: ${discountPercentVal}% off)`;
             } else {
                 discRow.style.display = 'none';
             }
             sTax.innerText = `$${tax.toFixed(2)}`;
             sTotal.innerText = `$${finalTotal.toFixed(2)}`;
 
+            // Update date display in summary
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            if (startDate && endDate) {
+                const datesRow = document.getElementById('dates-row');
+                const datesDisplay = document.getElementById('dates-display');
+                const durationRow = document.getElementById('duration-row');
+                const durationDisplay = document.getElementById('duration-display');
+                
+                if (datesRow && datesDisplay) {
+                    datesDisplay.innerHTML = `${formatDateDisplay(startDate)} - ${formatDateDisplay(endDate)}`;
+                    datesRow.style.display = 'flex';
+                }
+                if (durationRow && durationDisplay) {
+                    durationDisplay.innerHTML = `${durationDays} days`;
+                    durationRow.style.display = 'flex';
+                }
+            }
+
             localStorage.setItem("finalAmount", finalTotal.toFixed(2));
-            localStorage.setItem("discountApplied", discountRate);
-            localStorage.setItem("discountPercent", discountPercent);
+            localStorage.setItem("discountApplied", discountRateVal);
+            localStorage.setItem("discountPercent", discountPercentVal);
             localStorage.setItem("userName", userName);
             localStorage.setItem("tierName", tierName);
             localStorage.setItem("tripsCompleted", tripsCompleted);
-            localStorage.setItem("baseAmount", amount.toFixed(2));
+            localStorage.setItem("baseAmount", subtotal.toFixed(2));
+            localStorage.setItem("durationDays", durationDays);
+            localStorage.setItem("startDate", startDate);
+            localStorage.setItem("endDate", endDate);
 
             document.getElementById('cardName').value = userName;
             btn.innerText = originalText;
@@ -469,17 +572,24 @@
             pCheckout.style.display = 'block';
             document.getElementById('step2').classList.add('active');
 
-            if (discountRate > 0) {
-                showNotification('🎉 Loyalty Discount Applied!', `${discountPercent}% OFF as a ${tierName} member!`, 'success', 3500);
+            if (discountRateVal > 0) {
+                showNotification('🎉 Loyalty Discount Applied!', `${discountPercentVal}% OFF as a ${tierName} member!`, 'success', 3500);
             } else {
                 showNotification('👋 Welcome!', 'Complete 3 trips to get 3% discount!', 'info', 3500);
             }
+        }
+
+        function formatDateDisplay(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
         }
 
         // Check discount via backend API
         document.getElementById('btnProceed').onclick = async () => {
             const amount = parseFloat(document.getElementById('inputAmount').value);
             const userName = document.getElementById('inputUserName').value.trim();
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
             
             if (!amount || amount <= 0) {
                 showNotification('Invalid Amount', 'Please enter a valid booking amount.', 'error');
@@ -489,17 +599,24 @@
                 showNotification('Name Required', 'Please enter your full name.', 'warning');
                 return;
             }
+            if (!startDate || !endDate) {
+                showNotification('Dates Required', 'Please select travel dates.', 'warning');
+                return;
+            }
+            if (durationDays <= 0) {
+                showNotification('Invalid Dates', 'End date must be after start date.', 'error');
+                return;
+            }
 
             const btn = document.getElementById('btnProceed');
             const originalText = btn.innerText;
             btn.innerText = '🔄 Checking loyalty status...';
             btn.disabled = true;
 
-            let discountRate = 0, discountPercent = 0, tierName = "Bronze", tripsCompleted = 0, totalSpent = 0, userFound = false;
+            let discountRateVal = 0, discountPercentVal = 0, tierName = "Bronze", tripsCompleted = 0, totalSpent = 0, userFound = false;
             let nextTierData = null;
             
             try {
-                // First check if user is logged in via session
                 const sessionResponse = await fetch('../backend/check-login.php');
                 const sessionData = await sessionResponse.json();
                 
@@ -513,14 +630,13 @@
                 
                 if (data.success) {
                     userFound = true;
-                    discountRate = data.discount_decimal;
-                    discountPercent = data.discount_percent;
+                    discountRateVal = data.discount_decimal;
+                    discountPercentVal = data.discount_percent;
                     tierName = data.tier_name;
                     tripsCompleted = data.trips_completed;
                     totalSpent = data.total_spent || 0;
                 }
                 
-                // Try to get next tier info
                 try {
                     const nextResponse = await fetch('../backend/get-next-tier.php?trips=' + tripsCompleted);
                     const nextData = await nextResponse.json();
@@ -541,11 +657,11 @@
                 return;
             }
             
-            showLoyaltyInfo(userName, discountPercent, tierName, tripsCompleted, totalSpent, nextTierData);
+            showLoyaltyInfo(userName, discountPercentVal, tierName, tripsCompleted, totalSpent, nextTierData);
             const checkModal = setInterval(() => {
                 if (!document.querySelector('.modal-overlay')) {
                     clearInterval(checkModal);
-                    proceedWithBooking(amount, userName, discountRate, discountPercent, tierName, tripsCompleted, btn, originalText);
+                    proceedWithBooking(amount, userName, discountRateVal, discountPercentVal, tierName, tripsCompleted, btn, originalText);
                 }
             }, 500);
         };
@@ -568,25 +684,26 @@
             };
         });
 
-        // Save booking to database
+        // Save booking to database with date range
         async function saveBookingToDatabase(packageName, amount, paymentMethod, transactionRef) {
             let userName = localStorage.getItem("userName");
             if (!userName) userName = document.getElementById('cardName').value;
             
-            const travelDate = new Date();
-            travelDate.setDate(travelDate.getDate() + 30);
-            
+            const destination = localStorage.getItem("selectedDestinationName") || '';
+            const startDate = localStorage.getItem("startDate") || document.getElementById('startDate')?.value;
+            const endDate = localStorage.getItem("endDate") || document.getElementById('endDate')?.value;
+            const duration = parseInt(localStorage.getItem("durationDays")) || durationDays;
             const baseAmount = parseFloat(localStorage.getItem("baseAmount")) || amount;
-            const discountRate = parseFloat(localStorage.getItem("discountApplied")) || 0;
-            const discountAmount = baseAmount * discountRate;
-            const taxableAmount = baseAmount - discountAmount;
-            const finalAmount = parseFloat(localStorage.getItem("finalAmount")) || (taxableAmount + (taxableAmount * 0.10));
+            const finalAmount = parseFloat(localStorage.getItem("finalAmount")) || amount;
             
             const bookingData = {
                 package_name: packageName,
+                destination: destination,
                 package_price: baseAmount,
                 final_amount: finalAmount,
-                travel_date: travelDate.toISOString().split('T')[0],
+                start_date: startDate,
+                end_date: endDate,
+                duration_days: duration,
                 travelers: 1,
                 payment_method: paymentMethod,
                 transaction_id: transactionRef,
@@ -613,8 +730,11 @@
             const selectedPkg = localStorage.getItem("selectedPackage") || "EthioTrip Booking";
             const finalAmount = localStorage.getItem("finalAmount") || sTotal.innerText.replace('$', '');
             const tierName = localStorage.getItem("tierName") || "Bronze";
-            const discountPercent = parseFloat(localStorage.getItem("discountPercent")) || 0;
+            const discountPercentVal = parseFloat(localStorage.getItem("discountPercent")) || 0;
             const tripsBefore = parseInt(localStorage.getItem("tripsCompleted")) || 0;
+            const startDate = localStorage.getItem("startDate") || '';
+            const endDate = localStorage.getItem("endDate") || '';
+            const duration = localStorage.getItem("durationDays") || 0;
             const date = new Date().toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
             const finalRef = userReference || "ET-" + Math.floor(Math.random()*900000 + 100000);
             
@@ -640,8 +760,11 @@
                     ${saveResult.success ? '<p style="color:green;">✓ Booking saved to your account!</p>' : '<p style="color:#e74c3c;">⚠ Booking record issue. Please contact support with your reference number.</p>'}
                     <div style="text-align:left; background:#f9f9f9; padding:15px; border-radius:12px; margin:15px 0; font-size:0.85rem;">
                         <p><strong>Package:</strong> ${escapeHtml(selectedPkg)}</p>
+                        <p><strong>Destination:</strong> ${escapeHtml(selectedDestination || 'Not specified')}</p>
+                        <p><strong>Travel Dates:</strong> ${formatDateDisplay(startDate)} - ${formatDateDisplay(endDate)}</p>
+                        <p><strong>Duration:</strong> ${duration} days</p>
                         <p><strong>Payment Method:</strong> ${method}</p>
-                        <p><strong>Loyalty Discount:</strong> ${discountPercent}% OFF (${tierName})</p>
+                        <p><strong>Loyalty Discount:</strong> ${discountPercentVal}% OFF (${tierName})</p>
                         <p><strong>Total Paid:</strong> <strong style="color:#d4af37;">$${parseFloat(finalAmount).toFixed(2)}</strong></p>
                         <p><strong>Reference Number:</strong> ${finalRef}</p>
                         ${saveResult.success ? `<p><strong>Booking ID:</strong> #${saveResult.booking_id}</p>` : ''}
@@ -665,6 +788,9 @@
             localStorage.removeItem("tripsCompleted");
             localStorage.removeItem("baseAmount");
             localStorage.removeItem("returnAfterLogin");
+            localStorage.removeItem("startDate");
+            localStorage.removeItem("endDate");
+            localStorage.removeItem("durationDays");
         }
         
         function escapeHtml(str) {
@@ -730,13 +856,14 @@
             }
         };
 
+        // Set min dates for date inputs
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('startDate').min = today;
+        document.getElementById('endDate').min = today;
+
         // Check session on page load
         document.addEventListener('DOMContentLoaded', () => {
             checkExistingSession();
-            
-            // Auto-fill package price
-            const savedPrice = localStorage.getItem("selectedPrice");
-            if (savedPrice) document.getElementById('inputAmount').value = savedPrice;
         });
     </script>
 </body>

@@ -2,7 +2,6 @@
 session_start();
 require_once 'config/database.php';
 
-// Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit();
@@ -10,31 +9,40 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 $user_name = $_SESSION['user_name'] ?? '';
+$is_admin = ($_SESSION['user_role'] ?? '') === 'admin';
 
-// Get all bookings for this user
-$query = "SELECT * FROM bookings WHERE user_id = ? ORDER BY created_at DESC";
-$stmt = mysqli_prepare($conn, $query);
-mysqli_stmt_bind_param($stmt, "i", $user_id);
-mysqli_stmt_execute($stmt);
-$result = mysqli_stmt_get_result($stmt);
+// Get all bookings for this user (or all if admin)
+if ($is_admin) {
+    $query = "SELECT b.*, u.name as user_name FROM bookings b LEFT JOIN users u ON b.user_id = u.id ORDER BY b.created_at DESC";
+    $result = mysqli_query($conn, $query);
+    $bookings = $result;
+} else {
+    $query = "SELECT * FROM bookings WHERE user_id = ? ORDER BY created_at DESC";
+    $stmt = mysqli_prepare($conn, $query);
+    mysqli_stmt_bind_param($stmt, "i", $user_id);
+    mysqli_stmt_execute($stmt);
+    $bookings = mysqli_stmt_get_result($stmt);
+}
 
-// Store data in array 
-$bookings = [];
+// Calculate stats
 $total_bookings = 0;
 $total_spent = 0;
 $active_bookings = 0;
+$destinations_set = [];
 
-if ($result && mysqli_num_rows($result) > 0) {
-    while ($row = mysqli_fetch_assoc($result)) {
-        $bookings[] = $row;
-
+if ($bookings && mysqli_num_rows($bookings) > 0) {
+    mysqli_data_seek($bookings, 0);
+    while($stat = mysqli_fetch_assoc($bookings)) {
         $total_bookings++;
-        $total_spent += $row['final_amount'];
-
-        if ($row['status'] == 'confirmed') {
+        $total_spent += $stat['final_amount'];
+        if ($stat['status'] == 'confirmed') {
             $active_bookings++;
         }
+        if (!empty($stat['destination'])) {
+            $destinations_set[$stat['destination']] = true;
+        }
     }
+    mysqli_data_seek($bookings, 0);
 }
 ?>
 
@@ -76,9 +84,6 @@ if ($result && mysqli_num_rows($result) > 0) {
         .btn-primary:hover { background: #c09c2c; transform: translateY(-2px); }
         .btn-secondary { display: inline-block; padding: 10px 20px; background: #2d3436; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 0.9rem; transition: 0.3s; }
         .btn-secondary:hover { background: #1a1a1a; transform: translateY(-2px); }
-        .btn-danger { background: #e74c3c; }
-        .btn-danger:hover { background: #c0392b; }
-        .btn-small { padding: 5px 12px; font-size: 0.75rem; margin: 0 2px; display: inline-block; }
         
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
         .stat-card { background: white; padding: 1.5rem; border-radius: 15px; display: flex; align-items: center; gap: 1rem; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
@@ -87,10 +92,30 @@ if ($result && mysqli_num_rows($result) > 0) {
         .stat-info p { font-size: 0.75rem; color: #999; }
         
         .bookings-table { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.08); overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 700px; }
+        table { width: 100%; border-collapse: collapse; min-width: 900px; }
         th { background: #f8f9fa; padding: 15px; text-align: left; font-weight: 600; color: #555; font-size: 0.85rem; border-bottom: 1px solid #eee; }
         td { padding: 15px; border-bottom: 1px solid #eee; color: #666; font-size: 0.85rem; }
         tr:hover { background: #fafafa; }
+        
+        .date-range-badge {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: inline-block;
+            margin: 2px;
+        }
+        .duration-badge {
+            background: #fff3e0;
+            color: #e65100;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: inline-block;
+        }
         
         .status { padding: 4px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 600; display: inline-block; }
         .status-confirmed { background: #d4edda; color: #155724; }
@@ -128,6 +153,7 @@ if ($result && mysqli_num_rows($result) > 0) {
         <div class="page-header">
             <h1><i class="fas fa-suitcase"></i> My Travel Bookings</h1>
             <div class="action-buttons">
+                <a href="../frontend/Destination.html" class="btn-primary"><i class="fas fa-map-marker-alt"></i> Choose Destination</a>
                 <a href="../frontend/packages.html" class="btn-primary"><i class="fas fa-plus"></i> New Booking</a>
                 <a href="dashboard.php" class="btn-secondary"><i class="fas fa-chart-line"></i> Dashboard</a>
             </div>
@@ -141,7 +167,6 @@ if ($result && mysqli_num_rows($result) > 0) {
                     <p>Total Bookings</p>
                 </div>
             </div>
-
             <div class="stat-card">
                 <div class="stat-icon"><i class="fas fa-plane-departure"></i></div>
                 <div class="stat-info">
@@ -149,7 +174,6 @@ if ($result && mysqli_num_rows($result) > 0) {
                     <p>Active Trips</p>
                 </div>
             </div>
-
             <div class="stat-card">
                 <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
                 <div class="stat-info">
@@ -157,43 +181,67 @@ if ($result && mysqli_num_rows($result) > 0) {
                     <p>Total Spent</p>
                 </div>
             </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-calendar-week"></i></div>
+                <div class="stat-info">
+                    <h3><?php echo count($destinations_set); ?></h3>
+                    <p>Destinations</p>
+                </div>
+            </div>
         </div>
 
-        <?php if (count($bookings) > 0): ?>
+        <?php if ($bookings && mysqli_num_rows($bookings) > 0): ?>
             <div class="bookings-table">
                 <table>
                     <thead>
                         <tr>
-                            <th>Booking ID</th>
+                            <th>ID</th>
                             <th>Package</th>
-                            <th>Travel Date</th>
+                            <th>Travel Dates</th>
+                            <th>Duration</th>
                             <th>Travelers</th>
-                            <th>Total Amount</th>
+                            <th>Amount</th>
                             <th>Status</th>
-                            <th>Payment</th>
                             <th>Booked On</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach($bookings as $booking): ?>
+                        <?php while($booking = mysqli_fetch_assoc($bookings)): ?>
                         <tr>
                             <td><span style="font-weight: 600;">#<?php echo $booking['id']; ?></span></td>
                             <td><strong><?php echo htmlspecialchars($booking['package_name']); ?></strong></td>
-                            <td><?php echo date('M d, Y', strtotime($booking['travel_date'])); ?></td>
-                            <td><?php echo $booking['number_of_travelers']; ?> person(s)</td>
-                            <td>$<?php echo number_format($booking['final_amount'], 2); ?></td>
+                            <td>
+                                <div class="date-range-badge">
+                                    <i class="fas fa-calendar-alt"></i> 
+                                    <?php echo date('M d, Y', strtotime($booking['start_date'])); ?>
+                                </div>
+                                <i class="fas fa-arrow-right" style="margin: 0 5px; color: #d4af37;"></i>
+                                <div class="date-range-badge">
+                                    <?php echo date('M d, Y', strtotime($booking['end_date'])); ?>
+                                </div>
+                             </td>
+                            <td>
+                                <div class="duration-badge">
+                                    <i class="fas fa-clock"></i> <?php echo $booking['duration_days']; ?> days
+                                </div>
+                             </td>
+                            <td><i class="fas fa-users" style="color: #d4af37; margin-right: 5px;"></i><?php echo $booking['number_of_travelers']; ?></td>
+                            <td><span style="color: #d4af37; font-weight: 600;">$<?php echo number_format($booking['final_amount'], 2); ?></span></td>
                             <td><span class="status status-<?php echo $booking['status']; ?>"><?php echo ucfirst($booking['status']); ?></span></td>
-                            <td><span class="status status-<?php echo $booking['payment_status']; ?>"><?php echo ucfirst($booking['payment_status']); ?></span></td>
                             <td><?php echo date('M d, Y', strtotime($booking['created_at'])); ?></td>
                             <td>
                                 <?php if ($booking['status'] == 'pending'): ?>
-                                    <a href="edit-booking.php?id=<?php echo $booking['id']; ?>" class="btn-small btn-primary" style="background: #3498db;"><i class="fas fa-edit"></i></a>
-                                    <a href="delete-booking.php?id=<?php echo $booking['id']; ?>" class="btn-small btn-danger" onclick="return confirm('Cancel this booking?')"><i class="fas fa-trash"></i></a>
+                                    <a href="edit-booking.php?id=<?php echo $booking['id']; ?>" class="btn-small btn-primary" style="background: #3498db; padding: 5px 10px; border-radius: 5px; color: white; text-decoration: none; font-size: 0.7rem;">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                    <a href="delete-booking.php?id=<?php echo $booking['id']; ?>" class="btn-small btn-danger" style="background: #e74c3c; padding: 5px 10px; border-radius: 5px; color: white; text-decoration: none; font-size: 0.7rem; margin-left: 5px;" onclick="return confirm('Cancel this booking?')">
+                                        <i class="fas fa-trash"></i> Cancel
+                                    </a>
                                 <?php endif; ?>
-                             </td>
+                            </td>
                         </tr>
-                        <?php endforeach; ?>
+                        <?php endwhile; ?>
                     </tbody>
                 </table>
             </div>
@@ -201,7 +249,8 @@ if ($result && mysqli_num_rows($result) > 0) {
             <div class="empty-state">
                 <i class="fas fa-suitcase"></i>
                 <p>You haven't made any bookings yet.</p>
-                <a href="../frontend/packages.html" class="btn-primary">Browse Packages</a>
+                <p style="font-size: 0.8rem; margin-top: 5px;">Start your Ethiopian adventure today!</p>
+                <a href="../frontend/Destination.html" class="btn-primary" style="margin-top: 1rem;"><i class="fas fa-map-marker-alt"></i> Choose a Destination</a>
             </div>
         <?php endif; ?>
     </div>
