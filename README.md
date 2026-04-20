@@ -78,7 +78,6 @@ IP2_travel/
 │   │   ├── footer.php
 │   │   ├── functions.php
 │   │   └── header.php
-│   ├── js/
 │   ├── sql/
 │   │   └── database.sql
 │   ├── bookings.php
