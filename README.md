@@ -10,38 +10,100 @@ topic :-**TOUR MANAGEMENT SYSTEM**
 | Zemedkun Workalem | ETS1557/16 | zemedkunworkalem32      |
 | Zerihun Berhanu   | ETS1563/16 | zerub0                     |
 
-# title:-EthioTrip Web Platform
-**A Premium Digital Gateway to Ethiopia – The Land of Origins**
+# 🌍 EthioTrip Web Platform
+### A Premium Digital Gateway to Ethiopia – *The Land of Origins*
 
-## Project Overview
-EthioTrip is a modern, responsive travel and tourism platform designed to showcase Ethiopia as the “Land of Origins.” The platform provides a seamless digital experience for travelers, integrating curated destination information, cultural activities, user accounts, bookings, and interactive feedback. The system consists of: **Frontend** – User interface for browsing destinations, submitting inquiries, and interacting with travel content. **Backend** – Server-side system built with PHP, managing authentication, data processing, and communication with the database.
+---
 
-## Technology Stack
-## Project Folder Structure
+## 📌 Project Overview
+
+**EthioTrip** is a modern, full-stack travel and tourism booking platform designed to showcase Ethiopia as the **“Land of Origins.”**  
+
+It delivers a seamless digital experience for travelers by integrating:
+- Curated destination discovery
+- Dynamic package selection
+- Custom travel date booking
+- Loyalty-based discounts
+- Secure booking management
+- Interactive user engagement
+
+---
+
+## 🏗️ System Architecture
+
+The platform is divided into two main parts:
+
+### 🔹 Frontend
+- User-friendly interface
+- Destination browsing & package selection
+- Booking & payment interface
+
+### 🔹 Backend
+- Built with PHP & MySQL
+- Handles authentication, bookings, loyalty system, and admin controls
+
+---
+
+## 🛠️ Technology Stack
+
+| Component | Technology |
+|----------|-----------|
+| Backend | PHP 7+ (MySQLi) |
+| Database | MySQL |
+| Frontend | HTML5, CSS3, JavaScript (ES6+) |
+| Styling | Flexbox, CSS Grid, CSS Variables |
+| Icons | Font Awesome |
+| Fonts | Google Fonts (Poppins) |
+| Authentication | PHP Sessions |
+| Security | bcrypt, CSRF Tokens, Prepared Statements |
+| Storage | LocalStorage + MySQL |
+| Animations | CSS 3D + requestAnimationFrame |
+
+---
+
+## 📁 Project Structure
+
 
 ```text
 IP2_travel/
 ├── backend/
+│   ├── admin/
+│   │   ├── adjust-discounts.php
+│   │   └── discounts.php
 │   ├── config/
+│   │   └── database.php
 │   ├── css/
 │   ├── includes/
 │   │   ├── auth.php
 │   │   ├── footer.php
+│   │   ├── functions.php
 │   │   └── header.php
 │   ├── js/
 │   ├── sql/
+│   │   └── database.sql
 │   ├── bookings.php
+│   ├── check-login.php
+│   ├── check-table.php
 │   ├── create-booking.php
 │   ├── dashboard.php
 │   ├── delete-booking.php
 │   ├── edit-booking.php
+│   ├── get-loyalty-discount.php
+│   ├── get-next-tier.php
 │   ├── login.php
 │   ├── logout.php
 │   ├── registration.php
+│   ├── save-booking.php
+│   ├── test-booking.php
+│   ├── test-connection.php
+│   ├── test_registration.php
 │   └── testdb.php
 ├── frontend/
+│   ├── css/
 │   ├── dest_images/
 │   ├── home_images/
+│   ├── js/
+│   │   └── validation.js
 │   ├── .gitignore
 │   ├── about.css
 │   ├── about.html
@@ -51,7 +113,6 @@ IP2_travel/
 │   ├── Home.css
 │   ├── home.html
 │   ├── home.js
-│   ├── LICENSE
 │   ├── packages.css
 │   ├── packages.html
 │   ├── packages.js
@@ -60,104 +121,141 @@ IP2_travel/
 │   └── payment.js
 ├── .gitignore
 └── README.md
-Frontend
-HTML5 – Semantic and accessible structure
-CSS3 – Flexbox, Grid, CSS Variables, and 3D transforms
-JavaScript (ES6+) – Modular, event-driven logic
-Design & Assets
-Typography: Google Fonts (Poppins)
-Icons: Font Awesome 6.4.0
-Animations & Interactivity
-CSS 3D Transforms
-RequestAnimationFrame API for smooth animations
-Data Persistence
-Browser LocalStorage for authentication state and session management
-Core Features
 
-1. Interactive Hero Experience
+---
 
-The homepage features a 3D Card Stack Carousel that visually showcases key Ethiopian destinations.
+## 🗄️ Database Overview
 
-Key Capabilities:
+### Core Tables
 
-Mouse-based horizontal rotation for interactive exploration
-Automatic rotation fallback after 2 seconds of inactivity
-Smooth performance using frame-based animation control
+- **users** – User accounts & loyalty tracking  
+- **discount_tiers** – Loyalty levels  
+- **packages** – Travel packages  
+- **destinations** – Ethiopian destinations  
+- **bookings** – Booking records  
+- **reviews** – User feedback  
+- **user_destinations** – Visit tracking  
 
-Featured destinations:
+---
 
-Afar Depression
-Harar Jugol
-Omo Valley
-2. Journey Planner (Destinations Module)
+## 🎯 Core Features
 
-A comprehensive destination catalog designed for travel planning and discovery.
+### 🌟 Interactive Homepage
+- 3D card carousel showcasing Ethiopian destinations
+- Smooth animations with auto-rotation
 
-Highlights:
+### 🗺️ Destination Explorer
+- 8+ Ethiopian destinations
+- Travel tips, activities, best seasons
 
-Best-time-to-visit indicators (e.g., Lalibela: October–March)
-Curated activity lists (e.g., Hyena Feeding in Harar)
-Personnel directory featuring local historians and wildlife specialists
-3. Dynamic Statistics & User Engagement
+### 📦 Package Customization
+- Filtered by destination
+- Flexible pricing (per day)
 
-The About page features animated statistics powered by the Intersection Observer pattern.
+### 📅 Dynamic Booking System
+- Custom start/end dates
+- Automatic duration & pricing calculation
 
-Displayed metrics:
+### 💎 Loyalty Discount System
 
-Trips Completed: 250+
-Happy Travelers: 1,200+
-Destinations Covered: 35
-Recognitions: 10
+| Tier | Trips | Discount |
+|------|------|----------|
+| Bronze | 0–2 | 0% |
+| Silver | 3–4 | 3% |
+| Gold | 5–7 | 5% |
+| Platinum | 8–10 | 8% |
+| Diamond | 11+ | 12% |
 
-Animations trigger only when the section becomes visible, ensuring performance efficiency.
+---
 
-4. User Authentication System
+### 👤 Authentication System
+- Secure login & registration
+- Session-based authentication
+- Admin role support
 
-A centralized authentication system maintains user state across the platform.
+---
 
-Features:
+### 📊 User Dashboard
+- Total bookings & spending
+- Loyalty progress
+- Destination tracking
 
-Tabbed Sign In / Sign Up modal (no page reloads)
-Persistent login state using LocalStorage
-Dynamic UI updates with a User Profile Dropdown and Sign Out option
-Site Map & Navigation
-Page	Purpose	Key Components
-home.html	Brand introduction and engagement	3D Slider, Traveler Stories, Auth Modal
-destination.html	Travel planning and exploration	Infinite Viewport, Activity Lists, Personnel Grid
-about.html	Mission, values, and contact	Animated Stats, Value Cards, Contact Form
-Script Overview
-home.js
-Controls the 3D destination carousel
-Manages user authentication lifecycle
-Toggles login and signup forms
-Maintains session persistence using LocalStorage
-about.js
-Implements animated count-up statistics
-Handles asynchronous contact form submission
-Resets form state after successful interaction
-Sustainable Tourism Philosophy
+---
 
-EthioTrip is built on the principles of Sustainable Tourism, emphasizing:
+### 💳 Payment Methods
+- Credit Card
+- Telebirr
+- PayPal
+- Bank Transfer
+- Cash at Office
 
-Support for local communities
-Protection of natural and cultural heritage
-Ethical travel practices
-The Ethiopian value of Medemer (togetherness)
+---
 
-Every journey promoted through EthioTrip aims to respect and preserve Ethiopia’s identity while empowering its people.
+### 🛠️ Admin Panel
+- Manage loyalty tiers
+- Adjust discounts globally
+- View system statistics
 
-Future Enhancements
-Backend integration (Node.js / Express)
-Database support (MongoDB or PostgreSQL)
-Payment gateway integration
-Multilingual support
-Admin dashboard for content management
-License
+---
 
-This project is intended for educational and demonstration purposes.
-Licensing details can be added as needed.
+## 🔄 User Flow
+Home → Destination → Packages → Payment → Booking → Dashboard
 
-Author
+---
 
-EthioTrip Web Platform
-Crafted to celebrate Ethiopia through technology and storytelling.
+## 🔐 Security Features
+
+- Password hashing (bcrypt)
+- SQL Injection protection
+- XSS prevention
+- CSRF tokens
+- Secure session handling
+
+---
+
+## 🧪 Test Credentials
+
+| Role | Email | Password |
+|------|------|----------|
+| Admin | admin@ethiotrip.com | password123 |
+| User | test@example.com | password123 |
+
+---
+
+## 🚀 Future Enhancements
+
+- Payment gateway integration (Chapa, CBE Birr)
+- Email confirmations
+- Reviews & ratings system
+- Multi-language support (Amharic & English)
+- Mobile application
+- SMS/Email booking reminders
+- Advanced analytics dashboard
+
+---
+
+## 🌱 Sustainability Vision
+
+EthioTrip promotes:
+
+- Local community empowerment  
+- Cultural preservation  
+- Responsible tourism  
+- Ethical travel practices  
+
+Inspired by the Ethiopian value of **Medemer (togetherness)**
+
+---
+
+## 📄 License
+
+This project is for educational and demonstration purposes.
+
+---
+
+## 👨‍💻 Author
+
+**EthioTrip Web Platform**  
+Crafted to celebrate Ethiopia through technology 🇪🇹
+
+---
