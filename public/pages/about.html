@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EthioTrip | About & Contact</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #2d3436;
+            --accent: #d4af37;
+            --text-light: #636e72;
+            --bg-white: #ffffff;
+            --shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: var(--bg-white);
+            color: var(--primary);
+        }
+
+        /* ===== NAV ===== */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 8%;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 600;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--primary);
+            font-size: 0.9rem;
+        }
+
+        /* ===== ABOUT ===== */
+        .about-section {
+            padding: 100px 8%;
+            background: linear-gradient(180deg, #ffffff, #fafafa);
+            text-align: center;
+        }
+
+        .about-section h1 {
+            font-weight: 300;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .about-section p {
+            max-width: 850px;
+            margin: 0 auto 60px;
+            color: var(--text-light);
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 30px;
+        }
+
+        .about-card {
+            background: white;
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            transition: 0.4s ease;
+        }
+
+        .about-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .about-card i {
+            font-size: 2rem;
+            color: var(--accent);
+            margin-bottom: 18px;
+        }
+
+        .about-card h3 {
+            font-size: 1.15rem;
+            margin-bottom: 12px;
+        }
+
+        .about-card p {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        /* ===== ACHIEVEMENTS ===== */
+        .achievements {
+            padding: 90px 8%;
+            background: #fafafa;
+            text-align: center;
+        }
+
+        .achievements h2 {
+            font-weight: 400;
+            margin-bottom: 15px;
+        }
+
+        .achievements p {
+            max-width: 750px;
+            margin: 0 auto 50px;
+            color: var(--text-light);
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .stat-card i {
+            font-size: 2rem;
+            color: var(--accent);
+            margin-bottom: 15px;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 600;
+        }
+
+        .stat-card span {
+            display: block;
+            margin-top: 8px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        /* ===== VALUES ===== */
+        .values-section {
+            padding: 80px 8%;
+            text-align: center;
+        }
+
+        .values-section h2 {
+            font-weight: 400;
+            margin-bottom: 20px;
+        }
+
+        .values-section p {
+            max-width: 900px;
+            margin: auto;
+            font-size: 0.95rem;
+            color: var(--text-light);
+            line-height: 1.9;
+        }
+
+        /* ===== CONTACT ===== */
+        .contact-footer {
+            background: #fff;
+            border-top: 1px solid #f1f1f1;
+            padding: 90px 8% 40px;
+        }
+
+        .contact-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 60px;
+            align-items: center;
+        }
+
+        .contact-info h2 {
+            font-weight: 400;
+            margin-bottom: 15px;
+        }
+
+        .contact-info p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+
+        .contact-info i {
+            color: var(--accent);
+            margin-right: 8px;
+        }
+
+        .social-icons {
+            margin-top: 20px;
+        }
+
+        .social-icons a {
+            display: inline-block;
+            margin-right: 15px;
+            font-size: 1.2rem;
+            color: var(--primary);
+            transition: 0.3s;
+        }
+
+        .social-icons a:hover {
+            color: var(--accent);
+        }
+
+        .contact-form {
+            background: #fafafa;
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .contact-form h3 {
+            font-weight: 400;
+            margin-bottom: 20px;
+        }
+
+        .contact-form input,
+        .contact-form textarea {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 15px;
+            border-radius: 14px;
+            border: 1px solid #eee;
+            background: white;
+        }
+
+        .contact-form textarea {
+            resize: none;
+            height: 130px;
+        }
+
+        .contact-form button {
+            width: 100%;
+            padding: 14px;
+            border-radius: 30px;
+            border: none;
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .contact-form button:hover {
+            background: var(--accent);
+            color: black;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            padding: 60px 8% 40px;
+            border-top: 1px solid #333;
+            background: #1a1a1a;
+            color: #ffffff;
+        }
+
+        .footer .logo {
+            color: #ffffff;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+        }
+
+        .footer-col h4 {
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #ffffff;
+        }
+
+        .footer-col ul {
+            list-style: none;
+        }
+
+        .footer-col li {
+            margin-bottom: 12px;
+        }
+
+        .footer-col a {
+            text-decoration: none;
+            color: #bbb;
+            font-size: 0.85rem;
+            transition: 0.3s;
+        }
+
+        .footer-col a:hover {
+            color: var(--accent);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #2d2d2d; 
+            display: flex;
+            align-items: center;
+            justify-content: center; 
+            color: #ffffff;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .social-links a:hover {
+            background: var(--accent);
+            color: #000;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+            font-size: 0.8rem;
+            color: #777;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media(max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <a href="/ethiotrip1/ethiotrip/public/" class="logo">Ethio<span>Trip</span></a>
+        <ul class="nav-links">
+            <li><a href="/ethiotrip1/ethiotrip/public/"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="/ethiotrip1/ethiotrip/public/destination">Destinations</a></li>
+            <li><a href="/ethiotrip1/ethiotrip/public/packages">Packages</a></li>
+        </ul>
+    </nav>
+
+    <section class="about-section">
+        <h1>About EthioTrip</h1>
+        <p>
+            EthioTrip is inspired by Ethiopia’s deep history, diverse cultures, and timeless traditions.
+            We believe travel is more than movement — it is storytelling, connection, and discovery.
+            Our mission is to present Ethiopia through authentic journeys that honor heritage,
+            unity, and the warmth of Ethiopian hospitality.
+        </p>
+
+        <div class="about-grid">
+            <div class="about-card">
+                <i class="fas fa-map-marked-alt"></i>
+                <h3>Authentic Destinations</h3>
+                <p>Exploring Ethiopia’s landscapes, history, and traditions with care and respect.</p>
+            </div>
+
+            <div class="about-card">
+                <i class="fas fa-hand-holding-heart"></i>
+                <h3>Ethiopian Values</h3>
+                <p>Built on respect, community, unity, and shared cultural pride.</p>
+            </div>
+
+            <div class="about-card">
+                <i class="fas fa-seedling"></i>
+                <h3>Sustainable Tourism</h3>
+                <p>Supporting local communities while protecting cultural and natural heritage.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="achievements">
+        <h2>Our Journey So Far</h2>
+        <p>
+            Through dedication and passion for Ethiopian tourism,
+            EthioTrip has successfully connected travelers with unforgettable experiences.
+        </p>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <i class="fas fa-route"></i>
+                <div class="stat-number" data-target="250">0</div>
+                <span>Trips Completed</span>
+            </div>
+
+            <div class="stat-card">
+                <i class="fas fa-smile"></i>
+                <div class="stat-number" data-target="1200">0</div>
+                <span>Happy Travelers</span>
+            </div>
+
+            <div class="stat-card">
+                <i class="fas fa-landmark"></i>
+                <div class="stat-number" data-target="35">0</div>
+                <span>Destinations Covered</span>
+            </div>
+
+            <div class="stat-card">
+                <i class="fas fa-award"></i>
+                <div class="stat-number" data-target="10">0</div>
+                <span>Recognitions & Awards</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="values-section">
+        <h2>Our Philosophy</h2>
+        <p>
+            Ethiopia is not just a destination — it is a living story.
+            At EthioTrip, every journey reflects pride, resilience, diversity,
+            and the spirit of togetherness that defines the nation.
+        </p>
+    </section>
+
+    <footer class="contact-footer">
+        <div class="contact-container">
+            <div class="contact-info">
+                <h2>Get in Touch</h2>
+                <p>
+                    Have questions or planning your next adventure?
+                    Contact us and let EthioTrip guide your journey.
+                </p>
+                <p><i class="fas fa-envelope"></i> support@ethiotrip.com</p>
+                <p><i class="fas fa-phone"></i> +251 9XX XXX XXX</p>
+                <p><i class="fas fa-location-dot"></i> Addis Ababa, Ethiopia</p>
+
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-x-twitter"></i></a>
+                </div>
+            </div>
+
+            <form class="contact-form">
+                <h3>Send Us a Message</h3>
+                <input type="text" placeholder="Your Name" required>
+                <input type="email" placeholder="Your Email" required>
+                <textarea placeholder="Your Message" required></textarea>
+                <button type="submit">Send Message</button>
+            </form>
+        </div>
+    </footer>
+
+    <footer class="footer">
+    <div class="footer-grid">
+        <div class="footer-col">
+            <a href="#" class="logo">Ethio<span>Trip</span></a>
+            <p style="margin-top: 15px; color: #bbb;">Authentic Ethiopian journeys curated for the modern explorer.</p>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+        </div>
+        <div class="footer-col">
+            <h4>Explore</h4>
+            <ul>
+                <li><a href="/ethiotrip1/ethiotrip/public/destination">Destinations</a></li>
+                <li><a href="/ethiotrip1/ethiotrip/public/packages">Package</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4>Connect</h4>
+            <ul>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="about.html">Contact Us</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">© <span id="currentYear"></span> EthioTrip Ethiopia. All rights reserved.</div>
+</footer>
+
+<script>
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+</script>
+
+    <script src="/ethiotrip1/ethiotrip/public/js/about.js"></script>
+</body>
+</html>

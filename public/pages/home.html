@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EthioTrip | Ethiopian Escapes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/ethiotrip1/ethiotrip/public/css/Home.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/ethiotrip1/ethiotrip/public/" class="logo">Ethio<span>Trip</span></a>
+        <ul class="nav-links">
+            <li><a href="/ethiotrip1/ethiotrip/public/">Home</a></li>
+            <li><a href="/ethiotrip1/ethiotrip/public/destination">Destinations</a></li>
+            <li><a href="/ethiotrip1/ethiotrip/public/packages">Packages</a></li>
+            <li><a href="/ethiotrip1/ethiotrip/public/about">About</a></li>
+            <li><a href="/ethiotrip1/ethiotrip/public/login">Sign In</a></li>
+        </ul>
+    </nav>
+
+    <main class="hero">
+        <h1>Discover Ethiopia</h1>
+        <p>A journey through the Land of Origins.</p>
+        
+        <div class="slider-wrapper">
+            <div class="card-stack" id="cardStack" style="--quantity:6;">
+                <div class="card" style="--position:1"><img src="/ethiotrip1/ethiotrip/public/images/home_images/Camel.jpg" alt="Afar"><div class="card-desc"><h3>Afar Depression</h3><p>Volcanic wonders of Danakil</p></div></div>
+                <div class="card" style="--position:2"><img src="/ethiotrip1/ethiotrip/public/images/home_images/Sof Omar Cave.jpg" alt="Sof Omar"><div class="card-desc"><h3>Sof Omar Cave</h3><p>Spectacular caverns</p></div></div>
+                <div class="card" style="--position:3"><img src="/ethiotrip1/ethiotrip/public/images/home_images/Harar2.jpg" alt="Harar"><div class="card-desc"><h3>Harar Jugol</h3><p>Walled city of 100 mosques</p></div></div>
+                <div class="card" style="--position:4"><img src="/ethiotrip1/ethiotrip/public/images/home_images/Gondar.jpg" alt="Gondar"><div class="card-desc"><h3>Fasiledes, Gondar</h3><p>Royal castles</p></div></div>
+                <div class="card" style="--position:5"><img src="/ethiotrip1/ethiotrip/public/images/home_images/Omo.jpg" alt="Omo"><div class="card-desc"><h3>Omo Valley</h3><p>Tribal cultures</p></div></div>
+                <div class="card" style="--position:6"><img src="/ethiotrip1/ethiotrip/public/images/home_images/Axum.jpg" alt="Axum"><div class="card-desc"><h3>Axum</h3><p>Legendary obelisks</p></div></div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-col"><a href="#" class="logo">Ethio<span>Trip</span></a><p>Authentic Ethiopian journeys.</p></div>
+            <div class="footer-col"><h4>Explore</h4><ul><li><a href="/ethiotrip1/ethiotrip/public/destination">Destinations</a></li><li><a href="/ethiotrip1/ethiotrip/public/packages">Packages</a></li></ul></div>
+            <div class="footer-col"><h4>Connect</h4><ul><li><a href="/ethiotrip1/ethiotrip/public/about">About Us</a></li></ul></div>
+        </div>
+        <div class="footer-bottom">© <span id="currentYear"></span> EthioTrip Ethiopia</div>
+    </footer>
+
+    <script src="/ethiotrip1/ethiotrip/public/js/home.js"></script>
+    <script>document.getElementById('currentYear').textContent=new Date().getFullYear();</script>
+</body>
+</html>

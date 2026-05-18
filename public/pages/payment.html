@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EthioTrip | Secure Checkout</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/ethiotrip1/ethiotrip/public/css/payment.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="container header-flex">
+            <a href="/ethiotrip1/ethiotrip/public/" class="logo">Ethio<span>Trip</span></a>
+            <ul class="nav-links">
+                <li><a href="/ethiotrip1/ethiotrip/public/">Home</a></li>
+                <li><a href="/ethiotrip1/ethiotrip/public/destination">Destinations</a></li>
+                <li><a href="/ethiotrip1/ethiotrip/public/packages">Packages</a></li>
+                <li><a href="/ethiotrip1/ethiotrip/public/about">About</a></li>
+                <li><a href="/ethiotrip1/ethiotrip/public/bookings">My Bookings</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <div class="stepper-bar">
+        <div class="container">
+            <div class="stepper">
+                <div class="step active" id="step1">1. Details</div>
+                <div class="step" id="step2">2. Payment</div>
+                <div class="step" id="step3">3. Receipt</div>
+            </div>
+        </div>
+    </div>
+
+    <main class="container">
+        <section id="phase-amount" class="card-panel text-center">
+            <h1>Complete Your Booking</h1>
+            <p style="font-size: 0.85rem; margin-bottom: 20px;">Please review your package details below.</p>
+            
+            <div class="form-group" style="max-width: 350px; margin: 0 auto 15px auto;">
+                <label style="display: block; text-align: left; font-weight: bold;">Selected Package</label>
+                <div id="selectedPackageDisplay" style="background: #f8f9fa; border-radius: 10px; padding: 10px; text-align: center;">Loading...</div>
+            </div>
+
+            <div class="form-group" style="max-width: 350px; margin: 0 auto 15px auto;">
+                <label style="display: block; text-align: left; font-weight: bold;">Daily Rate ($)</label>
+                <div class="input-lockup">
+                    <span class="currency-label">$</span>
+                    <input type="number" id="dailyRateInput" placeholder="0.00" step="0.01" readonly style="background: #f5f5f5;">
+                </div>
+            </div>
+
+            <div class="form-group" style="max-width: 350px; margin: 0 auto 15px auto;">
+                <label style="display: block; text-align: left; font-weight: bold;">Full Name</label>
+                <input type="text" id="inputUserName" placeholder="Enter your full name">
+            </div>
+
+            <div class="form-group" style="max-width: 350px; margin: 0 auto 15px auto;">
+                <label style="display: block; text-align: left; font-weight: bold;">Travel Dates</label>
+                <div class="date-range-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div>
+                        <label style="font-size: 0.7rem;">Start Date</label>
+                        <input type="date" id="startDate">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.7rem;">End Date</label>
+                        <input type="date" id="endDate">
+                    </div>
+                </div>
+                <div id="durationInfo" style="font-size: 0.7rem; color: #666; margin-top: 5px;"></div>
+            </div>
+
+            <button class="btn-primary" id="btnProceed">Check Discount & Proceed</button>
+        </section>
+
+        <section id="phase-checkout" style="display: none;">
+            <!-- Payment methods section -->
+            <div class="method-tabs">
+                <button class="tab-btn active" data-method="card"><i class="fas fa-credit-card"></i> Credit Card</button>
+                <button class="tab-btn tele-tab" data-method="telebirr"><i class="fas fa-mobile-alt"></i> Telebirr</button>
+                <button class="tab-btn paypal-tab" data-method="paypal"><i class="fab fa-paypal"></i> PayPal</button>
+                <button class="tab-btn bank-tab" data-method="mobile"><i class="fas fa-building-columns"></i> Bank Transfer</button>
+                <button class="tab-btn" data-method="cash"><i class="fas fa-money-bill-wave"></i> Cash</button>
+            </div>
+            <div class="checkout-grid">
+                <div class="form-container">
+                    <form id="form-card" class="payment-view">
+                        <h3>Secure Card Payment</h3>
+                        <div class="form-group"><label>Cardholder Name</label><input type="text" id="cardName" required></div>
+                        <div class="form-group"><label>Card Number</label><input type="text" id="cardNumber" placeholder="0000 0000 0000 0000" maxlength="19" required></div>
+                        <div class="split">
+                            <div class="form-group"><label>Expiry</label><input type="text" id="expiry" placeholder="MM/YY" maxlength="5" required></div>
+                            <div class="form-group"><label>CVV</label><input type="password" id="cvv" placeholder="***" maxlength="3" required></div>
+                        </div>
+                        <button type="submit" class="btn-primary">Submit Booking</button>
+                    </form>
+                    <div id="view-telebirr" class="payment-view" style="display:none;">
+                        <div class="method-banner telebirr">Telebirr Digital Wallet</div>
+                        <div class="form-group"><label>Mobile Number</label><input type="text" id="telePhone" placeholder="09XXXXXXXX" maxlength="10"></div>
+                        <button type="button" class="btn-primary" id="btnTelebirr" style="background:#00a1e4;">Confirm Payment</button>
+                    </div>
+                    <div id="view-paypal" class="payment-view" style="display:none;">
+                        <div class="method-banner paypal">PayPal Transfer</div>
+                        <p style="font-size:0.9rem; margin-bottom:16px;">Send funds to <strong>payments@ethiotrip.com</strong>, then enter the transaction ID.</p>
+                        <div class="form-group"><label>Transaction ID</label><input type="text" id="paypalRef" placeholder="Enter PayPal transaction ID"></div>
+                        <button type="button" class="btn-primary" id="btnPaypal" style="background:#ffc439; color:#111;">Verify Payment</button>
+                    </div>
+                    <div id="view-mobile" class="payment-view" style="display:none;">
+                        <h3>Bank Transfer</h3>
+                        <div class="bank-details">
+                            <p><strong>Bank:</strong> Commercial Bank of Ethiopia</p>
+                            <p><strong>Account:</strong> EthioTrip Travel & Tours</p>
+                            <p><strong>Account No:</strong> 1000456982341</p>
+                        </div>
+                        <div class="form-group"><label>Reference Number</label><input type="text" id="bankRef" placeholder="e.g. FT23098X"></div>
+                        <button type="button" class="btn-primary" id="btnMobile" style="background:#2874a6;">Confirm Transfer</button>
+                    </div>
+                    <div id="view-cash" class="payment-view" style="display:none; text-align: center;">
+                        <h3>Pay at Our Office</h3>
+                        <p>Visit our headquarters in Addis Ababa (Bole Atlas Road)</p>
+                        <p style="font-size:0.85rem; color:#636e72; margin:12px 0 18px;">Monday - Friday: 9:00 AM - 5:00 PM</p>
+                        <button type="button" class="btn-primary" id="btnCash">Confirm Booking</button>
+                    </div>
+                </div>
+                <aside class="summary-card">
+                    <h3>Invoice Summary</h3>
+                    <div id="destination-row" class="row dest-row" style="display: none;">
+                        <span>Destination</span>
+                        <span id="dest-name"></span>
+                    </div>
+                    <div class="row"><span>Daily Rate</span><span id="display-daily-rate">$0.00</span></div>
+                    <div id="dates-row" class="row" style="display: none;"><span>Travel Dates</span><span id="dates-display"></span></div>
+                    <div id="duration-row" class="row" style="display: none;"><span>Duration</span><span id="duration-display"></span></div>
+                    <div id="travelers-row" class="row" style="display: none;"><span>Travelers</span><span id="travelers-display"></span></div>
+                    <div class="row"><span>Subtotal</span><span id="sum-sub">$0.00</span></div>
+                    <div id="discount-row" class="row" style="display:none;"><span>Loyalty Discount</span><span id="sum-discount">-$0.00</span></div>
+                    <div class="row"><span>VAT (10%)</span><span id="sum-tax">$0.00</span></div>
+                    <div class="row total"><span>Total Payable</span><span id="sum-total">$0.00</span></div>
+                </aside>
+            </div>
+        </section>
+
+        <section id="phase-receipt" style="display: none;"></section>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div class="footer-col">
+                <a href="/ethiotrip1/ethiotrip/public/" class="logo" style="color:white;">Ethio<span>Trip</span></a>
+                <p>Authentic Ethiopian journeys curated for the modern explorer.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Explore</h4>
+                <ul>
+                    <li><a href="/ethiotrip1/ethiotrip/public/destination">Destinations</a></li>
+                    <li><a href="/ethiotrip1/ethiotrip/public/packages">Packages</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Connect</h4>
+                <ul>
+                    <li><a href="/ethiotrip1/ethiotrip/public/about">About Us</a></li>
+                    <li><a href="/ethiotrip1/ethiotrip/public/about">Contact Us</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">© <span id="currentYear"></span> EthioTrip Ethiopia. All rights reserved.</div>
+    </footer>
+
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        
+        // Load package data
+        const savedPackage = localStorage.getItem("selectedPackage");
+        const savedDailyRate = localStorage.getItem("pricePerDay");
+        const savedDest = localStorage.getItem("selectedDestinationName");
+        const savedStartDate = localStorage.getItem("selectedStartDate");
+        const savedEndDate = localStorage.getItem("selectedEndDate");
+        const savedTravelers = Math.max(1, parseInt(localStorage.getItem("selectedTravelers") || "1", 10));
+        
+        if (savedPackage) document.getElementById('selectedPackageDisplay').textContent = savedPackage;
+        if (savedDailyRate) {
+            document.getElementById('dailyRateInput').value = savedDailyRate;
+            document.getElementById('display-daily-rate').textContent = `$${savedDailyRate}`;
+        }
+        if (savedDest) {
+            document.getElementById('dest-name').textContent = savedDest;
+            document.getElementById('destination-row').style.display = 'flex';
+        }
+        document.getElementById('travelers-display').textContent = String(savedTravelers);
+        document.getElementById('travelers-row').style.display = 'flex';
+        if (savedStartDate) document.getElementById('startDate').value = savedStartDate;
+        if (savedEndDate) document.getElementById('endDate').value = savedEndDate;
+        
+        // Date calculation
+        function updateDuration() {
+            const start = document.getElementById('startDate').value;
+            const end = document.getElementById('endDate').value;
+            if (start && end) {
+                const days = Math.ceil((new Date(end) - new Date(start)) / (1000 * 60 * 60 * 24));
+                if (days > 0) {
+                    document.getElementById('durationInfo').textContent = `Trip duration: ${days} days`;
+                    document.getElementById('durationInfo').style.color = "green";
+                    document.getElementById('duration-display').textContent = `${days} days`;
+                    document.getElementById('duration-row').style.display = 'flex';
+                    document.getElementById('dates-display').textContent = `${new Date(start).toLocaleDateString()} - ${new Date(end).toLocaleDateString()}`;
+                    document.getElementById('dates-row').style.display = 'flex';
+                    
+                    // Calculate price
+                    const dailyRate = parseFloat(savedDailyRate);
+                    const subtotal = dailyRate * days * savedTravelers;
+                    document.getElementById('sum-sub').textContent = `$${subtotal.toFixed(2)}`;
+                    document.getElementById('sum-tax').textContent = `$${(subtotal * 0.10).toFixed(2)}`;
+                    document.getElementById('sum-total').textContent = `$${(subtotal * 1.10).toFixed(2)}`;
+                } else {
+                    document.getElementById('durationInfo').textContent = "End date must be after start date.";
+                    document.getElementById('durationInfo').style.color = "#c0392b";
+                }
+            }
+        }
+        
+        document.getElementById('startDate').onchange = updateDuration;
+        document.getElementById('endDate').onchange = updateDuration;
+        
+        // Set min dates
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('startDate').min = today;
+        document.getElementById('endDate').min = today;
+        updateDuration();
+        
+        // Proceed button
+        document.getElementById('btnProceed').onclick = () => {
+            if (!savedPackage || !savedDailyRate) {
+                alert('Please choose a package first.');
+                return;
+            }
+            if (!document.getElementById('inputUserName').value.trim()) {
+                alert('Please enter your full name.');
+                return;
+            }
+            if (!document.getElementById('startDate').value || !document.getElementById('endDate').value) {
+                alert('Please select travel dates.');
+                return;
+            }
+            document.getElementById('phase-amount').style.display = 'none';
+            document.getElementById('phase-checkout').style.display = 'block';
+            document.getElementById('step2').classList.add('active');
+        };
+        
+        function showNotice(message, type = 'success') {
+            let stack = document.querySelector('.notice-stack');
+            if (!stack) {
+                stack = document.createElement('div');
+                stack.className = 'notice-stack';
+                document.body.appendChild(stack);
+            }
+            const notice = document.createElement('div');
+            notice.className = `notice ${type}`;
+            notice.textContent = message;
+            stack.appendChild(notice);
+            setTimeout(() => notice.remove(), 3500);
+        }
+
+        // Tab switching
+        const tabs = document.querySelectorAll('.tab-btn');
+        const views = {
+            card: document.getElementById('form-card'),
+            telebirr: document.getElementById('view-telebirr'),
+            paypal: document.getElementById('view-paypal'),
+            mobile: document.getElementById('view-mobile'),
+            cash: document.getElementById('view-cash')
+        };
+        tabs.forEach(t => {
+            t.onclick = () => {
+                tabs.forEach(btn => btn.classList.remove('active'));
+                t.classList.add('active');
+                Object.values(views).forEach(v => { if(v) v.style.display = 'none'; });
+                if(views[t.dataset.method]) views[t.dataset.method].style.display = 'block';
+            };
+        });
+        
+        async function saveBooking(method, button) {
+            button.disabled = true;
+            const originalText = button.textContent;
+            button.innerHTML = '<span class="loading-spinner"></span>Saving...';
+            const bookingData = {
+                package_name: localStorage.getItem("selectedPackage"),
+                destination: localStorage.getItem("selectedDestinationName"),
+                start_date: document.getElementById('startDate').value,
+                end_date: document.getElementById('endDate').value,
+                travelers: savedTravelers,
+                payment_method: method,
+                user_name: document.getElementById('inputUserName').value
+            };
+            
+            try {
+                const response = await fetch('/ethiotrip1/ethiotrip/public/api/save-booking', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(bookingData)
+                });
+                const result = await response.json();
+                if (!response.ok || !result.success) {
+                    throw new Error(result.message || 'Unable to save booking.');
+                }
+
+                document.getElementById('phase-checkout').style.display = 'none';
+                document.getElementById('phase-receipt').style.display = 'block';
+                document.getElementById('step3').classList.add('active');
+                const receipt = document.getElementById('phase-receipt');
+                receipt.textContent = '';
+                const box = document.createElement('div');
+                box.className = 'receipt';
+                box.innerHTML = '<h2>Booking Saved</h2>';
+                const booking = document.createElement('p');
+                booking.textContent = `Booking ID: #${result.booking_id}`;
+                const methodLine = document.createElement('p');
+                methodLine.textContent = `Payment Method: ${method}`;
+                const total = document.createElement('p');
+                total.textContent = `Amount Due: $${Number(result.final_amount).toFixed(2)}`;
+                const status = document.createElement('p');
+                status.textContent = 'Payment status: Pending';
+                const link = document.createElement('a');
+                link.href = '/ethiotrip1/ethiotrip/public/bookings';
+                link.className = 'btn-primary';
+                link.textContent = 'View My Bookings';
+                box.append(booking, methodLine, total, status, link);
+                receipt.appendChild(box);
+                showNotice('Booking saved successfully.');
+            } catch (error) {
+                showNotice(error.message, 'error');
+                button.disabled = false;
+                button.textContent = originalText;
+            }
+        }
+
+        document.getElementById('form-card').onsubmit = async (event) => {
+            event.preventDefault();
+            await saveBooking('Credit Card', event.submitter || document.querySelector('#form-card button[type="submit"]'));
+        };
+
+        document.getElementById('btnTelebirr').onclick = async () => {
+            const phone = document.getElementById('telePhone').value.trim();
+            if (!/^09\d{8}$/.test(phone)) {
+                showNotice('Enter a valid 10-digit Telebirr number.', 'error');
+                return;
+            }
+            await saveBooking('Telebirr', document.getElementById('btnTelebirr'));
+        };
+
+        document.getElementById('btnPaypal').onclick = async () => {
+            const ref = document.getElementById('paypalRef').value.trim();
+            if (!ref) {
+                showNotice('Enter the PayPal transaction ID.', 'error');
+                return;
+            }
+            await saveBooking('PayPal', document.getElementById('btnPaypal'));
+        };
+
+        document.getElementById('btnMobile').onclick = async () => {
+            const ref = document.getElementById('bankRef').value.trim();
+            if (!ref) {
+                showNotice('Enter the bank transfer reference number.', 'error');
+                return;
+            }
+            await saveBooking('Bank Transfer', document.getElementById('btnMobile'));
+        };
+
+        document.getElementById('btnCash').onclick = async () => {
+            await saveBooking('Cash at Office', document.getElementById('btnCash'));
+        };
+
+        document.getElementById('cardNumber').oninput = (event) => {
+            const groups = event.target.value.replace(/\D/g, '').match(/.{1,4}/g);
+            event.target.value = groups ? groups.join(' ') : '';
+        };
+
+        document.getElementById('expiry').oninput = (event) => {
+            const value = event.target.value.replace(/\D/g, '').slice(0, 4);
+            event.target.value = value.length > 2 ? `${value.slice(0, 2)}/${value.slice(2)}` : value;
+        };
+    </script>
+</body>
+</html>

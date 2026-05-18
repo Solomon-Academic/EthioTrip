@@ -1,0 +1,10 @@
+{
+  "name": "ethiotrip/ip2_travel",
+  "description": "Simple PHP travel booking application",
+  "autoload": {
+    "psr-4": {
+      "Backend\\": "backend/"
+    }
+  },
+  "require": {}
+}
