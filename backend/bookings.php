@@ -145,7 +145,7 @@ if ($bookings && mysqli_num_rows($bookings) > 0) {
             <li><a href="../frontend/packages.html">Packages</a></li>
             <li><a href="dashboard.php">Dashboard</a></li>
             <li><a href="logout.php">Logout</a></li>
-            <li><span class="welcome-badge">Welcome, <?php echo htmlspecialchars($user_name); ?></span></li>
+            <li><span class="welcome-badge">Welcome, <?php echo safe($user_name); ?></span></li>
         </ul>
     </nav>
 
@@ -210,7 +210,7 @@ if ($bookings && mysqli_num_rows($bookings) > 0) {
                         <?php while($booking = mysqli_fetch_assoc($bookings)): ?>
                         <tr>
                             <td><span style="font-weight: 600;">#<?php echo $booking['id']; ?></span></td>
-                            <td><strong><?php echo htmlspecialchars($booking['package_name']); ?></strong></td>
+                            <td><strong><?php echo safe($booking['package_name']); ?></strong></td>
                             <td>
                                 <div class="date-range-badge">
                                     <i class="fas fa-calendar-alt"></i> 

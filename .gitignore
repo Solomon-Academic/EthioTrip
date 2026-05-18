@@ -1,6 +1,12 @@
 # Database configuration (contains sensitive data)
 config/database.php
 
+# Environment configuration (contains secrets)
+.env
+.env.local
+.env.*.local
+backend/config/.env.php
+
 # System files
 .DS_Store
 Thumbs.db

@@ -9,35 +9,51 @@ if (isset($_SESSION['user_id'])) {
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = $_POST['email'] ?? '';
-    $password = $_POST['password'] ?? '';
-    
-    if (empty($email) || empty($password)) {
-        $error = 'Please fill in all fields';
+    // Validate CSRF token first
+    if (!isset($_POST['csrf_token']) || !verifyCSRFToken($_POST['csrf_token'])) {
+        $error = 'Security validation failed. Please try again.';
     } else {
-        $query = "SELECT id, name, email, password, role FROM users WHERE email = ?";
-        $stmt = mysqli_prepare($conn, $query);
-        mysqli_stmt_bind_param($stmt, "s", $email);
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
-        $user = mysqli_fetch_assoc($result);
-        
-        if ($user && password_verify($password, $user['password'])) {
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['user_name'] = $user['name'];
-            $_SESSION['user_role'] = $user['role'];
-            
-            // Check for return URL from frontend
-            if (isset($_SESSION['return_url'])) {
-                $return_url = $_SESSION['return_url'];
-                unset($_SESSION['return_url']);
-                header('Location: ' . $return_url);
-            } else {
-                header('Location: dashboard.php');
-            }
-            exit();
+        $email = $_POST['email'] ?? '';
+        $password = $_POST['password'] ?? '';
+
+        if (empty($email) || empty($password)) {
+            $error = 'Please fill in all fields';
         } else {
-            $error = 'Invalid email or password';
+            // Check rate limiting
+            $rateLimitCheck = checkLoginAttempts($email);
+            if (!$rateLimitCheck['allowed']) {
+                $error = $rateLimitCheck['message'];
+            } else {
+                $query = "SELECT id, name, email, password, role FROM users WHERE email = ?";
+                $stmt = mysqli_prepare($conn, $query);
+                mysqli_stmt_bind_param($stmt, "s", $email);
+                mysqli_stmt_execute($stmt);
+                $result = mysqli_stmt_get_result($stmt);
+                $user = mysqli_fetch_assoc($result);
+
+                if ($user && password_verify($password, $user['password'])) {
+                    // Clear login attempts on success
+                    clearLoginAttempts($email);
+
+                    $_SESSION['user_id'] = $user['id'];
+                    $_SESSION['user_name'] = $user['name'];
+                    $_SESSION['user_role'] = $user['role'];
+
+                    // Check for return URL from frontend
+                    if (isset($_SESSION['return_url'])) {
+                        $return_url = $_SESSION['return_url'];
+                        unset($_SESSION['return_url']);
+                        header('Location: ' . $return_url);
+                    } else {
+                        header('Location: dashboard.php');
+                    }
+                    exit();
+                } else {
+                    // Record failed attempt
+                    recordFailedLogin($email);
+                    $error = 'Invalid email or password';
+                }
+            }
         }
     }
 }
@@ -83,6 +99,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
         
         <form method="POST" action="" onsubmit="return validateLoginForm()">
+            <?php echo csrfField(); ?>
+
             <div class="form-group">
                 <label>Email Address</label>
                 <div class="input-icon">

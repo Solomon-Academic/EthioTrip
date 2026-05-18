@@ -26,86 +26,91 @@ $packages_query = "SELECT * FROM packages WHERE is_active = 1";
 $packages = mysqli_query($conn, $packages_query);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $package_id = $_POST['package_id'] ?? '';
-    $start_date = $_POST['start_date'] ?? '';
-    $end_date = $_POST['end_date'] ?? '';
-    $travelers = intval($_POST['travelers'] ?? 1);
-    $special_requests = $_POST['special_requests'] ?? '';
-    
-    if (empty($package_id)) {
-        $errors['package'] = 'Please select a package';
-    }
-    
-    // Validate dates
-    $today = date('Y-m-d');
-    
-    if (empty($start_date)) {
-        $errors['start_date'] = 'Start date is required';
-    } elseif (strtotime($start_date) < strtotime($today)) {
-        $errors['start_date'] = 'Start date cannot be in the past';
-    }
-    
-    if (empty($end_date)) {
-        $errors['end_date'] = 'End date is required';
-    } elseif (strtotime($end_date) < strtotime($start_date)) {
-        $errors['end_date'] = 'End date must be after start date';
-    }
-    
-    // Calculate duration in days
-    $duration_days = 0;
-    if (!empty($start_date) && !empty($end_date)) {
-        $start = new DateTime($start_date);
-        $end = new DateTime($end_date);
-        $interval = $start->diff($end);
-        $duration_days = $interval->days;
-        
-        if ($duration_days < 1) {
-            $errors['end_date'] = 'Trip must be at least 1 day';
+    // Validate CSRF token first
+    if (!isset($_POST['csrf_token']) || !verifyCSRFToken($_POST['csrf_token'])) {
+        $errors['general'] = 'Security validation failed. Please try again.';
+    } else {
+        $package_id = $_POST['package_id'] ?? '';
+        $start_date = $_POST['start_date'] ?? '';
+        $end_date = $_POST['end_date'] ?? '';
+        $travelers = intval($_POST['travelers'] ?? 1);
+        $special_requests = $_POST['special_requests'] ?? '';
+
+        if (empty($package_id)) {
+            $errors['package'] = 'Please select a package';
         }
-        if ($duration_days > 30) {
-            $errors['end_date'] = 'Trip cannot exceed 30 days';
+
+        // Validate dates
+        $today = date('Y-m-d');
+
+        if (empty($start_date)) {
+            $errors['start_date'] = 'Start date is required';
+        } elseif (strtotime($start_date) < strtotime($today)) {
+            $errors['start_date'] = 'Start date cannot be in the past';
         }
-    }
-    
-    if ($travelers < 1 || $travelers > 20) {
-        $errors['travelers'] = 'Number of travelers must be between 1 and 20';
-    }
-    
-    if (empty($errors)) {
-        $pkg_query = "SELECT * FROM packages WHERE id = ?";
-        $stmt = mysqli_prepare($conn, $pkg_query);
-        mysqli_stmt_bind_param($stmt, "i", $package_id);
-        mysqli_stmt_execute($stmt);
-        $pkg_result = mysqli_stmt_get_result($stmt);
-        $package = mysqli_fetch_assoc($pkg_result);
-        
-        if ($package) {
-            // Calculate price based on duration (daily rate)
-            $daily_rate = $package['price'] / 3; // Default packages are 3 days
-            $total_price = $daily_rate * $duration_days;
-            $subtotal = $total_price * $travelers;
-            $discount_amount = $subtotal * $discount_rate;
-            $total_after_discount = $subtotal - $discount_amount;
-            $tax = $total_after_discount * 0.10;
-            $grand_total = $total_after_discount + $tax;
-            
-            $insert = "INSERT INTO bookings (user_id, package_id, package_name, start_date, end_date, duration_days, 
-                       number_of_travelers, total_amount, discount_amount, final_amount, 
-                       special_requests, status, payment_status) 
-                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', 'pending')";
-            $stmt = mysqli_prepare($conn, $insert);
-            mysqli_stmt_bind_param($stmt, "iisssiiddds", 
-                $user_id, $package_id, $package['name'], $start_date, $end_date, $duration_days,
-                $travelers, $subtotal, $discount_amount, $grand_total, $special_requests
-            );
-            
-            if (mysqli_stmt_execute($stmt)) {
-                $_SESSION['message'] = "Booking created successfully!";
-                $_SESSION['message_type'] = 'success';
-                header('Location: bookings.php');
-                exit();
-            } else {
-                $errors['general'] = 'Failed to create booking: ' . mysqli_error($conn);
+
+        if (empty($end_date)) {
+            $errors['end_date'] = 'End date is required';
+        } elseif (strtotime($end_date) < strtotime($start_date)) {
+            $errors['end_date'] = 'End date must be after start date';
+        }
+
+        // Calculate duration in days
+        $duration_days = 0;
+        if (!empty($start_date) && !empty($end_date)) {
+            $start = new DateTime($start_date);
+            $end = new DateTime($end_date);
+            $interval = $start->diff($end);
+            $duration_days = $interval->days;
+
+            if ($duration_days < 1) {
+                $errors['end_date'] = 'Trip must be at least 1 day';
+            }
+            if ($duration_days > 30) {
+                $errors['end_date'] = 'Trip cannot exceed 30 days';
+            }
+        }
+
+        if ($travelers < 1 || $travelers > 20) {
+            $errors['travelers'] = 'Number of travelers must be between 1 and 20';
+        }
+
+        if (empty($errors)) {
+            $pkg_query = "SELECT * FROM packages WHERE id = ?";
+            $stmt = mysqli_prepare($conn, $pkg_query);
+            mysqli_stmt_bind_param($stmt, "i", $package_id);
+            mysqli_stmt_execute($stmt);
+            $pkg_result = mysqli_stmt_get_result($stmt);
+            $package = mysqli_fetch_assoc($pkg_result);
+
+            if ($package) {
+                // Calculate price based on duration (daily rate)
+                $daily_rate = $package['price'] / 3; // Default packages are 3 days
+                $total_price = $daily_rate * $duration_days;
+                $subtotal = $total_price * $travelers;
+                $discount_amount = $subtotal * $discount_rate;
+                $total_after_discount = $subtotal - $discount_amount;
+                $tax = $total_after_discount * 0.10;
+                $grand_total = $total_after_discount + $tax;
+
+                $insert = "INSERT INTO bookings (user_id, package_id, package_name, start_date, end_date, duration_days,
+                           number_of_travelers, total_amount, discount_amount, final_amount,
+                           special_requests, status, payment_status)
+                           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', 'pending')";
+                $stmt = mysqli_prepare($conn, $insert);
+                mysqli_stmt_bind_param($stmt, "iisssiiddds",
+                    $user_id, $package_id, $package['name'], $start_date, $end_date, $duration_days,
+                    $travelers, $subtotal, $discount_amount, $grand_total, $special_requests
+                );
+
+                if (mysqli_stmt_execute($stmt)) {
+                    $_SESSION['message'] = "Booking created successfully!";
+                    $_SESSION['message_type'] = 'success';
+                    header('Location: bookings.php');
+                    exit();
+                } else {
+                    $errors['general'] = 'Failed to create booking: ' . mysqli_error($conn);
+                }
             }
         }
     }
@@ -172,7 +177,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <li><a href="../frontend/packages.html">Packages</a></li>
             <li><a href="bookings.php">My Bookings</a></li>
             <li><a href="logout.php">Logout</a></li>
-            <li><span class="welcome-badge">Welcome, <?php echo htmlspecialchars($user_name); ?></span></li>
+            <li><span class="welcome-badge">Welcome, <?php echo safe($user_name); ?></span></li>
         </ul>
     </nav>
 
@@ -190,6 +195,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
         
         <form method="POST" action="" id="bookingForm">
+            <?php echo csrfField(); ?>
+
             <div class="form-group">
                 <label>Select Package *</label>
                 <select name="package_id" id="package_id" required onchange="updatePackageInfo()">
@@ -280,7 +287,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             <div class="form-group">
                 <label>Special Requests</label>
-                <textarea name="special_requests" rows="3" placeholder="Any special requirements or requests? (e.g., dietary needs, hotel preferences, accessibility requirements)"><?php echo $_POST['special_requests'] ?? ''; ?></textarea>
+                <textarea name="special_requests" rows="3" placeholder="Any special requirements or requests? (e.g., dietary needs, hotel preferences, accessibility requirements)"><?php echo safe($_POST['special_requests'] ?? ''); ?></textarea>
             </div>
             
             <button type="submit" class="btn-primary">Create Booking</button>

@@ -6,14 +6,28 @@ function sanitize($data) {
     return mysqli_real_escape_string($conn, htmlspecialchars(trim($data)));
 }
 
+// Safe output escaping for HTML display (prevents XSS)
+function safe($text) {
+    return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
+}
+
 // Validate email format
 function validateEmail($email) {
     return filter_var($email, FILTER_VALIDATE_EMAIL);
 }
 
-// Validate password strength (minimum 6 characters)
+// Validate password strength (minimum 8 characters, must have uppercase and number)
 function validatePassword($password) {
-    return strlen($password) >= 6;
+    if (strlen($password) < 8) {
+        return false;
+    }
+    if (!preg_match('/[A-Z]/', $password)) {
+        return false;
+    }
+    if (!preg_match('/[0-9]/', $password)) {
+        return false;
+    }
+    return true;
 }
 
 // Validate Ethiopian phone number (09XXXXXXXX format)
@@ -138,6 +152,48 @@ function verifyCSRFToken($token) {
 // Get CSRF token field HTML
 function csrfField() {
     return '<input type="hidden" name="csrf_token" value="' . generateCSRFToken() . '">';
+}
+
+// Rate limiting for login attempts (prevent brute force)
+function checkLoginAttempts($email) {
+    $lockKey = 'login_attempt_' . hash('sha256', $email);
+    $attempts = $_SESSION[$lockKey]['count'] ?? 0;
+    $lastAttempt = $_SESSION[$lockKey]['time'] ?? 0;
+    $limitWindow = 900; // 15 minutes
+    $maxAttempts = 5;
+
+    // Reset if window has passed
+    if (time() - $lastAttempt > $limitWindow) {
+        return ['allowed' => true];
+    }
+
+    if ($attempts >= $maxAttempts) {
+        $remaining = $limitWindow - (time() - $lastAttempt);
+        return [
+            'allowed' => false,
+            'message' => 'Too many login attempts. Please try again in ' . ceil($remaining / 60) . ' minutes.'
+        ];
+    }
+
+    return ['allowed' => true];
+}
+
+// Record failed login attempt
+function recordFailedLogin($email) {
+    $lockKey = 'login_attempt_' . hash('sha256', $email);
+
+    if (!isset($_SESSION[$lockKey])) {
+        $_SESSION[$lockKey] = ['count' => 0, 'time' => time()];
+    }
+
+    $_SESSION[$lockKey]['count']++;
+    $_SESSION[$lockKey]['time'] = time();
+}
+
+// Clear login attempts on successful login
+function clearLoginAttempts($email) {
+    $lockKey = 'login_attempt_' . hash('sha256', $email);
+    unset($_SESSION[$lockKey]);
 }
 
 // Get pagination data

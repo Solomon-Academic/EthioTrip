@@ -10,66 +10,74 @@ if (isset($_SESSION['user_id'])) {
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Validate CSRF token first
+    if (!isset($_POST['csrf_token']) || !verifyCSRFToken($_POST['csrf_token'])) {
+        $errors['general'] = 'Security validation failed. Please try again.';
+    } else {
+        $name = mysqli_real_escape_string($conn, trim($_POST['name'] ?? ''));
+        $email = mysqli_real_escape_string($conn, trim($_POST['email'] ?? ''));
+        $phone = mysqli_real_escape_string($conn, trim($_POST['phone'] ?? ''));
+        $password = $_POST['password'] ?? '';
+        $confirm_password = $_POST['confirm_password'] ?? '';
 
-    $name = mysqli_real_escape_string($conn, trim($_POST['name'] ?? ''));
-    $email = mysqli_real_escape_string($conn, trim($_POST['email'] ?? ''));
-    $phone = mysqli_real_escape_string($conn, trim($_POST['phone'] ?? ''));
-    $password = $_POST['password'] ?? '';
-    $confirm_password = $_POST['confirm_password'] ?? '';
+        if (empty($name)) $errors['name'] = 'Full name is required';
 
-    if (empty($name)) $errors['name'] = 'Full name is required';
-
-    if (empty($email)) {
-        $errors['email'] = 'Email is required';
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errors['email'] = 'Valid email is required';
-    }
-
-    if (empty($phone)) $errors['phone'] = 'Phone number is required';
-
-    if (empty($password)) {
-        $errors['password'] = 'Password is required';
-    } elseif (strlen($password) < 6) {
-        $errors['password'] = 'Password must be at least 6 characters';
-    }
-
-    if ($password !== $confirm_password) {
-        $errors['confirm_password'] = 'Passwords do not match';
-    }
-
-    if (empty($errors)) {
-        $check = "SELECT id FROM users WHERE email = ?";
-        $stmt = mysqli_prepare($conn, $check);
-        mysqli_stmt_bind_param($stmt, "s", $email);
-        mysqli_stmt_execute($stmt);
-        mysqli_stmt_store_result($stmt);
-
-        if (mysqli_stmt_num_rows($stmt) > 0) {
-            $errors['email'] = 'Email already registered';
+        if (empty($email)) {
+            $errors['email'] = 'Email is required';
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errors['email'] = 'Valid email is required';
         }
-    }
 
-    if (empty($errors)) {
+        if (empty($phone)) $errors['phone'] = 'Phone number is required';
 
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        if (empty($password)) {
+            $errors['password'] = 'Password is required';
+        } elseif (strlen($password) < 8) {
+            $errors['password'] = 'Password must be at least 8 characters';
+        } elseif (!preg_match('/[A-Z]/', $password)) {
+            $errors['password'] = 'Password must contain at least one uppercase letter';
+        } elseif (!preg_match('/[0-9]/', $password)) {
+            $errors['password'] = 'Password must contain at least one number';
+        }
 
-        $query = "INSERT INTO users (name, email, password, phone, role) VALUES (?, ?, ?, ?, 'user')";
-        $stmt = mysqli_prepare($conn, $query);
-        mysqli_stmt_bind_param($stmt, "ssss", $name, $email, $hashed_password, $phone);
+        if ($password !== $confirm_password) {
+            $errors['confirm_password'] = 'Passwords do not match';
+        }
 
-        if (mysqli_stmt_execute($stmt)) {
+        if (empty($errors)) {
+            $check = "SELECT id FROM users WHERE email = ?";
+            $stmt = mysqli_prepare($conn, $check);
+            mysqli_stmt_bind_param($stmt, "s", $email);
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_store_result($stmt);
 
-            $user_id = mysqli_insert_id($conn);
+            if (mysqli_stmt_num_rows($stmt) > 0) {
+                $errors['email'] = 'Email already registered';
+            }
+        }
 
-            $_SESSION['user_id'] = $user_id;
-            $_SESSION['user_name'] = $name;
-            $_SESSION['user_role'] = 'user';
+        if (empty($errors)) {
 
-            header('Location: dashboard.php');
-            exit();
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-        } else {
-            $errors['general'] = 'Registration failed. Please try again.';
+            $query = "INSERT INTO users (name, email, password, phone, role) VALUES (?, ?, ?, ?, 'user')";
+            $stmt = mysqli_prepare($conn, $query);
+            mysqli_stmt_bind_param($stmt, "ssss", $name, $email, $hashed_password, $phone);
+
+            if (mysqli_stmt_execute($stmt)) {
+
+                $user_id = mysqli_insert_id($conn);
+
+                $_SESSION['user_id'] = $user_id;
+                $_SESSION['user_name'] = $name;
+                $_SESSION['user_role'] = 'user';
+
+                header('Location: dashboard.php');
+                exit();
+
+            } else {
+                $errors['general'] = 'Registration failed. Please try again.';
+            }
         }
     }
 }
@@ -113,6 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
 
         <form method="POST" action="" onsubmit="return validateRegistrationForm()">
+            <?php echo csrfField(); ?>
 
             <div class="form-group">
                 <label>Full Name *</label>

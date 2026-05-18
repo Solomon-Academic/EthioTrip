@@ -26,10 +26,14 @@ if (!$booking) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $start_date = $_POST['start_date'] ?? '';
-    $end_date = $_POST['end_date'] ?? '';
-    $travelers = intval($_POST['travelers'] ?? 1);
-    $special_requests = $_POST['special_requests'] ?? '';
+    // Validate CSRF token first
+    if (!isset($_POST['csrf_token']) || !verifyCSRFToken($_POST['csrf_token'])) {
+        $errors['general'] = 'Security validation failed. Please try again.';
+    } else {
+        $start_date = $_POST['start_date'] ?? '';
+        $end_date = $_POST['end_date'] ?? '';
+        $travelers = intval($_POST['travelers'] ?? 1);
+        $special_requests = $_POST['special_requests'] ?? '';
     
     // Validate dates
     $today = date('Y-m-d');
@@ -148,7 +152,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <li><a href="../frontend/packages.html">Packages</a></li>
             <li><a href="bookings.php">My Bookings</a></li>
             <li><a href="logout.php">Logout</a></li>
-            <li><span class="welcome-badge">Welcome, <?php echo htmlspecialchars($user_name); ?></span></li>
+            <li><span class="welcome-badge">Welcome, <?php echo safe($user_name); ?></span></li>
         </ul>
     </nav>
 
@@ -160,9 +164,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
         
         <form method="POST" action="">
+            <?php echo csrfField(); ?>
+
             <div class="form-group">
                 <label>Package</label>
-                <input type="text" value="<?php echo htmlspecialchars($booking['package_name']); ?>" readonly>
+                <input type="text" value="<?php echo safe($booking['package_name']); ?>" readonly>
             </div>
             
             <div class="form-group">
@@ -205,7 +211,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             <div class="form-group">
                 <label>Special Requests</label>
-                <textarea name="special_requests" rows="3"><?php echo $_POST['special_requests'] ?? $booking['special_requests']; ?></textarea>
+                <textarea name="special_requests" rows="3"><?php echo safe($_POST['special_requests'] ?? $booking['special_requests']); ?></textarea>
             </div>
             
             <button type="submit" class="btn-primary">Update Booking</button>

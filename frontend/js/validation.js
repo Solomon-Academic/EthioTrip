@@ -6,7 +6,7 @@ function validateEmail(email) {
 }
 
 function validatePassword(password) {
-    return password.length >= 6;
+    return password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password);
 }
 
 function validateName(name) {
@@ -34,21 +34,27 @@ function validateLoginForm() {
     const email = document.getElementById('email')?.value;
     const password = document.getElementById('password')?.value;
     let isValid = true;
-    
+
     if (!email || !validateEmail(email)) {
         showError('email', 'Please enter a valid email address');
         isValid = false;
     } else {
         hideError('email');
     }
-    
-    if (!password || password.length < 6) {
-        showError('password', 'Password must be at least 6 characters');
+
+    if (!password || password.length < 8) {
+        showError('password', 'Password must be at least 8 characters with uppercase and number');
+        isValid = false;
+    } else if (!/[A-Z]/.test(password)) {
+        showError('password', 'Password must contain an uppercase letter');
+        isValid = false;
+    } else if (!/[0-9]/.test(password)) {
+        showError('password', 'Password must contain a number');
         isValid = false;
     } else {
         hideError('password');
     }
-    
+
     return isValid;
 }
 
@@ -82,20 +88,26 @@ function validateRegistrationForm() {
         hideError('phone');
     }
     
-    if (!password || password.length < 6) {
-        showError('password', 'Password must be at least 6 characters');
+    if (!password || password.length < 8) {
+        showError('password', 'Password must be at least 8 characters');
+        isValid = false;
+    } else if (!/[A-Z]/.test(password)) {
+        showError('password', 'Password must contain an uppercase letter');
+        isValid = false;
+    } else if (!/[0-9]/.test(password)) {
+        showError('password', 'Password must contain a number');
         isValid = false;
     } else {
         hideError('password');
     }
-    
+
     if (password !== confirmPassword) {
         showError('confirm_password', 'Passwords do not match');
         isValid = false;
     } else {
         hideError('confirm_password');
     }
-    
+
     return isValid;
 }
 
