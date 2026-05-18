@@ -1,6 +1,6 @@
-# IP2_travel
+# EthioTrip: TOUR MANAGEMENT SYSTEM
 ## Group 4
-topic :-**TOUR MANAGEMENT SYSTEM**
+
 
 | Name              | ID         | GitHub Username        |
 |-------------------|-----------|------------------------|
