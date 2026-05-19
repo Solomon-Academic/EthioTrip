@@ -111,13 +111,13 @@ $next_tier = mysqli_fetch_assoc($next_tier_result);
                 <li><a href="discounts.php">Admin Panel</a></li>
             <?php endif; ?>
             <li><a href="logout.php">Logout</a></li>
-            <li><span class="welcome-badge"><?php echo htmlspecialchars($user_name); ?></span></li>
+            <li><span class="welcome-badge"><?php echo safe($user_name); ?></span></li>
         </ul>
     </nav>
 
     <div class="dashboard-container">
         <div class="hero-section">
-            <h1>Welcome, <?php echo htmlspecialchars($user_name); ?>! 👋</h1>
+            <h1>Welcome, <?php echo safe($user_name); ?>! 👋</h1>
             <p>Your Ethiopian adventure dashboard - manage your journeys and track rewards.</p>
         </div>
 

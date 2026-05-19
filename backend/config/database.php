@@ -1,4 +1,7 @@
 <?php
+// Load environment variables from .env file
+require_once __DIR__ . '/.env.php';
+
 // Set session cookie parameters to work across entire site
 if (session_status() === PHP_SESSION_NONE) {
     // Make session work across all subdirectories
@@ -13,10 +16,10 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-$host = 'localhost';
-$db   = 'ethiotrip_db';
-$user = 'root';
-$pass = '';
+$host = $_ENV['DB_HOST'] ?? 'localhost';
+$db   = $_ENV['DB_NAME'] ?? 'ethiotrip_db';
+$user = $_ENV['DB_USER'] ?? 'root';
+$pass = $_ENV['DB_PASS'] ?? '';
 
 $conn = mysqli_connect($host, $user, $pass, $db);
 
