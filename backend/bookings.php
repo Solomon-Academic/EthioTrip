@@ -141,7 +141,7 @@ if ($bookings && mysqli_num_rows($bookings) > 0) {
         <a href="dashboard.php" class="logo">Ethio<span>Trip</span></a>
         <ul class="nav-links">
             <li><a href="../frontend/home.html">Home</a></li>
-            <li><a href="../frontend/Destination.html">Destinations</a></li>
+            <li><a href="../frontend/destination.html">Destinations</a></li>
             <li><a href="../frontend/packages.html">Packages</a></li>
             <li><a href="dashboard.php">Dashboard</a></li>
             <li><a href="logout.php">Logout</a></li>
@@ -153,7 +153,7 @@ if ($bookings && mysqli_num_rows($bookings) > 0) {
         <div class="page-header">
             <h1><i class="fas fa-suitcase"></i> My Travel Bookings</h1>
             <div class="action-buttons">
-                <a href="../frontend/Destination.html" class="btn-primary"><i class="fas fa-map-marker-alt"></i> Choose Destination</a>
+                <a href="../frontend/destination.html" class="btn-primary"><i class="fas fa-map-marker-alt"></i> Choose Destination</a>
                 <a href="../frontend/packages.html" class="btn-primary"><i class="fas fa-plus"></i> New Booking</a>
                 <a href="dashboard.php" class="btn-secondary"><i class="fas fa-chart-line"></i> Dashboard</a>
             </div>
@@ -250,7 +250,7 @@ if ($bookings && mysqli_num_rows($bookings) > 0) {
                 <i class="fas fa-suitcase"></i>
                 <p>You haven't made any bookings yet.</p>
                 <p style="font-size: 0.8rem; margin-top: 5px;">Start your Ethiopian adventure today!</p>
-                <a href="../frontend/Destination.html" class="btn-primary" style="margin-top: 1rem;"><i class="fas fa-map-marker-alt"></i> Choose a Destination</a>
+                <a href="../frontend/destination.html" class="btn-primary" style="margin-top: 1rem;"><i class="fas fa-map-marker-alt"></i> Choose a Destination</a>
             </div>
         <?php endif; ?>
     </div>

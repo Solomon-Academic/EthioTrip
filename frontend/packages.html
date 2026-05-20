@@ -281,6 +281,29 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        .destination-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            margin: 0 0 20px 0;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .destination-banner.warning {
+            background: linear-gradient(135deg, #f39c12 0%, #e74c3c 100%);
+        }
+
+        .destination-banner a {
+            color: white;
+            text-decoration: underline;
+            cursor: pointer;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
@@ -288,9 +311,10 @@
         <a href="home.html" class="logo">Ethio<span>Trip</span></a>
         <ul class="nav-links">
             <li><a href="home.html"><i class="fas fa-home"></i> Home</a></li>
-            <li><a href="Destination.html">Destinations</a></li>
+            <li><a href="destination.html">Destinations</a></li>
             <li><a href="packages.html">Packages</a></li>
             <li><a href="about.html">About</a></li>
+            <li><a href="../backend/login.php" style="color: #d4af37; font-weight: 600;"><i class="fas fa-sign-in-alt"></i> Sign In</a></li>
         </ul>
     </nav>
 
@@ -298,6 +322,17 @@
         <h2>EthioTrip Packages</h2>
         <p>Authentic Ethiopian journeys inspired by our heritage, unity, and the spirit of togetherness.</p>
     </header>
+
+    <div class="container" style="max-width: 1100px; margin: 0 auto; padding: 0 20px; margin-top: -20px; margin-bottom: 20px;">
+        <div class="destination-banner" id="destBanner" style="display: none;">
+            <div><i class="fas fa-map-marker-alt"></i> <strong>Destination:</strong> <span id="selectedDestName">-</span></div>
+            <a href="destination.html">Change Destination</a>
+        </div>
+        <div class="destination-banner warning" id="destWarning" style="display: none;">
+            <div><i class="fas fa-exclamation-circle"></i> <strong>Select a destination first to get started</strong></div>
+            <a href="destination.html">Choose Destination</a>
+        </div>
+    </div>
 
     <div class="packages-container" id="packageList">
         <div class="pkg-card" onclick="selectPkg(this, 'Meskerem Journey', 350)">
@@ -393,7 +428,7 @@
         <div class="footer-col">
             <h4>Explore</h4>
             <ul>
-                <li><a href="Destination.html">Destinations</a></li>
+                <li><a href="destination.html">Destinations</a></li>
                 <li><a href="packages.html">Package</a></li>
             </ul>
         </div>
@@ -410,36 +445,61 @@
 
 <script>
     document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+    // Check if destination is selected on page load
+    window.addEventListener('DOMContentLoaded', () => {
+        const selectedDest = localStorage.getItem('selectedDestinationName');
+        const destBanner = document.getElementById('destBanner');
+        const destWarning = document.getElementById('destWarning');
+
+        if (selectedDest) {
+            document.getElementById('selectedDestName').textContent = selectedDest;
+            destBanner.style.display = 'flex';
+            destWarning.style.display = 'none';
+        } else {
+            destBanner.style.display = 'none';
+            destWarning.style.display = 'flex';
+        }
+    });
 </script>
     <div class="selection-toast" id="toast">Package Selected!</div>
 
     <script>
         async function selectPkg(element, pkgName, pkgPrice) {
+            // Check if destination is selected
+            const selectedDest = localStorage.getItem('selectedDestinationName');
+            if (!selectedDest) {
+                if (confirm('🗺️ Please select a destination first!\n\nClick OK to go to Destinations page.')) {
+                    window.location.href = 'destination.html';
+                }
+                return;
+            }
+
             localStorage.setItem("selectedPackage", pkgName);
             localStorage.setItem("selectedPrice", pkgPrice);
-            
+
             // Check login status via backend session
             try {
                 const response = await fetch('../backend/check-login.php');
                 const data = await response.json();
-                
+
                 if (data.logged_in) {
                     // User is logged in - go to payment
-                    window.location.href = "Payment.html";
+                    window.location.href = "payment.html";
                 } else {
                     // Not logged in - show modal with options
                     if (confirm("🔐 You are not signed in!\n\nSign in to get loyalty discounts and track your bookings.\n\nClick OK to sign in, or Cancel to continue as guest.")) {
                         // Save return URL
-                        localStorage.setItem("returnAfterLogin", "Payment.html");
+                        localStorage.setItem("returnAfterLogin", "payment.html");
                         window.location.href = "../backend/login.php";
                     } else {
                         // Continue as guest
-                        window.location.href = "Payment.html";
+                        window.location.href = "payment.html";
                     }
                 }
             } catch(e) {
                 // If check fails, still allow booking
-                window.location.href = "Payment.html";
+                window.location.href = "payment.html";
             }
         }
     </script>

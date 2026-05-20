@@ -13,7 +13,7 @@
             <div class="footer-col">
                 <h4>Explore</h4>
                 <ul>
-                    <li><a href="../../frontend/Destination.html">Destinations</a></li>
+                    <li><a href="../../frontend/destination.html">Destinations</a></li>
                     <li><a href="../../frontend/packages.html">Packages</a></li>
                 </ul>
             </div>
@@ -94,7 +94,7 @@
         <div>
             <h4>Explore</h4>
             <ul style="list-style: none; margin-top: 0.5rem;">
-                <li><a href="../frontend/Destination.html" style="color: #bbb; text-decoration: none;">Destinations</a></li>
+                <li><a href="../frontend/destination.html" style="color: #bbb; text-decoration: none;">Destinations</a></li>
                 <li><a href="../frontend/packages.html" style="color: #bbb; text-decoration: none;">Packages</a></li>
             </ul>
         </div>

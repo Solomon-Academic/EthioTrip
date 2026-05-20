@@ -1,4 +1,4 @@
-[4/20/2026 1:26 PM] 𝓩𝓮𝔀𝓸𝓻𝓴𝓪𝓵𝓮𝓶: <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -122,6 +122,20 @@
                 flex-wrap: wrap;
             }
         }
+
+        .scroll-hint {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(90deg, transparent, rgba(212,175,55,0.2), transparent);
+            font-size: 0.85rem;
+            color: #d4af37;
+            animation: float 2s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
     </style>
 </head>
 <body>
@@ -130,13 +144,12 @@
         <a href="home.html" class="logo">Ethio<span>Trip</span></a>
         <div class="nav-links">
             <a href="home.html"><i class="fas fa-home"></i> Home</a>
-            <a href="Destination.html">Destinations</a>
+            <a href="destination.html">Destinations</a>
             <a href="packages.html">Packages</a>
             <a href="about.html">About</a>
-            <a href="../backend/login.php"><i class="fas fa-sign-in-alt"></i> Sign In</a>
+            <a href="../backend/login.php" style="color: #d4af37; font-weight: 600;"><i class="fas fa-sign-in-alt"></i> Sign In</a>
         </div>
     </nav>
-[4/20/2026 1:26 PM] 𝓩𝓮𝔀𝓸𝓻𝓴𝓪𝓵𝓮𝓶: 
 
     <div class="destination-header">
         <h1>🌍 Choose Your Destination</h1>
@@ -144,6 +157,7 @@
     </div>
 
     <div class="carousel-outer">
+        <div class="scroll-hint"><i class="fas fa-arrow-right"></i> Scroll to see all destinations →</div>
         <div class="infinite-viewport" id="mainScroller">
             
             <div class="place-card" data-dest="Lalibela" data-location="Amhara Region" data-best-time="Oct - Mar">
@@ -181,7 +195,6 @@
                     <button class="btn-select" onclick="selectDestination('Axum', 'Tigray Region', 'Sep - May')">Select Destination →</button>
                 </div>
             </div>
-[4/20/2026 1:26 PM] 𝓩𝓮𝔀𝓸𝓻𝓴𝓪𝓵𝓮𝓶: 
 
             <div class="place-card" data-dest="Gondar" data-location="Amhara Region" data-best-time="Oct - Feb">
                 <div class="place-img-box"><img src="./dest_images/Gondar.jpg" alt="Gondar"></div>
@@ -236,7 +249,6 @@
                     <button class="btn-select" onclick="selectDestination('Danakil Depression', 'Afar Region', 'Nov - Jan')">Select Destination →</button>
                 </div>
             </div>
-[4/20/2026 1:26 PM] 𝓩𝓮𝔀𝓸𝓻𝓴𝓪𝓵𝓮𝓶: 
 
             <div class="place-card" data-dest="Sof Omar Cave" data-location="Oromia Region" data-best-time="Dec - Apr">
                 <div class="place-img-box"><img src="./dest_images/Cave.jpg" alt="Sof Omar"></div>
@@ -304,7 +316,6 @@
                 <span class="expertise">Lead Historian</span>
                 <p>Specializes in the Aksumite Empire and Northern historical circuits.</p>
             </div>
-[4/20/2026 1:26 PM] 𝓩𝓮𝔀𝓸𝓻𝓴𝓪𝓵𝓮𝓶: 
 
             <div class="person-card">
                 <i class="fas fa-user-circle profile-icon"></i>
@@ -343,7 +354,7 @@
             <div class="footer-col">
                 <h4>Explore</h4>
                 <ul>
-                    <li><a href="Destination.html">Destinations</a></li>
+                    <li><a href="destination.html">Destinations</a></li>
                     <li><a href="packages.html">Packages</a></li>
                 </ul>
             </div>
