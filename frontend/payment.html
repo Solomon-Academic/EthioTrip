@@ -172,10 +172,11 @@
             <a href="home.html" class="logo">Ethio<span>Trip</span></a>
             <ul class="nav-links">
                 <li><a href="home.html"><i class="fas fa-home"></i> Home</a></li>
-                <li><a href="Destination.html">Destinations</a></li>
+                <li><a href="destination.html">Destinations</a></li>
                 <li><a href="packages.html">Packages</a></li>
                 <li><a href="about.html">About</a></li>
                 <li><a href="../backend/bookings.php">My Bookings</a></li>
+                <li><a href="../backend/login.php" style="color: #d4af37;"><i class="fas fa-sign-in-alt"></i> Sign In</a></li>
             </ul>
         </div>
     </header>
@@ -194,7 +195,8 @@
         <section id="phase-amount" class="card-panel text-center">
             <h1>Complete Your Booking</h1>
             <p style="font-size: 0.85rem; margin-bottom: 20px;">Please enter your details to continue.</p>
-            
+
+            <div id="validation-alerts"></div>
             <div class="form-group" style="max-width: 350px; margin: 0 auto 15px auto;">
                 <label style="display: block; text-align: left; font-weight: bold;">Booking Amount ($)</label>
                 <div class="input-lockup">
@@ -322,7 +324,7 @@
             </div>
             <div class="footer-col">
                 <h4>Explore</h4>
-                <ul><li><a href="Destination.html">Destinations</a></li><li><a href="packages.html">Packages</a></li></ul>
+                <ul><li><a href="destination.html">Destinations</a></li><li><a href="packages.html">Packages</a></li></ul>
             </div>
             <div class="footer-col">
                 <h4>Connect</h4>
@@ -342,6 +344,32 @@
         let discountRate = 0;
         let discountPercent = 0;
         let durationDays = 0;
+
+        // Validate booking requirements on page load
+        function validateBookingRequirements() {
+            const savedPrice = localStorage.getItem("selectedPrice");
+            const savedPkg = localStorage.getItem("selectedPackage");
+            const savedDest = localStorage.getItem("selectedDestinationName");
+            const alerts = document.getElementById('validation-alerts');
+            let hasErrors = false;
+
+            let html = '';
+            if (!savedDest) {
+                html += '<div style="background: #f8d7da; color: #721c24; padding: 12px; border-radius: 8px; margin-bottom: 10px;"><i class="fas fa-exclamation-circle"></i> <strong>No destination selected</strong> - <a href="destination.html" style="color: #721c24; text-decoration: underline;">Choose one</a></div>';
+                hasErrors = true;
+            }
+            if (!savedPkg) {
+                html += '<div style="background: #f8d7da; color: #721c24; padding: 12px; border-radius: 8px; margin-bottom: 10px;"><i class="fas fa-exclamation-circle"></i> <strong>No package selected</strong> - <a href="packages.html" style="color: #721c24; text-decoration: underline;">Choose one</a></div>';
+                hasErrors = true;
+            }
+            if (!savedPrice) {
+                html += '<div style="background: #f8d7da; color: #721c24; padding: 12px; border-radius: 8px; margin-bottom: 10px;"><i class="fas fa-exclamation-circle"></i> <strong>Invalid booking amount</strong> - <a href="packages.html" style="color: #721c24; text-decoration: underline;">Start over</a></div>';
+                hasErrors = true;
+            }
+
+            if (html) alerts.innerHTML = html;
+            return !hasErrors;
+        }
 
         // Load data from localStorage
         const savedPrice = localStorage.getItem("selectedPrice");
@@ -863,6 +891,7 @@
 
         // Check session on page load
         document.addEventListener('DOMContentLoaded', () => {
+            validateBookingRequirements();
             checkExistingSession();
         });
     </script>

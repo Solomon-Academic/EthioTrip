@@ -104,7 +104,7 @@ $next_tier = mysqli_fetch_assoc($next_tier_result);
         <a href="dashboard.php" class="logo">Ethio<span>Trip</span></a>
         <ul class="nav-links">
             <li><a href="../frontend/home.html">Home</a></li>
-            <li><a href="../frontend/Destination.html">Destinations</a></li>
+            <li><a href="../frontend/destination.html">Destinations</a></li>
             <li><a href="../frontend/packages.html">Packages</a></li>
             <li><a href="bookings.php">My Bookings</a></li>
             <?php if ($is_admin): ?>
@@ -174,7 +174,7 @@ $next_tier = mysqli_fetch_assoc($next_tier_result);
                 <i class="fas fa-plus-circle"></i>
                 <span>Book a Package</span>
             </a>
-            <a href="../frontend/Destination.html" class="action-card">
+            <a href="../frontend/destination.html" class="action-card">
                 <i class="fas fa-compass"></i>
                 <span>Explore Destinations</span>
             </a>

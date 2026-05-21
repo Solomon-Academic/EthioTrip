@@ -1,4 +1,13 @@
 function selectPkg(element, pkgName) {
+    // Check if destination is selected
+    const selectedDest = localStorage.getItem('selectedDestinationName');
+    if (!selectedDest) {
+        if (confirm('🗺️ Please select a destination first!\n\nClick OK to go to Destinations page.')) {
+            window.location.href = 'destination.html';
+        }
+        return;
+    }
+
     // Get price from the card
     const priceText = element.querySelector(".pkg-price").innerText;
     const priceValue = priceText.replace(/[^0-9]/g, "");
@@ -19,6 +28,6 @@ function selectPkg(element, pkgName) {
 
     // Redirect to payment page
     setTimeout(() => {
-        window.location.href = "Payment.html"; 
+        window.location.href = "payment.html";
     }, 800);
 }

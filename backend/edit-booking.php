@@ -148,7 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <a href="dashboard.php" class="logo">Ethio<span>Trip</span></a>
         <ul class="nav-links">
             <li><a href="../frontend/home.html">Home</a></li>
-            <li><a href="../frontend/Destination.html">Destinations</a></li>
+            <li><a href="../frontend/destination.html">Destinations</a></li>
             <li><a href="../frontend/packages.html">Packages</a></li>
             <li><a href="bookings.php">My Bookings</a></li>
             <li><a href="logout.php">Logout</a></li>

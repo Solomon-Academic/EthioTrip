@@ -125,7 +125,7 @@ if (!function_exists('isLoggedIn')) {
             <li><a href="dashboard.php">Dashboard</a></li>
             <li><a href="bookings.php">My Bookings</a></li>
             <li><a href="../../frontend/packages.html">Packages</a></li>
-            <li><a href="../../frontend/Destination.html">Destinations</a></li>
+            <li><a href="../../frontend/destination.html">Destinations</a></li>
             <?php if (isLoggedIn()): ?>
                 <li><a href="logout.php">Logout</a></li>
                 <li><span class="welcome-text">Welcome, <?php echo htmlspecialchars($_SESSION['user_name'] ?? 'User'); ?></span></li>
@@ -141,7 +141,7 @@ if (!function_exists('isLoggedIn')) {
     <a href="dashboard.php" class="logo">Ethio<span>Trip</span></a>
     <ul class="nav-links">
         <li><a href="../frontend/home.html">Home</a></li>
-        <li><a href="../frontend/Destination.html">Destinations</a></li>
+        <li><a href="../frontend/destination.html">Destinations</a></li>
         <li><a href="../frontend/packages.html">Packages</a></li>
         <?php if (isLoggedIn()): ?>
             <li><a href="dashboard.php">Dashboard</a></li>
