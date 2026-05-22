@@ -27,6 +27,14 @@ class PageController extends Controller {
     public function about() {
         $this->serveHtmlPage('about.html');
     }
+    public function readMore() {
+    $filePath = __DIR__ . '/../../public/pages/read-more.html';
+    if (file_exists($filePath)) {
+        readfile($filePath);
+        exit;
+    }
+    $this->render('page.readmore');
+   }
     
     private function serveHtmlPage($filename) {
         $filePath = __DIR__ . '/../../public/pages/' . $filename;
