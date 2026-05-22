@@ -31,8 +31,10 @@ return [
         '/api/check-login' => 'ApiController@checkLogin',
         '/api/loyalty-discount' => 'ApiController@getLoyaltyDiscount',
         '/api/next-tier' => 'ApiController@getNextTier',
+         '/read-more' => 'PageController@readMore',
     ],
     'POST' => [
+        // add POST routes for form submissions and API endpoints
         '/login' => 'AuthController@loginAction',
         '/register' => 'AuthController@registerAction',
         '/bookings/create' => 'BookingController@createAction',
