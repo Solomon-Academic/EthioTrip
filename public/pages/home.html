@@ -388,7 +388,11 @@
                 padding: 20px;
             }
         }
-/* Help Button - Beside Sign In in Navbar with Spacing */
+/* Help Button with Separator */
+.nav-links li:last-child {
+    margin-left: auto;
+}
+
 .help-nav-btn {
     background: #000000;
     color: white;
@@ -402,12 +406,17 @@
     font-size: 16px;
     font-weight: bold;
     transition: all 0.3s ease;
-    margin-left: 30px;
 }
 
 .help-nav-btn:hover {
     background: #333333;
     transform: translateY(-2px);
+}
+
+/* Optional: Add a vertical divider */
+.nav-links li:nth-child(6) {
+    border-left: 1px solid #ddd;
+    padding-left: 30px;
 }
     </style>
 </head>
@@ -415,11 +424,16 @@
     <nav class="navbar">
         <a href="/ethiotrip1/ethiotrip/public/" class="logo">Ethio<span>Trip</span></a>
         <ul class="nav-links">
+    <li><a href="/ethiotrip1/ethiotrip/public/">Home</a></li>
     <li><a href="/ethiotrip1/ethiotrip/public/destination">Destinations</a></li>
     <li><a href="/ethiotrip1/ethiotrip/public/packages">Packages</a></li>
     <li><a href="/ethiotrip1/ethiotrip/public/about">About</a></li>
     <li><a href="/ethiotrip1/ethiotrip/public/login">Sign In</a></li>
-    <li><a href="/ethiotrip1/ethiotrip/public/help" class="help-nav-btn" title="Help"><i class="fas fa-question"></i></a></li>
+    <li>
+        <a href="/ethiotrip1/ethiotrip/public/help" class="help-nav-btn" title="Help">
+            <i class="fas fa-question"></i>
+        </a>
+    </li>
 </ul>
     </nav>
 
@@ -586,7 +600,6 @@
 
     <!-- Toast Notification -->
     <div class="toast-notification" id="toastNotification"></div>
-    <!-- Help Button -->
     
     <footer class="footer">
         <div class="footer-grid">
