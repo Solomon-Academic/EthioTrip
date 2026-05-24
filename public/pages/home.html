@@ -388,18 +388,39 @@
                 padding: 20px;
             }
         }
+/* Help Button - Beside Sign In in Navbar with Spacing */
+.help-nav-btn {
+    background: #000000;
+    color: white;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    margin-left: 30px;
+}
+
+.help-nav-btn:hover {
+    background: #333333;
+    transform: translateY(-2px);
+}
     </style>
 </head>
 <body>
     <nav class="navbar">
         <a href="/ethiotrip1/ethiotrip/public/" class="logo">Ethio<span>Trip</span></a>
         <ul class="nav-links">
-            <!-- <li><a href="/ethiotrip1/ethiotrip/public/">Home</a></li> -->
-            <li><a href="/ethiotrip1/ethiotrip/public/destination">Destinations</a></li>
-            <li><a href="/ethiotrip1/ethiotrip/public/packages">Packages</a></li>
-            <li><a href="/ethiotrip1/ethiotrip/public/about">About</a></li>
-            <li><a href="/ethiotrip1/ethiotrip/public/login">Sign In</a></li>
-        </ul>
+    <li><a href="/ethiotrip1/ethiotrip/public/destination">Destinations</a></li>
+    <li><a href="/ethiotrip1/ethiotrip/public/packages">Packages</a></li>
+    <li><a href="/ethiotrip1/ethiotrip/public/about">About</a></li>
+    <li><a href="/ethiotrip1/ethiotrip/public/login">Sign In</a></li>
+    <li><a href="/ethiotrip1/ethiotrip/public/help" class="help-nav-btn" title="Help"><i class="fas fa-question"></i></a></li>
+</ul>
     </nav>
 
     <main class="hero">
@@ -565,7 +586,8 @@
 
     <!-- Toast Notification -->
     <div class="toast-notification" id="toastNotification"></div>
-
+    <!-- Help Button -->
+    
     <footer class="footer">
         <div class="footer-grid">
             <div class="footer-col">
