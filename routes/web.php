@@ -9,6 +9,7 @@ return [
         '/packages' => 'PageController@packages',
         '/payment' => 'PageController@payment',
         '/about' => 'PageController@about',
+        '/help' => 'PageController@help',
         
         '/login' => 'AuthController@loginAction',
         '/register' => 'AuthController@registerAction',
