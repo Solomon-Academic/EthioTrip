@@ -12,20 +12,25 @@ class Booking extends Model {
     }
 
     private function ensureAdminApprovalColumns(): void {
-        $columns = [
-            'admin_approval_status' => "ALTER TABLE bookings ADD COLUMN admin_approval_status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending'",
-            'admin_notes' => "ALTER TABLE bookings ADD COLUMN admin_notes TEXT NULL",
-            'approved_by' => "ALTER TABLE bookings ADD COLUMN approved_by INT NULL",
-            'approved_at' => "ALTER TABLE bookings ADD COLUMN approved_at TIMESTAMP NULL",
-        ];
-
-        foreach ($columns as $column => $sql) {
-            $stmt = $this->db->prepare("SHOW COLUMNS FROM bookings LIKE ?");
-            $stmt->bind_param("s", $column);
-            $stmt->execute();
-            if ($stmt->get_result()->num_rows === 0) {
-                $this->db->query($sql);
-            }
+        // Check if columns exist using simple queries (NOT prepared statements with LIKE)
+        $result = $this->db->query("SHOW COLUMNS FROM bookings LIKE 'admin_approval_status'");
+        if ($result && $result->num_rows === 0) {
+            $this->db->query("ALTER TABLE bookings ADD COLUMN admin_approval_status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending'");
+        }
+        
+        $result = $this->db->query("SHOW COLUMNS FROM bookings LIKE 'admin_notes'");
+        if ($result && $result->num_rows === 0) {
+            $this->db->query("ALTER TABLE bookings ADD COLUMN admin_notes TEXT NULL");
+        }
+        
+        $result = $this->db->query("SHOW COLUMNS FROM bookings LIKE 'approved_by'");
+        if ($result && $result->num_rows === 0) {
+            $this->db->query("ALTER TABLE bookings ADD COLUMN approved_by INT NULL");
+        }
+        
+        $result = $this->db->query("SHOW COLUMNS FROM bookings LIKE 'approved_at'");
+        if ($result && $result->num_rows === 0) {
+            $this->db->query("ALTER TABLE bookings ADD COLUMN approved_at TIMESTAMP NULL");
         }
     }
 
@@ -53,31 +58,30 @@ class Booking extends Model {
         return $stmt->execute();
     }
     
-    // Admin approval methods
     public function approveBooking($bookingId, $adminId, $adminNotes = '') {
-        $stmt = $this->db->prepare("UPDATE bookings SET admin_approval_status = 'approved', approved_by = ?, approved_at = NOW(), admin_notes = CONCAT(IFNULL(admin_notes, ''), ?, '\\n[Approved by Admin] ', NOW()), status = 'confirmed' WHERE id = ?");
-        $notes = $adminNotes ? "Admin note: $adminNotes\\n" : '';
+        $notes = $adminNotes ? "Admin note: $adminNotes\n" : '';
+        $stmt = $this->db->prepare("UPDATE bookings SET admin_approval_status = 'approved', approved_by = ?, approved_at = NOW(), admin_notes = CONCAT(IFNULL(admin_notes, ''), ?, '\n[Approved by Admin] ', NOW()), status = 'confirmed' WHERE id = ?");
         $stmt->bind_param("isi", $adminId, $notes, $bookingId);
         return $stmt->execute();
     }
     
     public function rejectBooking($bookingId, $adminId, $adminNotes = '') {
-        $stmt = $this->db->prepare("UPDATE bookings SET admin_approval_status = 'rejected', approved_by = ?, approved_at = NOW(), admin_notes = CONCAT(IFNULL(admin_notes, ''), ?, '\\n[Rejected by Admin] ', NOW()), status = 'cancelled' WHERE id = ?");
-        $notes = $adminNotes ? "Rejection reason: $adminNotes\\n" : '';
+        $notes = $adminNotes ? "Rejection reason: $adminNotes\n" : '';
+        $stmt = $this->db->prepare("UPDATE bookings SET admin_approval_status = 'rejected', approved_by = ?, approved_at = NOW(), admin_notes = CONCAT(IFNULL(admin_notes, ''), ?, '\n[Rejected by Admin] ', NOW()), status = 'cancelled' WHERE id = ?");
         $stmt->bind_param("isi", $adminId, $notes, $bookingId);
         return $stmt->execute();
     }
 
     public function approvePayment($bookingId, $adminId, $adminNotes = '') {
-        $stmt = $this->db->prepare("UPDATE bookings SET payment_status = 'completed', admin_approval_status = 'approved', approved_by = ?, approved_at = NOW(), admin_notes = CONCAT(IFNULL(admin_notes, ''), ?, '\\n[Payment approved by Admin] ', NOW()), status = 'confirmed' WHERE id = ?");
-        $notes = $adminNotes ? "Payment note: $adminNotes\\n" : '';
+        $notes = $adminNotes ? "Payment note: $adminNotes\n" : '';
+        $stmt = $this->db->prepare("UPDATE bookings SET payment_status = 'completed', admin_approval_status = 'approved', approved_by = ?, approved_at = NOW(), admin_notes = CONCAT(IFNULL(admin_notes, ''), ?, '\n[Payment approved by Admin] ', NOW()), status = 'confirmed' WHERE id = ?");
         $stmt->bind_param("isi", $adminId, $notes, $bookingId);
         return $stmt->execute();
     }
 
     public function markPaymentFailed($bookingId, $adminId, $adminNotes = '') {
-        $stmt = $this->db->prepare("UPDATE bookings SET payment_status = 'failed', admin_approval_status = 'rejected', approved_by = ?, approved_at = NOW(), admin_notes = CONCAT(IFNULL(admin_notes, ''), ?, '\\n[Payment rejected by Admin] ', NOW()), status = 'cancelled' WHERE id = ?");
-        $notes = $adminNotes ? "Payment rejection reason: $adminNotes\\n" : '';
+        $notes = $adminNotes ? "Payment rejection reason: $adminNotes\n" : '';
+        $stmt = $this->db->prepare("UPDATE bookings SET payment_status = 'failed', admin_approval_status = 'rejected', approved_by = ?, approved_at = NOW(), admin_notes = CONCAT(IFNULL(admin_notes, ''), ?, '\n[Payment rejected by Admin] ', NOW()), status = 'cancelled' WHERE id = ?");
         $stmt->bind_param("isi", $adminId, $notes, $bookingId);
         return $stmt->execute();
     }
@@ -147,17 +151,20 @@ class Booking extends Model {
     
     public function getTotalBookingsCount() {
         $result = $this->db->query("SELECT COUNT(*) as count FROM bookings");
-        return $result->fetch_assoc()['count'];
+        $row = $result->fetch_assoc();
+        return $row['count'] ?? 0;
     }
     
     public function getPendingApprovalsCount() {
         $result = $this->db->query("SELECT COUNT(*) as count FROM bookings WHERE admin_approval_status = 'pending'");
-        return $result->fetch_assoc()['count'];
+        $row = $result->fetch_assoc();
+        return $row['count'] ?? 0;
     }
     
     public function getTotalRevenue() {
         $result = $this->db->query("SELECT SUM(final_amount) as total FROM bookings WHERE admin_approval_status = 'approved' AND payment_status = 'completed'");
-        return $result->fetch_assoc()['total'] ?? 0;
+        $row = $result->fetch_assoc();
+        return $row['total'] ?? 0;
     }
     
     public function getRecentBookings($limit = 5) {

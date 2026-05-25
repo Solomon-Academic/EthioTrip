@@ -42,7 +42,8 @@ class User extends Model {
     
     public function getTotalUsersCount() {
         $result = $this->db->query("SELECT COUNT(*) as count FROM users");
-        return $result->fetch_assoc()['count'];
+        $row = $result->fetch_assoc();
+        return $row['count'] ?? 0;
     }
     
     public function findAllUsers($limit = null, $offset = 0) {
