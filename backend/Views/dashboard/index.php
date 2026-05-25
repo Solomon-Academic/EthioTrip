@@ -52,10 +52,9 @@
         <div class="actions">
             <a class="action" href="/ethiotrip1/ethiotrip/public/bookings">View My Bookings</a>
             <a class="action" href="/ethiotrip1/ethiotrip/public/bookings/create">Create Booking</a>
-            <a class="action" href="/ethiotrip1/ethiotrip/public/">Back to Home</a>
             <?php if (($user['role'] ?? '') === 'admin'): ?>
                 <a class="action" href="/ethiotrip1/ethiotrip/public/admin/destinations">Manage Destinations</a>
-                <a class="action" href="/ethiotrip1/ethiotrip/public/admin/packages">Manage Packages & Prices</a>
+                <a class="action" href="/ethiotrip1/ethiotrip/public/admin/packages">Manage Packages</a>
                 <a class="action" href="/ethiotrip1/ethiotrip/public/admin/discounts">Manage Discounts</a>
                 <a class="action" href="/ethiotrip1/ethiotrip/public/admin/bookings">Review Payments</a>
             <?php endif; ?>
