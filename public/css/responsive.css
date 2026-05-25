@@ -536,3 +536,121 @@ body {
         padding-right: max(var(--page-pad), env(safe-area-inset-right));
     }
 }
+
+/* ——— Header: links top-right + polish (keeps existing colors) ——— */
+.navbar:not(:has(.navbar-inner)) {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    flex-wrap: nowrap !important;
+    gap: 16px;
+    padding: 1rem 8% !important;
+    background: #fff !important;
+    box-shadow: 0 2px 14px rgba(45, 52, 54, 0.06) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.navbar:not(:has(.navbar-inner)) > .logo {
+    flex-shrink: 0;
+    margin-right: 0;
+}
+
+.navbar .nav-links,
+.navbar > ul.nav-links,
+.navbar > .nav-links,
+.navbar .nav.site-nav-panel,
+.navbar > .nav {
+    margin-left: auto !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+    gap: 4px !important;
+}
+
+.navbar .nav-links a:not(.help-nav-btn),
+.navbar .nav a:not(.help-nav-btn) {
+    padding: 10px 16px !important;
+    border-radius: 10px !important;
+    color: #2d3436 !important;
+    font-weight: 600 !important;
+    font-size: 0.875rem !important;
+    letter-spacing: 0.02em;
+    transition: color 0.25s ease, background 0.25s ease, transform 0.2s ease !important;
+}
+
+.navbar .nav-links a:not(.help-nav-btn):hover,
+.navbar .nav a:not(.help-nav-btn):hover {
+    color: #d4af37 !important;
+    background: rgba(212, 175, 55, 0.12) !important;
+}
+
+.navbar .nav-links a[href*="login"],
+.navbar .nav-links #authLink {
+    border: 1.5px solid #d4af37 !important;
+    border-radius: 50px !important;
+    padding: 8px 20px !important;
+    margin-left: 4px;
+}
+
+.navbar .nav-links a[href*="login"]:hover,
+.navbar .nav-links #authLink:hover {
+    background: #d4af37 !important;
+    color: #2d3436 !important;
+}
+
+.navbar .help-nav-btn {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+    padding: 0 !important;
+    margin-left: 8px !important;
+    border-radius: 50% !important;
+    background: #f4f5f6 !important;
+    border: 1px solid #e8e8e8 !important;
+    color: #2d3436 !important;
+    font-size: 0.95rem !important;
+    box-shadow: none !important;
+}
+
+.navbar .help-nav-btn i {
+    color: #d4af37 !important;
+}
+
+.navbar .help-nav-btn:hover {
+    background: #fff9e8 !important;
+    border-color: #d4af37 !important;
+    transform: translateY(-2px);
+}
+
+.navbar .nav-links li:nth-child(6) {
+    border-left: none !important;
+    padding-left: 0 !important;
+}
+
+.navbar .user-icon {
+    margin-left: 4px;
+    padding: 6px 14px 6px 10px;
+    border-radius: 50px;
+    border: 1px solid #e8e8e8;
+    background: #fafafa;
+}
+
+.navbar .user-icon a {
+    border: none !important;
+    padding: 0 0 0 10px !important;
+    background: transparent !important;
+}
+
+/* Payment page: nav inside .container */
+.navbar > .container {
+    display: flex !important;
+    align-items: center !important;
+    width: 100%;
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.navbar > .container .nav-links {
+    margin-left: auto !important;
+}

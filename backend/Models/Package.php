@@ -23,6 +23,15 @@ class Package extends Model {
         return $this->db->query("SELECT * FROM packages WHERE is_active = 1 ORDER BY price ASC");
     }
 
+    /** @return list<array<string, mixed>> */
+    public function findAllActiveArray(): array {
+        $result = $this->findAllActive();
+        if (!$result) {
+            return [];
+        }
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
     public function findActiveByDestination(int $destinationId): array {
         $stmt = $this->db->prepare(
             "SELECT * FROM packages WHERE is_active = 1 AND destination_id = ? ORDER BY price ASC"

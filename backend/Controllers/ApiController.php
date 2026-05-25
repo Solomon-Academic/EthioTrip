@@ -90,7 +90,7 @@ class ApiController extends Controller {
 
         $packages = array_map(
             fn($p) => $this->packageModel->toApiItem($p),
-            $this->packageModel->findActiveByDestination($id)
+            $this->packageModel->findAllActiveArray()
         );
 
         $this->json([
@@ -124,9 +124,10 @@ class ApiController extends Controller {
             $this->json(['success' => false, 'message' => 'Destination not found.'], 404);
         }
 
+        // All active packages are available for every destination (destination sets trip context only).
         $packages = array_map(
             fn($p) => $this->packageModel->toApiItem($p),
-            $this->packageModel->findActiveByDestination($destinationId)
+            $this->packageModel->findAllActiveArray()
         );
 
         $this->json([
@@ -134,6 +135,7 @@ class ApiController extends Controller {
             'destination' => [
                 'id' => (int) $destination['id'],
                 'name' => $destination['name'],
+                'location' => $destination['location'] ?? '',
             ],
             'packages' => $packages,
         ]);

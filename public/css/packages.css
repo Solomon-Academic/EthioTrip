@@ -45,19 +45,24 @@
       .nav-links {
         list-style: none;
         display: flex;
-        gap: 30px;
+        align-items: center;
+        gap: 4px;
+        margin-left: auto;
       }
 
       .nav-links a {
         text-decoration: none;
         color: var(--primary);
-        font-size: 0.9rem;
+        font-size: 0.875rem;
         font-weight: 600;
-        transition: 0.3s;
+        padding: 10px 16px;
+        border-radius: 10px;
+        transition: color 0.25s ease, background 0.25s ease;
       }
 
       .nav-links a:hover {
         color: var(--accent);
+        background: rgba(212, 175, 55, 0.12);
       }
 
       /* ===== PACKAGE HEADER ===== */

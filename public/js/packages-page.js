@@ -6,16 +6,7 @@
     const empty = document.getElementById('packagesEmpty');
     const errorBox = document.getElementById('packagesError');
     const subtitle = document.getElementById('packagesSubtitle');
-    const authModal = document.getElementById('authModal');
     const toast = document.getElementById('toast');
-    let selectedPkgData = null;
-
-    if (!destinationId) {
-        loading.style.display = 'none';
-        errorBox.innerHTML = 'Please <a href="' + ETHIOTRIP.page('/destination') + '">select a destination</a> first.';
-        errorBox.style.display = 'block';
-        return;
-    }
 
     function escapeHtml(text) {
         const div = document.createElement('div');
@@ -24,73 +15,82 @@
     }
 
     function showToastMessage(message, duration = 2000) {
+        if (!toast) return;
         toast.textContent = message;
         toast.style.display = 'block';
         setTimeout(() => { toast.style.display = 'none'; }, duration);
     }
 
-    function persistPackage(pkg) {
-        const perDay = Math.round((pkg.price / 3) * 100) / 100;
-        localStorage.setItem('selectedPackageId', String(pkg.id));
-        localStorage.setItem('selectedPackage', pkg.name);
-        localStorage.setItem('selectedPrice', String(pkg.price));
-        localStorage.setItem('pricePerDay', String(perDay));
-        localStorage.setItem('packageDurationDays', '3');
+    function parseDurationDays(durationStr) {
+        const d = String(durationStr || '').toLowerCase();
+        if (d.includes('per day') || d.includes('/ day') || d.includes('daily')) {
+            return 1;
+        }
+        const match = d.match(/(\d+)/);
+        return match ? Math.max(1, parseInt(match[1], 10)) : 3;
     }
 
-    window.openAuthModal = function (pkgData) {
-        selectedPkgData = pkgData;
-        authModal.style.display = 'flex';
-    };
-    window.closeAuthModal = function () {
-        authModal.style.display = 'none';
-        selectedPkgData = null;
-    };
-    window.redirectToLogin = function () {
-        if (selectedPkgData) persistPackage(selectedPkgData);
-        localStorage.setItem('returnAfterLogin', '/payment');
-        window.location.href = ETHIOTRIP.page('/login');
-    };
-    window.redirectToRegister = function () {
-        if (selectedPkgData) persistPackage(selectedPkgData);
-        localStorage.setItem('returnAfterLogin', '/payment');
-        window.location.href = ETHIOTRIP.page('/register');
-    };
-    window.continueAsGuest = function () {
-        if (!selectedPkgData) return;
-        persistPackage(selectedPkgData);
-        window.location.href = ETHIOTRIP.page('/payment');
-    };
+    function getPerDayRate(pkg) {
+        const price = Number(pkg.price) || 0;
+        const duration = String(pkg.duration || '').toLowerCase();
+        if (duration.includes('per day') || duration.includes('/ day') || duration.includes('daily')) {
+            return price;
+        }
+        const days = parseDurationDays(pkg.duration);
+        return price / Math.max(days, 1);
+    }
 
-    async function selectPackage(pkg) {
-        const pkgData = { ...pkg, perDay: Math.round((pkg.price / 3) * 100) / 100 };
-        try {
-            const data = await EthioTripApi.checkLogin();
-            persistPackage(pkg);
-            if (data.logged_in) {
-                showToastMessage('✓ ' + pkg.name + ' selected! Redirecting...');
-                setTimeout(() => { window.location.href = ETHIOTRIP.page('/payment'); }, 600);
-            } else {
-                openAuthModal(pkgData);
-            }
-        } catch {
-            openAuthModal(pkgData);
+    function persistDestination(dest) {
+        if (!dest) return;
+        localStorage.setItem('selectedDestinationId', String(dest.id));
+        localStorage.setItem('selectedDestinationName', dest.name || '');
+        if (dest.location) {
+            localStorage.setItem('selectedDestinationLocation', dest.location);
         }
     }
 
+    function persistPackage(pkg) {
+        const perDay = getPerDayRate(pkg);
+        const durationDays = parseDurationDays(pkg.duration);
+        const isPerDay = String(pkg.duration || '').toLowerCase().includes('per day')
+            || String(pkg.duration || '').toLowerCase().includes('/ day');
+
+        localStorage.setItem('selectedPackageId', String(pkg.id));
+        localStorage.setItem('selectedPackage', pkg.name);
+        localStorage.setItem('selectedPrice', String(Number(pkg.price) || 0));
+        localStorage.setItem('pricePerDay', String(perDay));
+        localStorage.setItem('packageDurationDays', String(durationDays));
+        localStorage.setItem('packageDurationLabel', pkg.duration || '');
+        localStorage.setItem('packageIsPerDay', isPerDay ? '1' : '0');
+    }
+
+    function selectPackage(pkg) {
+        persistPackage(pkg);
+        showToastMessage('✓ ' + pkg.name + ' selected. Opening payment...');
+        window.location.href = ETHIOTRIP.page('/payment');
+    }
+
     function renderCard(pkg) {
+        const price = Number(pkg.price) || 0;
+        const perDay = getPerDayRate(pkg);
+        const isPerDay = String(pkg.duration || '').toLowerCase().includes('per day')
+            || String(pkg.duration || '').toLowerCase().includes('/ day');
+        const priceLabel = isPerDay
+            ? `$${price.toFixed(2)}<span> / day</span>`
+            : `$${price.toFixed(2)}<span> package</span>`;
+
         const features = (pkg.features || []).slice(0, 4);
         const featureHtml = features.map((f) =>
             `<li><i class="fas fa-check"></i> ${escapeHtml(f)}</li>`
         ).join('');
-        const perDay = Math.round((pkg.price / 3) * 100) / 100;
+
         const card = document.createElement('div');
         card.className = 'pkg-card';
         card.innerHTML = `
             <span class="pkg-tag">${escapeHtml(pkg.category || 'package')}</span>
             <h3>${escapeHtml(pkg.name)}</h3>
-            <div class="pkg-price">$${pkg.price.toFixed(2)}<span> base rate</span></div>
-            <div class="pkg-per-day"><i class="fas fa-calendar-day"></i> ~$${perDay} per day</div>
+            <div class="pkg-price">${priceLabel}</div>
+            <div class="pkg-per-day"><i class="fas fa-calendar-day"></i> ~$${perDay.toFixed(2)} per day (est.)</div>
             <span class="pkg-duration"><i class="far fa-clock"></i> ${escapeHtml(pkg.duration || 'Flexible')}</span>
             <p style="color:#636e72;font-size:0.85rem;margin-bottom:12px;">${escapeHtml(pkg.description || '')}</p>
             <ul class="pkg-features">${featureHtml}</ul>
@@ -105,30 +105,42 @@
     }
 
     async function load() {
+        if (!destinationId) {
+            loading.style.display = 'none';
+            errorBox.innerHTML = 'Please <a href="' + ETHIOTRIP.page('/destination') + '">select a destination</a> first.';
+            errorBox.style.display = 'block';
+            return;
+        }
+
         try {
             const data = await EthioTripApi.listPackages(destinationId);
-            loading.style.display = 'none';
-            if (data.destination) {
-                subtitle.textContent = 'Packages for ' + data.destination.name;
-                localStorage.setItem('selectedDestinationId', String(data.destination.id));
-                localStorage.setItem('selectedDestinationName', data.destination.name);
+
+            if (data.success === false) {
+                throw new Error(data.message || 'Could not load packages.');
             }
-            const packages = data.packages || [];
+
+            loading.style.display = 'none';
+
+            if (data.destination) {
+                persistDestination(data.destination);
+                subtitle.textContent = 'All packages available for ' + data.destination.name
+                    + ' — choose one to continue to payment.';
+            }
+
+            const packages = Array.isArray(data.packages) ? data.packages : [];
             if (!packages.length) {
                 empty.style.display = 'block';
                 return;
             }
+
             packages.forEach((pkg) => list.appendChild(renderCard(pkg)));
         } catch (err) {
             loading.style.display = 'none';
             errorBox.textContent = err.message || 'Could not load packages.';
             errorBox.style.display = 'block';
+            console.error('Packages load error:', err);
         }
     }
-
-    window.onclick = function (event) {
-        if (event.target === authModal) closeAuthModal();
-    };
 
     load();
 })();

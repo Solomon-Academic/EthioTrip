@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -184,6 +184,13 @@
                 <p><strong><i class="fas fa-user"></i> Logged in as:</strong> <span id="displayUserName">Loading...</span></p>
                 <p><strong><i class="fas fa-envelope"></i> Email:</strong> <span id="displayUserEmail">Loading...</span></p>
             </div>
+
+            <div class="user-info-card" id="selectionSummaryCard" style="background: linear-gradient(135deg, #fff9e8, #fff); border: 1px solid #e8d9a0; margin-bottom: 24px;">
+                <p><strong><i class="fas fa-map-marker-alt"></i> Destination:</strong> <span id="summarySelectedDestination">—</span></p>
+                <p><strong><i class="fas fa-box"></i> Package:</strong> <span id="summarySelectedPackage">—</span></p>
+                <p><strong><i class="fas fa-tag"></i> Package price:</strong> <span id="summarySelectedPackagePrice">—</span></p>
+                <p style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #d4af37;"><strong><i class="fas fa-wallet"></i> Total to pay:</strong> <span id="summarySelectedTotal" style="font-size: 1.25rem; color: #2d3436;">—</span></p>
+            </div>
             
             <div style="max-width: 600px; margin: 0 auto;">
                 <div class="form-group">
@@ -222,6 +229,11 @@
                     </div>
                 </div>
                 
+                <div class="form-group" id="guestNameGroup" style="display: none;">
+                    <label>Your Name <span style="color: red;">*</span></label>
+                    <input type="text" id="inputGuestName" placeholder="Full name for booking">
+                </div>
+
                 <div class="form-group">
                     <label>Phone Number <span style="color: red;">*</span></label>
                     <input type="tel" id="inputPhone" placeholder="09XXXXXXXX" required>
@@ -371,19 +383,65 @@
                         }
                     }
                 } else {
-                    // Not logged in - redirect to login
-                    showNotice('Please login to continue with your booking', 'error');
-                    setTimeout(() => {
-                        window.location.href = '/ethiotrip1/ethiotrip/public/login';
-                    }, 2000);
+                    userData = { logged_in: false, user_name: 'Guest', user_email: '' };
+                    document.getElementById('displayUserName').textContent = 'Guest checkout';
+                    document.getElementById('displayUserEmail').textContent = 'Sign in for loyalty discounts (optional)';
+                    document.getElementById('guestNameGroup').style.display = 'block';
                 }
             } catch (error) {
                 console.error('Failed to load user data:', error);
-                showNotice('Session error. Please login again.', 'error');
-                setTimeout(() => {
-                    window.location.href = '/ethiotrip1/ethiotrip/public/login';
-                }, 2000);
+                userData = { logged_in: false, user_name: 'Guest', user_email: '' };
+                document.getElementById('displayUserName').textContent = 'Guest checkout';
+                document.getElementById('displayUserEmail').textContent = 'Continue as guest';
+                document.getElementById('guestNameGroup').style.display = 'block';
             }
+        }
+
+        function formatPackagePriceDisplay(pkgPrice, perDay, isPerDay, durationLabel) {
+            if (isPerDay) {
+                return `$${perDay.toFixed(2)} per day`;
+            }
+            if (durationLabel) {
+                return `$${pkgPrice.toFixed(2)} (${durationLabel})`;
+            }
+            return `$${pkgPrice.toFixed(2)}`;
+        }
+
+        function computePayableTotal(durationDays, travelers) {
+            const dailyRate = selectedPackageData.perDay;
+            const days = durationDays > 0 ? durationDays : 1;
+            const count = travelers > 0 ? travelers : 1;
+            const subtotal = dailyRate * days * count;
+            const discountPercent = (discountData && discountData.discount_percent) || 0;
+            const discountAmount = subtotal * (discountPercent / 100);
+            const afterDiscount = subtotal - discountAmount;
+            const tax = afterDiscount * 0.10;
+            return afterDiscount + tax;
+        }
+
+        function updateSelectionSummary() {
+            const dest = localStorage.getItem('selectedDestinationName') || 'Not specified';
+            const pkgPrice = parseFloat(localStorage.getItem('selectedPrice') || '0');
+            const isPerDay = localStorage.getItem('packageIsPerDay') === '1';
+            const durationLabel = localStorage.getItem('packageDurationLabel') || '';
+
+            document.getElementById('summarySelectedDestination').textContent = dest;
+            document.getElementById('summarySelectedPackage').textContent = selectedPackageData.name;
+            document.getElementById('summarySelectedPackagePrice').textContent = formatPackagePriceDisplay(
+                pkgPrice,
+                selectedPackageData.perDay,
+                isPerDay,
+                durationLabel
+            );
+
+            let total = 0;
+            if (bookingDetails && bookingDetails.durationDays > 0) {
+                total = computePayableTotal(bookingDetails.durationDays, bookingDetails.travelers);
+            } else {
+                total = computePayableTotal(1, 1);
+            }
+            document.getElementById('summarySelectedTotal').textContent = `$${total.toFixed(2)}`;
+            return total;
         }
         
         // Load package data from localStorage
@@ -399,28 +457,34 @@
             
             if (!pkgName || !pkgPrice) {
                 showNotice('Please select a package before payment.', 'error');
+                const destId = localStorage.getItem('selectedDestinationId');
                 setTimeout(() => {
-                    window.location.href = '/ethiotrip1/ethiotrip/public/packages';
+                    window.location.href = destId
+                        ? '/ethiotrip1/ethiotrip/public/packages?destination_id=' + destId
+                        : '/ethiotrip1/ethiotrip/public/destination';
                 }, 2000);
                 return false;
             }
-            
+
+            const parsedPerDay = perDayRate ? parseFloat(perDayRate) : (parseFloat(pkgPrice) / parseInt(durationDays || 3, 10));
             selectedPackageData = {
                 name: pkgName,
                 price: parseFloat(pkgPrice),
-                perDay: perDayRate ? parseFloat(perDayRate) : (parseFloat(pkgPrice) / parseInt(durationDays || 3)),
-                duration: parseInt(durationDays || 3)
+                perDay: parsedPerDay,
+                duration: parseInt(durationDays || 3, 10)
             };
 
             bookingDetails = buildBookingDetailsFromStorage();
-            
+
             document.getElementById('selectedPackageDisplay').textContent = selectedPackageData.name;
-            document.getElementById('dailyRateInput').value = `$${selectedPackageData.perDay.toFixed(0)} per day`;
+            document.getElementById('dailyRateInput').value = `$${selectedPackageData.perDay.toFixed(2)} per day`;
             document.getElementById('summaryPackage').textContent = selectedPackageData.name;
-            document.getElementById('summaryDailyRate').textContent = `$${selectedPackageData.perDay.toFixed(0)}`;
+            document.getElementById('summaryDailyRate').textContent = `$${selectedPackageData.perDay.toFixed(2)}`;
+            document.getElementById('displayDestination').textContent = destination || 'Not specified';
             hydrateBookingDetailsEditor(destination, startDate, endDate, travelers);
             renderBookingDetails();
-            
+            updateSelectionSummary();
+
             return true;
         }
 
@@ -534,9 +598,10 @@
                 }
                 document.getElementById('summaryTax').textContent = `$${tax.toFixed(2)}`;
                 document.getElementById('summaryTotal').textContent = `$${total.toFixed(2)}`;
-                
+                updateSelectionSummary();
                 return total;
             }
+            updateSelectionSummary();
             return 0;
         }
 
@@ -569,7 +634,15 @@
         // Proceed button
         document.getElementById('btnProceed').addEventListener('click', () => {
             const phone = document.getElementById('inputPhone').value.trim();
-            
+            const guestName = document.getElementById('inputGuestName').value.trim();
+
+            if (!userData || !userData.logged_in) {
+                if (!guestName) {
+                    showNotice('Please enter your name to continue as guest', 'error');
+                    return;
+                }
+                userData = { logged_in: false, user_name: guestName, user_email: '' };
+            }
             if (!phone) {
                 showNotice('Please enter your phone number', 'error');
                 return;
@@ -582,7 +655,7 @@
                 showNotice('Please enter valid travel dates and number of travelers', 'error');
                 return;
             }
-            
+
             document.getElementById('phase-amount').style.display = 'none';
             document.getElementById('phase-checkout').style.display = 'block';
             document.getElementById('step2').classList.add('active');
@@ -638,7 +711,7 @@
                 end_date: endDate,
                 travelers: travelers,
                 payment_method: paymentMethod,
-                user_name: userData ? userData.user_name : '',
+                user_name: userData ? (userData.user_name || document.getElementById('inputGuestName').value.trim()) : '',
                 user_email: userData ? userData.user_email : '',
                 phone: document.getElementById('inputPhone').value,
                 special_requests: bookingDetails.specialRequests,

@@ -21,20 +21,26 @@
             display: flex;
             align-items: center;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 4px;
+            margin-left: auto;
+            list-style: none;
         }
+        .nav-links li { list-style: none; }
         .nav-links a {
             text-decoration: none;
             color: var(--primary);
             font-weight: 600;
-            font-size: clamp(0.85rem, 2.5vw, 1rem);
-            transition: 0.3s;
-            min-height: 44px;
+            font-size: 0.875rem;
+            transition: color 0.25s ease, background 0.25s ease;
             display: inline-flex;
             align-items: center;
-            padding: 8px 12px;
+            padding: 10px 16px;
+            border-radius: 10px;
         }
-        .nav-links a:hover { color: var(--accent); }
+        .nav-links a:hover {
+            color: var(--accent);
+            background: rgba(212, 175, 55, 0.12);
+        }
 
         /* --- SECTION 1: ISOLATED CAROUSEL --- */
         .carousel-outer {
