@@ -40,6 +40,7 @@ class AuthController extends Controller
                 if ($user && password_verify($password, $user['password'])) {
                     Session::set('user_id', $user['id']);
                     Session::set('user_name', $user['name']);
+                    Session::set('user_email', $user['email']);
                     Session::set('user_role', $user['role']);
 
                     $redirectUrl = Session::get('return_url') ?: '/dashboard';
@@ -106,6 +107,7 @@ class AuthController extends Controller
                     $user = $this->userModel->findByEmail($data['email']);
                     Session::set('user_id', $user['id']);
                     Session::set('user_name', $user['name']);
+                    Session::set('user_email', $user['email']);
                     Session::set('user_role', $user['role']);
                     $this->redirect('/dashboard');
                 }
@@ -135,6 +137,7 @@ class AuthController extends Controller
             'logged_in' => $isLoggedIn,
             'user_id' => Session::get('user_id'),
             'user_name' => Session::get('user_name'),
+            'user_email' => Session::get('user_email'),
             'user_role' => Session::get('user_role') ?? 'user'
         ]);
         exit;

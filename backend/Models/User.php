@@ -39,5 +39,17 @@ class User extends Model {
         $stmt->bind_param("di", $discount, $id);
         return $stmt->execute();
     }
+    
+    public function getTotalUsersCount() {
+        $result = $this->db->query("SELECT COUNT(*) as count FROM users");
+        return $result->fetch_assoc()['count'];
+    }
+    
+    public function findAllUsers($limit = null, $offset = 0) {
+        $sql = "SELECT id, name, email, phone, role, trips_completed, total_spent, loyalty_discount, created_at FROM users ORDER BY created_at DESC";
+        if ($limit) {
+            $sql .= " LIMIT $offset, $limit";
+        }
+        return $this->db->query($sql);
+    }
 }
-?>

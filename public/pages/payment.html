@@ -176,7 +176,7 @@
     <main class="container">
         <section id="phase-amount" style="background: white; padding: 40px; border-radius: 24px; box-shadow: var(--shadow);">
             <h1 style="text-align: center; margin-bottom: 10px;">Complete Your Booking</h1>
-            <p style="text-align: center; margin-bottom: 30px; color: var(--text-light);">Please review your package details below.</p>
+            <p style="text-align: center; margin-bottom: 30px; color: var(--text-light);">Please confirm your payment details below.</p>
             
             <!-- User Info Display (auto-filled from login) -->
             <div class="user-info-card" id="userInfoCard">
@@ -194,32 +194,39 @@
                     <label>Price per day (per person)</label>
                     <input type="text" id="dailyRateInput" readonly style="background: #f5f5f5; text-align: center;">
                 </div>
+                <div class="user-info-card" id="bookingDetailsCard">
+                    <p><strong><i class="fas fa-map-marker-alt"></i> Destination:</strong> <span id="displayDestination">Loading...</span></p>
+                    <p><strong><i class="fas fa-calendar"></i> Dates:</strong> <span id="displayDates">Loading...</span></p>
+                    <p><strong><i class="fas fa-users"></i> Travelers:</strong> <span id="displayTravelers">Loading...</span></p>
+                </div>
+
+                <div id="bookingDetailsEditor" style="display:none;">
+                    <div class="form-group">
+                        <label>Number of Travelers <span style="color: red;">*</span></label>
+                        <input type="number" id="travelersCount" min="1" max="20" value="1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Travel Dates <span style="color: red;">*</span></label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div><label style="font-size: 0.7rem;">Start Date</label><input type="date" id="startDate"></div>
+                            <div><label style="font-size: 0.7rem;">End Date</label><input type="date" id="endDate"></div>
+                        </div>
+                        <div id="durationInfo" style="font-size: 0.75rem; color: #666; margin-top: 8px;"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Special Requests (Optional)</label>
+                        <textarea id="specialRequests" rows="3" placeholder="Dietary preferences, accessibility needs, special accommodations, etc." style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #ddd;"></textarea>
+                    </div>
+                </div>
                 
                 <div class="form-group">
                     <label>Phone Number <span style="color: red;">*</span></label>
                     <input type="tel" id="inputPhone" placeholder="09XXXXXXXX" required>
                 </div>
                 
-                <div class="form-group">
-                    <label>Number of Travelers <span style="color: red;">*</span></label>
-                    <input type="number" id="travelersCount" min="1" max="20" value="1" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>Travel Dates <span style="color: red;">*</span></label>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                        <div><label style="font-size: 0.7rem;">Start Date</label><input type="date" id="startDate" required></div>
-                        <div><label style="font-size: 0.7rem;">End Date</label><input type="date" id="endDate" required></div>
-                    </div>
-                    <div id="durationInfo" style="font-size: 0.75rem; color: #666; margin-top: 8px;"></div>
-                </div>
-                
-                <div class="form-group">
-                    <label>Special Requests (Optional)</label>
-                    <textarea id="specialRequests" rows="3" placeholder="Dietary preferences, accessibility needs, special accommodations, etc." style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #ddd;"></textarea>
-                </div>
-                
-                <button class="btn-primary" id="btnProceed">Proceed to Payment →</button>
+                <button class="btn-primary" id="btnProceed">Proceed to Payment</button>
             </div>
         </section>
 
@@ -330,6 +337,7 @@
         
         let userData = null;
         let selectedPackageData = null;
+        let bookingDetails = null;
         let discountData = null;
         
         function showNotice(message, type = 'success') {
@@ -383,9 +391,13 @@
             const pkgPrice = localStorage.getItem("selectedPrice");
             const perDayRate = localStorage.getItem("pricePerDay");
             const durationDays = localStorage.getItem("packageDurationDays");
+            const startDate = localStorage.getItem("selectedStartDate");
+            const endDate = localStorage.getItem("selectedEndDate");
+            const travelers = parseInt(localStorage.getItem("selectedTravelers") || "1");
+            const destination = localStorage.getItem("selectedDestinationName") || '';
             
             if (!pkgName || !pkgPrice) {
-                showNotice('No package selected. Redirecting to packages page.', 'error');
+                showNotice('Please select a package before payment.', 'error');
                 setTimeout(() => {
                     window.location.href = '/ethiotrip1/ethiotrip/public/packages';
                 }, 2000);
@@ -394,90 +406,168 @@
             
             selectedPackageData = {
                 name: pkgName,
-                price: parseInt(pkgPrice),
-                perDay: perDayRate ? parseFloat(perDayRate) : (parseInt(pkgPrice) / parseInt(durationDays || 3)),
+                price: parseFloat(pkgPrice),
+                perDay: perDayRate ? parseFloat(perDayRate) : (parseFloat(pkgPrice) / parseInt(durationDays || 3)),
                 duration: parseInt(durationDays || 3)
             };
+
+            bookingDetails = buildBookingDetailsFromStorage();
             
             document.getElementById('selectedPackageDisplay').textContent = selectedPackageData.name;
             document.getElementById('dailyRateInput').value = `$${selectedPackageData.perDay.toFixed(0)} per day`;
             document.getElementById('summaryPackage').textContent = selectedPackageData.name;
             document.getElementById('summaryDailyRate').textContent = `$${selectedPackageData.perDay.toFixed(0)}`;
+            hydrateBookingDetailsEditor(destination, startDate, endDate, travelers);
+            renderBookingDetails();
             
             return true;
+        }
+
+        function buildBookingDetailsFromStorage() {
+            const startDate = localStorage.getItem("selectedStartDate");
+            const endDate = localStorage.getItem("selectedEndDate");
+            const travelers = parseInt(localStorage.getItem("selectedTravelers") || "1");
+            const destination = localStorage.getItem("selectedDestinationName") || '';
+
+            if (!startDate || !endDate) {
+                return null;
+            }
+
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            const durationDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+            if (durationDays < 1 || travelers < 1 || travelers > 20) {
+                return null;
+            }
+
+            return {
+                destination,
+                startDate,
+                endDate,
+                travelers,
+                durationDays,
+                specialRequests: localStorage.getItem("specialRequests") || ''
+            };
+        }
+
+        function hydrateBookingDetailsEditor(destination, startDate, endDate, travelers) {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('startDate').min = today;
+            document.getElementById('endDate').min = today;
+            document.getElementById('startDate').value = startDate || '';
+            document.getElementById('endDate').value = endDate || '';
+            document.getElementById('travelersCount').value = travelers || 1;
+            document.getElementById('specialRequests').value = localStorage.getItem("specialRequests") || '';
+
+            document.getElementById('bookingDetailsEditor').style.display = bookingDetails ? 'none' : 'block';
+            if (!destination) {
+                document.getElementById('displayDestination').textContent = 'Not specified';
+            }
+        }
+
+        function collectBookingDetailsFromEditor() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const travelers = parseInt(document.getElementById('travelersCount').value || "1");
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            const durationDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+
+            if (!startDate || !endDate || durationDays < 1 || travelers < 1 || travelers > 20) {
+                return null;
+            }
+
+            bookingDetails = {
+                destination: localStorage.getItem("selectedDestinationName") || '',
+                startDate,
+                endDate,
+                travelers,
+                durationDays,
+                specialRequests: document.getElementById('specialRequests').value || ''
+            };
+
+            localStorage.setItem("selectedStartDate", startDate);
+            localStorage.setItem("selectedEndDate", endDate);
+            localStorage.setItem("selectedTravelers", travelers.toString());
+            localStorage.setItem("specialRequests", bookingDetails.specialRequests);
+            renderBookingDetails();
+            return bookingDetails;
+        }
+
+        function renderBookingDetails() {
+            if (!bookingDetails) {
+                document.getElementById('displayDestination').textContent = localStorage.getItem("selectedDestinationName") || 'Not specified';
+                document.getElementById('displayDates').textContent = 'Choose dates below';
+                document.getElementById('displayTravelers').textContent = 'Choose travelers below';
+                document.getElementById('summaryDuration').textContent = '-';
+                document.getElementById('summaryTravelers').textContent = '-';
+                document.getElementById('summarySubtotal').textContent = '$0.00';
+                document.getElementById('summaryTax').textContent = '$0.00';
+                document.getElementById('summaryTotal').textContent = '$0.00';
+                return;
+            }
+
+            document.getElementById('displayDestination').textContent = bookingDetails.destination || 'Not specified';
+            document.getElementById('displayDates').textContent = `${bookingDetails.startDate} to ${bookingDetails.endDate}`;
+            document.getElementById('displayTravelers').textContent = bookingDetails.travelers;
+            calculateTotals();
         }
         
         // Calculate totals
         function calculateTotals() {
             const dailyRate = selectedPackageData.perDay;
-            const travelers = parseInt(document.getElementById('travelersCount').value) || 1;
-            const startDate = document.getElementById('startDate').value;
-            const endDate = document.getElementById('endDate').value;
-            
-            if (startDate && endDate) {
-                const start = new Date(startDate);
-                const end = new Date(endDate);
-                const durationDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+            if (bookingDetails && bookingDetails.durationDays > 0) {
+                const subtotal = dailyRate * bookingDetails.durationDays * bookingDetails.travelers;
+                const discountPercent = (discountData && discountData.discount_percent) || 0;
+                const discountAmount = subtotal * (discountPercent / 100);
+                const afterDiscount = subtotal - discountAmount;
+                const tax = afterDiscount * 0.10;
+                const total = afterDiscount + tax;
                 
-                if (durationDays > 0) {
-                    const subtotal = dailyRate * durationDays * travelers;
-                    const discountPercent = (discountData && discountData.discount_percent) || 0;
-                    const discountAmount = subtotal * (discountPercent / 100);
-                    const afterDiscount = subtotal - discountAmount;
-                    const tax = afterDiscount * 0.10;
-                    const total = afterDiscount + tax;
-                    
-                    document.getElementById('summaryDuration').textContent = durationDays;
-                    document.getElementById('summaryTravelers').textContent = travelers;
-                    document.getElementById('summarySubtotal').textContent = `$${subtotal.toFixed(2)}`;
-                    if (discountAmount > 0) {
-                        document.getElementById('summaryDiscount').textContent = `-$${discountAmount.toFixed(2)}`;
-                        document.getElementById('discountRow').style.display = 'flex';
-                    }
-                    document.getElementById('summaryTax').textContent = `$${tax.toFixed(2)}`;
-                    document.getElementById('summaryTotal').textContent = `$${total.toFixed(2)}`;
-                    
-                    return total;
+                document.getElementById('summaryDuration').textContent = bookingDetails.durationDays;
+                document.getElementById('summaryTravelers').textContent = bookingDetails.travelers;
+                document.getElementById('summarySubtotal').textContent = `$${subtotal.toFixed(2)}`;
+                if (discountAmount > 0) {
+                    document.getElementById('summaryDiscount').textContent = `-$${discountAmount.toFixed(2)}`;
+                    document.getElementById('discountRow').style.display = 'flex';
                 }
+                document.getElementById('summaryTax').textContent = `$${tax.toFixed(2)}`;
+                document.getElementById('summaryTotal').textContent = `$${total.toFixed(2)}`;
+                
+                return total;
             }
             return 0;
         }
-        
-        // Update duration display
-        function updateDuration() {
-            const start = document.getElementById('startDate').value;
-            const end = document.getElementById('endDate').value;
-            if (start && end) {
-                const startDate = new Date(start);
-                const endDate = new Date(end);
-                const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
-                if (days > 0) {
-                    document.getElementById('durationInfo').textContent = `Trip duration: ${days} day(s)`;
-                    document.getElementById('durationInfo').style.color = "#27ae60";
-                    calculateTotals();
-                } else {
-                    document.getElementById('durationInfo').textContent = "End date must be after start date";
-                    document.getElementById('durationInfo').style.color = "#e74c3c";
-                }
+
+        function updateDurationPreview() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const durationInfo = document.getElementById('durationInfo');
+            if (!startDate || !endDate) {
+                durationInfo.textContent = '';
+                return;
+            }
+
+            const days = Math.ceil((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24));
+            if (days > 0) {
+                durationInfo.textContent = `Trip duration: ${days} day(s)`;
+                durationInfo.style.color = '#27ae60';
+                collectBookingDetailsFromEditor();
+            } else {
+                durationInfo.textContent = 'End date must be after start date';
+                durationInfo.style.color = '#e74c3c';
             }
         }
-        
-        // Set min dates
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('startDate').min = today;
-        document.getElementById('endDate').min = today;
-        
-        // Event listeners for calculation
-        document.getElementById('startDate').addEventListener('change', updateDuration);
-        document.getElementById('endDate').addEventListener('change', updateDuration);
-        document.getElementById('travelersCount').addEventListener('input', calculateTotals);
+
+        document.getElementById('startDate').addEventListener('change', updateDurationPreview);
+        document.getElementById('endDate').addEventListener('change', updateDurationPreview);
+        document.getElementById('travelersCount').addEventListener('input', () => {
+            collectBookingDetailsFromEditor();
+        });
         
         // Proceed button
         document.getElementById('btnProceed').addEventListener('click', () => {
             const phone = document.getElementById('inputPhone').value.trim();
-            const travelers = document.getElementById('travelersCount').value;
-            const startDate = document.getElementById('startDate').value;
-            const endDate = document.getElementById('endDate').value;
             
             if (!phone) {
                 showNotice('Please enter your phone number', 'error');
@@ -487,12 +577,8 @@
                 showNotice('Please enter a valid 10-digit phone number', 'error');
                 return;
             }
-            if (!startDate || !endDate) {
-                showNotice('Please select travel dates', 'error');
-                return;
-            }
-            if (new Date(startDate) >= new Date(endDate)) {
-                showNotice('End date must be after start date', 'error');
+            if (!bookingDetails && !collectBookingDetailsFromEditor()) {
+                showNotice('Please enter valid travel dates and number of travelers', 'error');
                 return;
             }
             
@@ -530,12 +616,10 @@
             const originalText = button.innerHTML;
             button.innerHTML = '<span class="loading-spinner"></span>Saving...';
             
-            const startDate = document.getElementById('startDate').value;
-            const endDate = document.getElementById('endDate').value;
-            const travelers = parseInt(document.getElementById('travelersCount').value);
-            const start = new Date(startDate);
-            const end = new Date(endDate);
-            const durationDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+            const startDate = bookingDetails.startDate;
+            const endDate = bookingDetails.endDate;
+            const travelers = bookingDetails.travelers;
+            const durationDays = bookingDetails.durationDays;
             const dailyRate = selectedPackageData.perDay;
             const subtotal = dailyRate * durationDays * travelers;
             const discountPercent = (discountData && discountData.discount_percent) || 0;
@@ -552,8 +636,9 @@
                 travelers: travelers,
                 payment_method: paymentMethod,
                 user_name: userData ? userData.user_name : '',
+                user_email: userData ? userData.user_email : '',
                 phone: document.getElementById('inputPhone').value,
-                special_requests: document.getElementById('specialRequests').value,
+                special_requests: bookingDetails.specialRequests,
                 total_amount: subtotal,
                 discount_amount: discountAmount,
                 final_amount: finalAmount,
@@ -593,8 +678,9 @@
                             <p><strong>VAT (10%):</strong> $${tax.toFixed(2)}</p>
                             <p><strong>Total Paid:</strong> $${finalAmount.toFixed(2)}</p>
                             <p><strong>Payment Method:</strong> ${paymentMethod}</p>
-                            <p><strong>Payment Status:</strong> Pending</p>
+                            <p><strong>Payment Status:</strong> ${result.payment_status || 'Pending'} admin review</p>
                             <p><strong>Booking Status:</strong> ${result.status || 'Pending'}</p>
+                            <p><strong>Confirmation Email:</strong> ${result.email_sent ? 'Sent to ' + (result.user_email || userData.user_email) : 'Queued for configured mail server'}</p>
                         </div>
                         <a href="/ethiotrip1/ethiotrip/public/bookings" class="btn-primary" style="display: inline-block; text-decoration: none; margin-top: 20px;">View My Bookings</a>
                     </div>
@@ -606,6 +692,11 @@
                 localStorage.removeItem("selectedPrice");
                 localStorage.removeItem("pricePerDay");
                 localStorage.removeItem("packageDurationDays");
+                localStorage.removeItem("selectedDestinationName");
+                localStorage.removeItem("selectedStartDate");
+                localStorage.removeItem("selectedEndDate");
+                localStorage.removeItem("selectedTravelers");
+                localStorage.removeItem("specialRequests");
                 
             } catch (error) {
                 showNotice(error.message, 'error');

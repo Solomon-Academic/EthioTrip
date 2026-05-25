@@ -17,8 +17,21 @@
             </div>
         </div>
 
+        <div class="header">
+            <div>
+                <h1>Create Booking</h1>
+                <p>Choose your trip details once, then continue to payment.</p>
+            </div>
+            <a class="button button-secondary" href="/ethiotrip1/ethiotrip/public/bookings">Back to My Bookings</a>
+        </div>
+
         <div class="card">
-            <h1>Create Booking</h1>
+            <div class="highlight">
+                Booking for <?php echo htmlspecialchars($user['name'] ?? 'Traveler'); ?>
+                <?php if (!empty($user['email'])): ?>
+                    (<?php echo htmlspecialchars($user['email']); ?>)
+                <?php endif; ?>
+            </div>
             <?php if (!empty($errors['general'])): ?>
                 <div class="error"><?php echo htmlspecialchars($errors['general']); ?></div>
             <?php endif; ?>
@@ -71,7 +84,7 @@
                 </div>
                 <div class="form-group">
                     <label>Special Requests</label>
-                    <textarea name="special_requests" rows="4"><?php echo htmlspecialchars($form['special_requests'] ?? ''); ?></textarea>
+                    <textarea name="special_requests" id="specialRequestsField" rows="4"><?php echo htmlspecialchars($form['special_requests'] ?? ''); ?></textarea>
                 </div>
                 <button class="button" type="button" id="continueToPayment">Continue to Payment</button>
                 <a class="button button-secondary" href="/ethiotrip1/ethiotrip/public/bookings">Cancel</a>
@@ -104,6 +117,7 @@
             localStorage.setItem('selectedStartDate', startDate);
             localStorage.setItem('selectedEndDate', endDate);
             localStorage.setItem('selectedTravelers', travelers);
+            localStorage.setItem('specialRequests', document.getElementById('specialRequestsField').value || '');
             window.location.href = '/ethiotrip1/ethiotrip/public/payment';
         });
     </script>

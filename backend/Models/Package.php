@@ -24,5 +24,36 @@ class Package extends Model {
         $stmt->execute();
         return $stmt->get_result()->fetch_assoc();
     }
+    
+    public function createPackage($data) {
+        return $this->create($data);
+    }
+    
+    public function updatePackage($id, $data) {
+        return $this->update($id, $data);
+    }
+    
+    public function deletePackage($id) {
+        // Check if package has any bookings
+        $checkStmt = $this->db->prepare("SELECT COUNT(*) as count FROM bookings WHERE package_id = ?");
+        $checkStmt->bind_param("i", $id);
+        $checkStmt->execute();
+        $result = $checkStmt->get_result()->fetch_assoc();
+        
+        if ($result['count'] > 0) {
+            // Instead of deleting, just deactivate
+            return $this->update($id, ['is_active' => 0]);
+        }
+        
+        return $this->delete($id);
+    }
+    
+    public function getPackageWithBookings($id) {
+        $stmt = $this->db->prepare("SELECT p.*, 
+            (SELECT COUNT(*) FROM bookings WHERE package_id = p.id) as booking_count 
+            FROM packages p WHERE p.id = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_assoc();
+    }
 }
-?>

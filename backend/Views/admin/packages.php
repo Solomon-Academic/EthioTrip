@@ -12,6 +12,7 @@
         <div class="navbar">
             <a href="/ethiotrip1/ethiotrip/public/dashboard" class="logo">Ethio<span class="accent-text">Trip</span> Admin</a>
             <div class="nav">
+                <a href="/ethiotrip1/ethiotrip/public/admin/bookings">Payments</a>
                 <a href="/ethiotrip1/ethiotrip/public/admin/destinations">Destinations</a>
                 <a href="/ethiotrip1/ethiotrip/public/admin/discounts">Discounts</a>
                 <a href="/ethiotrip1/ethiotrip/public/logout">Logout</a>
@@ -59,7 +60,7 @@
                                     <a href="/ethiotrip1/ethiotrip/public/admin/packages/edit?id=<?php echo $package['id']; ?>">Edit</a>
                                     <form method="POST" action="/ethiotrip1/ethiotrip/public/admin/packages/delete?id=<?php echo $package['id']; ?>" style="display:inline;" onsubmit="return confirm('Delete this package?');">
                                         <?php echo $this->csrfField(); ?>
-                                        <button type="submit">Delete</button>
+                                        <button type="submit" class="button-danger">Delete</button>
                                     </form>
                                 </td>
                             </tr>

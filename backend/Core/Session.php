@@ -77,5 +77,9 @@ class Session {
     public static function getUserName() {
         return $_SESSION['user_name'] ?? '';
     }
+
+    public static function getUserEmail() {
+        return $_SESSION['user_email'] ?? '';
+    }
 }
 ?>

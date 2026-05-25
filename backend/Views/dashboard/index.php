@@ -55,6 +55,7 @@
                 <a class="action" href="/ethiotrip1/ethiotrip/public/admin/destinations">Manage Destinations</a>
                 <a class="action" href="/ethiotrip1/ethiotrip/public/admin/packages">Manage Packages & Prices</a>
                 <a class="action" href="/ethiotrip1/ethiotrip/public/admin/discounts">Manage Discounts</a>
+                <a class="action" href="/ethiotrip1/ethiotrip/public/admin/bookings">Review Payments</a>
             <?php endif; ?>
         </div>
 

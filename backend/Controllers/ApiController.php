@@ -27,10 +27,22 @@ class ApiController extends Controller {
     }
     
     public function checkLogin() {
+        $userEmail = Session::getUserEmail();
+        $userId = Session::getUserId();
+
+        if ($userId && $userEmail === '') {
+            $user = $this->userModel->find($userId);
+            $userEmail = $user['email'] ?? '';
+            if ($userEmail !== '') {
+                Session::set('user_email', $userEmail);
+            }
+        }
+
         $this->json([
             'logged_in' => Session::isLoggedIn(),
-            'user_id' => Session::getUserId(),
+            'user_id' => $userId,
             'user_name' => Session::getUserName(),
+            'user_email' => $userEmail,
             'user_role' => Session::isAdmin() ? 'admin' : 'user'
         ]);
     }
@@ -108,8 +120,8 @@ class ApiController extends Controller {
         $paymentMethod = trim($input['payment_method'] ?? 'cash');
         $userName = trim($input['user_name'] ?? '');
 
-        if ($packageName === '' || $startDate === '' || $endDate === '' || $userName === '') {
-            $this->json(['success' => false, 'message' => 'Package, dates, and traveler name are required.'], 422);
+        if ($packageName === '' || $startDate === '' || $endDate === '') {
+            $this->json(['success' => false, 'message' => 'Package and travel dates are required.'], 422);
         }
 
         $package = $this->packageModel->findByName($packageName);
@@ -137,6 +149,10 @@ class ApiController extends Controller {
         
         $userId = Session::getUserId();
         if (!$userId) {
+            if ($userName === '') {
+                $this->json(['success' => false, 'message' => 'Please sign in before completing a booking.'], 401);
+            }
+
             $users = $this->userModel->where('name', $userName);
             if (count($users) > 0) {
                 $userId = $users[0]['id'];
@@ -153,6 +169,10 @@ class ApiController extends Controller {
         }
         
         $user = $this->userModel->find($userId);
+        if (!$user) {
+            $this->json(['success' => false, 'message' => 'Signed-in user was not found.'], 401);
+        }
+
         $discountRate = floatval($user['loyalty_discount']);
         
         $dailyRate = $packagePrice / 3;
@@ -178,24 +198,71 @@ class ApiController extends Controller {
             'transaction_id' => $transactionId,
             'payment_status' => 'pending',
             'status' => 'pending',
-            'special_requests' => ''
+            'special_requests' => trim($input['special_requests'] ?? '')
         ]);
         
         if ($bookingId) {
+            $emailSent = $this->sendBookingConfirmation($user['email'] ?? '', $user['name'] ?? $userName, [
+                'booking_id' => $bookingId,
+                'package_name' => $packageName,
+                'destination' => $destination,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'travelers' => $travelers,
+                'final_amount' => $grandTotal,
+                'payment_status' => 'pending',
+            ]);
+
             $this->json([
                 'success' => true,
                 'booking_id' => $bookingId,
                 'transaction_id' => $transactionId,
+                'user_email' => $user['email'] ?? '',
                 'trips_completed' => intval($user['trips_completed']),
                 'total_spent' => floatval($user['total_spent']),
                 'final_amount' => $grandTotal,
                 'discount_percent' => $discountRate * 100,
                 'payment_status' => 'pending',
-                'status' => 'pending'
+                'status' => 'pending',
+                'email_sent' => $emailSent
             ]);
         } else {
             $this->json(['success' => false, 'message' => 'Failed to save booking']);
         }
+    }
+
+    private function sendBookingConfirmation(string $email, string $name, array $booking): bool
+    {
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return false;
+        }
+
+        $subject = 'EthioTrip booking confirmation #' . $booking['booking_id'];
+        $lines = [
+            'Hello ' . ($name !== '' ? $name : 'Traveler') . ',',
+            '',
+            'Your EthioTrip booking has been received.',
+            '',
+            'Booking ID: #' . $booking['booking_id'],
+            'Package: ' . $booking['package_name'],
+            'Destination: ' . ($booking['destination'] ?: 'Not specified'),
+            'Travel Dates: ' . $booking['start_date'] . ' to ' . $booking['end_date'],
+            'Travelers: ' . $booking['travelers'],
+            'Total: $' . number_format((float) $booking['final_amount'], 2),
+            'Payment Status: Pending admin review',
+            '',
+            'We will notify you once your payment is approved.',
+            '',
+            'EthioTrip Team',
+        ];
+
+        $headers = [
+            'From: EthioTrip <no-reply@ethiotrip.local>',
+            'Reply-To: no-reply@ethiotrip.local',
+            'Content-Type: text/plain; charset=UTF-8',
+        ];
+
+        return @mail($email, $subject, implode("\n", $lines), implode("\r\n", $headers));
     }
 }
 ?>

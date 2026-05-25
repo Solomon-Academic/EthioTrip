@@ -9,6 +9,15 @@
 </head>
 <body>
     <div class="page">
+        <div class="navbar">
+            <a href="/ethiotrip1/ethiotrip/public/dashboard" class="logo">Ethio<span class="accent-text">Trip</span> Admin</a>
+            <div class="nav">
+                <a href="/ethiotrip1/ethiotrip/public/admin/bookings">Payments</a>
+                <a href="/ethiotrip1/ethiotrip/public/admin/packages">Packages</a>
+                <a href="/ethiotrip1/ethiotrip/public/admin/destinations">Destinations</a>
+                <a href="/ethiotrip1/ethiotrip/public/logout">Logout</a>
+            </div>
+        </div>
         <div class="header">
             <div>
                 <h1><?php echo htmlspecialchars($pageTitle); ?></h1>
