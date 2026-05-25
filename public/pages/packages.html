@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EthioTrip | Travel Packages</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="/ethiotrip1/ethiotrip/public/css/packages.css" />
+    <link rel="stylesheet" href="/ethiotrip1/ethiotrip/public/css/responsive.css" />
+    <style>
+        :root {
+            --primary: #2d3436;
+            --accent: #d4af37;
+            --text-light: #636e72;
+            --shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Poppins", sans-serif; }
+        body { background: #fff; color: var(--primary); }
+        .navbar {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1.2rem 8%; background: white; box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            position: sticky; top: 0; z-index: 1000;
+        }
+        .logo { font-size: 1.6rem; font-weight: 700; text-decoration: none; color: var(--primary); }
+        .logo span { color: var(--accent); }
+        .nav-links { list-style: none; display: flex; gap: 30px; }
+        .nav-links a { text-decoration: none; color: var(--primary); font-size: 0.9rem; font-weight: 500; }
+        .nav-links a:hover { color: var(--accent); }
+        .section-header { text-align: center; padding: 70px 8% 40px; background: linear-gradient(180deg, #ffffff, #faf9f5); }
+        .section-header h2 { font-size: 2.5rem; margin-bottom: 15px; }
+        .section-header p { color: var(--text-light); max-width: 700px; margin: 0 auto; line-height: 1.8; }
+        .packages-container {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 30px; padding: 40px 8% 100px; max-width: 1400px; margin: 0 auto;
+        }
+        .pkg-card {
+            background: white; border-radius: 28px; padding: 30px; box-shadow: var(--shadow);
+            border: 2px solid transparent; transition: 0.4s; cursor: pointer;
+            display: flex; flex-direction: column;
+        }
+        .pkg-card:hover { transform: translateY(-10px); border-color: var(--accent); }
+        .pkg-tag { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); margin-bottom: 10px; }
+        .pkg-price { font-size: 2rem; font-weight: 700; }
+        .pkg-features { list-style: none; margin: 16px 0; flex: 1; }
+        .pkg-features li { font-size: 0.9rem; color: var(--text-light); margin-bottom: 8px; }
+        .btn-pkg {
+            width: 100%; padding: 14px; border: 2px solid var(--primary); background: none;
+            border-radius: 50px; font-weight: 600; cursor: pointer;
+        }
+        .pkg-card:hover .btn-pkg { background: var(--primary); color: white; }
+        .state-msg { text-align: center; padding: 40px; color: var(--text-light); grid-column: 1 / -1; }
+        .state-error { color: #c0392b; }
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 10000;
+            display: none; align-items: center; justify-content: center;
+        }
+        .modal-container { background: white; border-radius: 24px; max-width: 450px; width: 90%; overflow: hidden; }
+        .modal-header { padding: 20px 24px; background: var(--accent); display: flex; justify-content: space-between; }
+        .modal-body { padding: 24px; }
+        .modal-option { padding: 15px; border: 2px solid #eee; border-radius: 12px; margin-bottom: 12px; cursor: pointer; }
+        .modal-option:hover { border-color: var(--accent); background: #fff9e8; }
+        .selection-toast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: var(--primary); color: white; padding: 15px 40px; border-radius: 50px;
+            display: none; z-index: 1000;
+        }
+        .footer { padding: 60px 8% 40px; background: #1a1a1a; color: #fff; }
+        .footer-bottom { text-align: center; margin-top: 30px; color: #777; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/ethiotrip1/ethiotrip/public/" class="logo">Ethio<span>Trip</span></a>
+        <ul class="nav-links">
+            <li><a href="/ethiotrip1/ethiotrip/public/">Home</a></li>
+            <li><a href="/ethiotrip1/ethiotrip/public/destination">Destinations</a></li>
+            <li><a href="/ethiotrip1/ethiotrip/public/about">About</a></li>
+            <li><a href="/ethiotrip1/ethiotrip/public/login">Sign In</a></li>
+        </ul>
+    </nav>
+
+    <header class="section-header">
+        <h2>EthioTrip Packages</h2>
+        <p id="packagesSubtitle">Select a travel package for your chosen destination.</p>
+        <p style="margin-top:12px;"><a href="/ethiotrip1/ethiotrip/public/destination" style="color:#d4af37;">← Change destination</a></p>
+    </header>
+
+    <div class="packages-container" id="packageList">
+        <p class="state-msg" id="packagesLoading">Loading packages...</p>
+        <p class="state-msg" id="packagesEmpty" style="display:none;">No packages for this destination yet. Check back soon.</p>
+        <p class="state-msg state-error" id="packagesError" style="display:none;"></p>
+    </div>
+
+    <div class="modal-overlay" id="authModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-circle"></i> Quick Login</h3>
+                <span class="modal-close" onclick="closeAuthModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Sign in for loyalty discounts, or continue as guest.</p>
+                <div class="modal-option" onclick="redirectToLogin()"><strong>Login</strong></div>
+                <div class="modal-option" onclick="redirectToRegister()"><strong>Register</strong></div>
+                <div class="modal-option" onclick="continueAsGuest()"><strong>Continue as Guest</strong></div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-bottom">© <span id="currentYear"></span> EthioTrip Ethiopia.</div>
+    </footer>
+
+    <div class="selection-toast" id="toast"></div>
+
+    <script>document.getElementById('currentYear').textContent = new Date().getFullYear();</script>
+    <script src="/ethiotrip1/ethiotrip/public/js/ethiotrip-config.js"></script>
+    <script src="/ethiotrip1/ethiotrip/public/js/ethiotrip-api.js"></script>
+    <script src="/ethiotrip1/ethiotrip/public/js/packages-page.js"></script>
+    <script src="/ethiotrip1/ethiotrip/public/js/nav-mobile.js"></script>
+</body>
+</html>

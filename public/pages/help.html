@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help Center | EthioTrip</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background: #f5f5f5;
+            color: #2d3436;
+        }
+        
+        /* Navigation */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 8%;
+            background: white;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-decoration: none;
+            color: #2d3436;
+        }
+        
+        .logo span {
+            color: #d4af37;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 35px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #2d3436;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #d4af37;
+        }
+        
+        /* Help Container */
+        .help-container {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+        
+        .help-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .help-header h1 {
+            font-size: 2.5rem;
+            color: #2d3436;
+            margin-bottom: 15px;
+        }
+        
+        .help-header p {
+            color: #636e72;
+            font-size: 1.1rem;
+        }
+        
+        .help-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .help-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: 0.3s;
+        }
+        
+        .help-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+        
+        .help-card i {
+            font-size: 2.5rem;
+            color: #d4af37;
+            margin-bottom: 20px;
+        }
+        
+        .help-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #2d3436;
+        }
+        
+        .help-card p {
+            color: #636e72;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .faq-section {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            margin-top: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+        
+        .faq-section h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2d3436;
+        }
+        
+        .faq-item {
+            border-bottom: 1px solid #e0e0e0;
+            padding: 20px 0;
+        }
+        
+        .faq-question {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #2d3436;
+            margin-bottom: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .faq-question i {
+            color: #d4af37;
+            transition: 0.3s;
+        }
+        
+        .faq-answer {
+            color: #636e72;
+            line-height: 1.6;
+            display: none;
+            padding-top: 10px;
+        }
+        
+        .faq-answer.show {
+            display: block;
+        }
+        
+        .contact-section {
+            background: linear-gradient(135deg, #2d3436, #1a1a2e);
+            border-radius: 16px;
+            padding: 50px;
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+        }
+        
+        .contact-section h2 {
+            margin-bottom: 15px;
+        }
+        
+        .contact-section p {
+            margin-bottom: 25px;
+            color: #ccc;
+        }
+        
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .contact-info div {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .contact-info i {
+            font-size: 1.3rem;
+            color: #d4af37;
+        }
+        
+        .back-home-btn {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 30px;
+            background: #d4af37;
+            color: #2d3436;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        
+        .back-home-btn:hover {
+            background: #c09c2c;
+            transform: translateY(-2px);
+        }
+        
+        /* Footer */
+        .footer {
+            padding: 60px 8% 40px;
+            background: #1a1a1a;
+            color: white;
+            margin-top: 60px;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+            color: #7f8c8d;
+            font-size: 0.85rem;
+        }
+        
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem 5%;
+            }
+            .nav-links {
+                gap: 20px;
+            }
+            .help-grid {
+                grid-template-columns: 1fr;
+            }
+            .contact-info {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+            .faq-section {
+                padding: 20px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="/ethiotrip1/ethiotrip/public/css/responsive.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/ethiotrip1/ethiotrip/public/" class="logo">Ethio<span>Trip</span></a>
+        <ul class="nav-links">
+            <li><a href="/ethiotrip1/ethiotrip/public/"><i class="fas fa-home"></i>Home</a></li>
+            <li><a href="/ethiotrip1/ethiotrip/public/destination">Destinations</a></li>
+            <li><a href="/ethiotrip1/ethiotrip/public/packages">Packages</a></li>
+            <li><a href="/ethiotrip1/ethiotrip/public/about">About</a></li>
+            <li><a href="/ethiotrip1/ethiotrip/public/login">Sign In</a></li>
+        </ul>
+    </nav>
+
+    <div class="help-container">
+        <div class="help-header">
+            <h1>How can we help you?</h1>
+            <p>Find answers to common questions or get in touch with our support team</p>
+        </div>
+
+        <div class="help-grid">
+            <div class="help-card">
+                <i class="fas fa-book"></i>
+                <h3>Booking Guide</h3>
+                <p>Learn how to book your perfect Ethiopian adventure with our step-by-step guide.</p>
+            </div>
+            <div class="help-card">
+                <i class="fas fa-credit-card"></i>
+                <h3>Payment Methods</h3>
+                <p>We accept various payment options including credit cards, bank transfer, and mobile money.</p>
+            </div>
+            <div class="help-card">
+                <i class="fas fa-shield-alt"></i>
+                <h3>Travel Insurance</h3>
+                <p>Information about travel insurance and safety measures for your trip.</p>
+            </div>
+            <div class="help-card">
+                <i class="fas fa-passport"></i>
+                <h3>Visa Requirements</h3>
+                <p>Everything you need to know about Ethiopian visa and entry requirements.</p>
+            </div>
+            <div class="help-card">
+                <i class="fas fa-route"></i>
+                <h3>Cancellation Policy</h3>
+                <p>Understand our cancellation and refund policies before booking.</p>
+            </div>
+            <div class="help-card">
+            <i class="fas fa-headset"></i>
+            <h3>Customer Support</h3>
+            <p>Get assistance with our services and support inquiries.</p>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <h2><i class="fas fa-question-circle"></i> Frequently Asked Questions</h2>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    How do I book a tour? <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    You can book a tour directly through our website by clicking the "Book Now" button on any destination or package page. Select your dates, number of travelers, and complete the payment process. You'll receive a confirmation email with your booking details.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    What is your cancellation policy? <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Cancellations made 30+ days before travel receive a full refund. 15-29 days receive 50% refund. Less than 14 days receive no refund. However, you can transfer your booking to another person free of charge.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Do I need a visa to visit Ethiopia? <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Most nationalities can get a visa on arrival or apply for an e-visa online. We recommend checking with your local Ethiopian embassy for specific requirements based on your country of origin.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    What is the best time to visit Ethiopia? <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    The dry seasons (October-January and April-June) are ideal for most destinations. However, different regions have varying climates. Our travel consultants can help you choose the best time based on your preferred destinations.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Are your tours guided? <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Yes, all our tours include professional, English-speaking local guides who are experts in Ethiopian history, culture, and wildlife. Multi-lingual guides can be arranged upon request.
+                </div>
+            </div>
+        </div>
+
+        <div class="contact-section">
+            <h2>Still need help?</h2>
+            <p>Our customer support team is available 24/7 to assist you</p>
+            <div class="contact-info">
+                <div><i class="fas fa-envelope"></i> support@ethiotrip.com</div>
+                <div><i class="fas fa-phone"></i> +251-911-123-456</div>
+                <div><i class="fab fa-telegram"></i> @EthioTripSupport</div>
+            </div>
+            <!-- <a href="/ethiotrip1/ethiotrip/public/" class="back-home-btn">
+                <i class="fas fa-home"></i> Back to Home
+            </a> -->
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-bottom">© <span id="currentYear"></span> EthioTrip Ethiopia. All rights reserved.</div>
+    </footer>
+
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        
+        function toggleFAQ(element) {
+            const answer = element.nextElementSibling;
+            const icon = element.querySelector('i');
+            answer.classList.toggle('show');
+            
+            if (answer.classList.contains('show')) {
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+    </script>
+    <script src="/ethiotrip1/ethiotrip/public/js/nav-mobile.js"></script>
+</body>
+</html>
