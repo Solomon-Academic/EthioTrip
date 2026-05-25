@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Destination Details | EthioTrip</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/ethiotrip1/ethiotrip/public/css/destination.css">
+    <link rel="stylesheet" href="/ethiotrip1/ethiotrip/public/css/responsive.css">
+    <style>
+        .detail-wrap { max-width: 1100px; margin: 0 auto; padding: 30px 8% 80px; }
+        .detail-hero { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: start; }
+        .detail-hero img { width: 100%; border-radius: 20px; max-height: 420px; object-fit: cover; }
+        .meta-tags { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
+        .meta-tags span { background: #fff9e8; color: #2d3436; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; }
+        .detail-section { margin-top: 40px; }
+        .detail-section h2 { margin-bottom: 16px; font-weight: 600; }
+        .highlights-grid, .attractions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+        }
+        .highlight-card, .attraction-card {
+            background: white;
+            padding: 18px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+        }
+        .highlight-card h4, .attraction-card h4 { margin-bottom: 8px; color: #d4af37; }
+        .btn-proceed {
+            display: inline-block;
+            margin-top: 24px;
+            padding: 14px 28px;
+            background: #2d3436;
+            color: white;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .btn-proceed:hover { background: #d4af37; color: #2d3436; }
+        .breadcrumbs { padding: 20px 8% 0; color: #636e72; }
+        .breadcrumbs a { color: #d4af37; text-decoration: none; }
+        .state-msg { text-align: center; padding: 60px 8%; color: #636e72; }
+        .state-error { color: #c0392b; }
+        @media (max-width: 768px) { .detail-hero { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/ethiotrip1/ethiotrip/public/" class="logo">Ethio<span>Trip</span></a>
+        <div class="nav-links">
+            <a href="/ethiotrip1/ethiotrip/public/destination">← All Destinations</a>
+            <a href="/ethiotrip1/ethiotrip/public/login">Sign In</a>
+        </div>
+    </nav>
+
+    <div class="breadcrumbs">
+        <a href="/ethiotrip1/ethiotrip/public/destination">Destinations</a> → <span id="breadcrumbName">Details</span>
+    </div>
+
+    <p class="state-msg" id="detailLoading">Loading destination...</p>
+    <p class="state-msg state-error" id="detailError" style="display:none;"></p>
+
+    <div class="detail-wrap" id="detailContent" style="display:none;">
+        <div class="detail-hero">
+            <img id="destImage" src="" alt="">
+            <div>
+                <h1 id="destName"></h1>
+                <div class="meta-tags">
+                    <span id="destLocation"></span>
+                    <span>Best: <span id="destBestTime"></span></span>
+                </div>
+                <p id="destDescription"></p>
+                <a href="#" id="btnProceedPackages" class="btn-proceed">Choose Packages for this Destination →</a>
+            </div>
+        </div>
+
+        <section class="detail-section">
+            <h2>Travel Guide</h2>
+            <p id="destTravelGuide" style="line-height:1.8;color:#444;"></p>
+        </section>
+
+        <section class="detail-section" id="activitiesBlock" style="display:none;">
+            <h2>Activities</h2>
+            <p id="destActivities" style="line-height:1.8;color:#444;"></p>
+        </section>
+
+        <div id="dynamicSections"></div>
+    </div>
+
+    <script src="/ethiotrip1/ethiotrip/public/js/ethiotrip-config.js"></script>
+    <script src="/ethiotrip1/ethiotrip/public/js/ethiotrip-api.js"></script>
+    <script src="/ethiotrip1/ethiotrip/public/js/destination-detail.js"></script>
+    <script src="/ethiotrip1/ethiotrip/public/js/nav-mobile.js"></script>
+    <script>
+        document.getElementById('destName')?.addEventListener?.('DOMNodeInserted', function(){});
+        const observer = new MutationObserver(() => {
+            const name = document.getElementById('destName')?.textContent;
+            if (name) document.getElementById('breadcrumbName').textContent = name;
+        });
+        const target = document.getElementById('detailContent');
+        if (target) observer.observe(target, { childList: true, subtree: true, characterData: true });
+    </script>
+</body>
+</html>

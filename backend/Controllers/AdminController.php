@@ -6,12 +6,18 @@ use Backend\Core\Session;
 use Backend\Models\DiscountTier;
 use Backend\Models\User;
 use Backend\Models\Booking;
+use Backend\Models\Destination;
+use Backend\Models\Package;
+use Backend\Services\BookingEmailService;
 
 class AdminController extends Controller
 {
     private DiscountTier $tierModel;
     private User $userModel;
     private Booking $bookingModel;
+    private Destination $destinationModel;
+    private Package $packageModel;
+    private BookingEmailService $emailService;
 
     public function __construct()
     {
@@ -20,6 +26,9 @@ class AdminController extends Controller
         $this->tierModel = new DiscountTier();
         $this->userModel = new User();
         $this->bookingModel = new Booking();
+        $this->destinationModel = new Destination();
+        $this->packageModel = new Package();
+        $this->emailService = new BookingEmailService();
     }
 
     protected function requireAdmin(): array
@@ -36,6 +45,38 @@ class AdminController extends Controller
         }
 
         return $user;
+    }
+
+    // SINGLE UNIFIED DASHBOARD
+    public function dashboardAction(): void
+    {
+        $this->requireAdmin();
+        
+        // Get all stats for admin dashboard
+        $totalBookings = $this->bookingModel->getTotalBookingsCount();
+        $pendingApprovals = $this->bookingModel->getPendingApprovalsCount();
+        $pendingPayments = $this->bookingModel->getPendingPaymentsCount();
+        $totalUsers = $this->userModel->getTotalUsersCount();
+        $totalRevenue = $this->bookingModel->getTotalRevenue();
+        $recentBookings = $this->bookingModel->getRecentBookings(10);
+        
+        // Get destination and package counts
+        $totalDestinations = $this->destinationModel->getTotalCount();
+        $totalPackages = $this->packageModel->getTotalCount();
+        
+        $stats = $this->bookingModel->getBookingStats();
+        
+        $this->render('admin.dashboard', [
+            'totalBookings' => $totalBookings,
+            'pendingApprovals' => $pendingApprovals,
+            'pendingPayments' => $pendingPayments,
+            'totalUsers' => $totalUsers,
+            'totalRevenue' => $totalRevenue,
+            'totalDestinations' => $totalDestinations,
+            'totalPackages' => $totalPackages,
+            'recentBookings' => $recentBookings,
+            'stats' => $stats,
+        ]);
     }
 
     public function discountsAction(): void
@@ -83,13 +124,12 @@ class AdminController extends Controller
         ]);
     }
 
-    // New method: Manage all bookings for admin
     public function bookingsAction(): void
     {
         $this->requireAdmin();
         $message = '';
+        $messageType = '';
         
-        // Handle approval/rejection
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $this->requireValidCsrf();
             $bookingId = intval($_POST['booking_id'] ?? 0);
@@ -100,25 +140,42 @@ class AdminController extends Controller
             if ($bookingId && $action) {
                 if ($action === 'approve') {
                     $result = $this->bookingModel->approveBooking($bookingId, $adminId, $adminNotes);
-                    $message = $result ? 'Booking approved successfully!' : 'Failed to approve booking.';
+                    if ($result) {
+                        $booking = $this->bookingModel->getBookingWithDetails($bookingId);
+                        $emailOk = $this->emailService->sendApprovalConfirmation($booking ?: []);
+                        $message = $emailOk
+                            ? 'Booking approved successfully! Confirmation email sent via Resend.'
+                            : 'Booking approved. Email could not be sent (check Resend API key).';
+                        $messageType = 'success';
+                    } else {
+                        $message = 'Failed to approve booking.';
+                        $messageType = 'error';
+                    }
                 } elseif ($action === 'reject') {
                     $result = $this->bookingModel->rejectBooking($bookingId, $adminId, $adminNotes);
                     $message = $result ? 'Booking rejected successfully!' : 'Failed to reject booking.';
+                    $messageType = $result ? 'warning' : 'error';
                 } elseif ($action === 'approve_payment') {
                     $result = $this->bookingModel->approvePayment($bookingId, $adminId, $adminNotes);
                     if ($result) {
                         $booking = $this->bookingModel->getBookingWithDetails($bookingId);
-                        $this->sendPaymentApprovalEmail($booking ?: []);
+                        $emailOk = $this->emailService->sendApprovalConfirmation($booking ?: []);
+                        $message = $emailOk
+                            ? 'Payment approved successfully! Confirmation email sent via Resend.'
+                            : 'Payment approved. Email could not be sent (check Resend API key).';
+                        $messageType = 'success';
+                    } else {
+                        $message = 'Failed to approve payment.';
+                        $messageType = 'error';
                     }
-                    $message = $result ? 'Payment approved successfully!' : 'Failed to approve payment.';
                 } elseif ($action === 'fail_payment') {
                     $result = $this->bookingModel->markPaymentFailed($bookingId, $adminId, $adminNotes);
                     $message = $result ? 'Payment marked as failed.' : 'Failed to update payment.';
+                    $messageType = $result ? 'warning' : 'error';
                 }
             }
         }
         
-        // Get filter parameters
         $filter = $_GET['filter'] ?? 'payment_pending';
         $search = $_GET['search'] ?? '';
         
@@ -127,6 +184,7 @@ class AdminController extends Controller
         
         $this->render('admin.bookings', [
             'message' => $message,
+            'messageType' => $messageType,
             'bookings' => $bookings,
             'stats' => $stats,
             'currentFilter' => $filter,
@@ -134,7 +192,6 @@ class AdminController extends Controller
         ]);
     }
     
-    // View single booking details
     public function viewBookingAction(): void
     {
         $this->requireAdmin();
@@ -154,54 +211,5 @@ class AdminController extends Controller
             'booking' => $booking,
         ]);
     }
-    
-    // Dashboard stats for admin
-    public function dashboardAction(): void
-    {
-        $this->requireAdmin();
-        
-        $stats = [
-            'total_bookings' => $this->bookingModel->getTotalBookingsCount(),
-            'pending_approvals' => $this->bookingModel->getPendingApprovalsCount(),
-            'total_users' => $this->userModel->getTotalUsersCount(),
-            'total_revenue' => $this->bookingModel->getTotalRevenue(),
-            'recent_bookings' => $this->bookingModel->getRecentBookings(5),
-        ];
-        
-        $this->render('admin.dashboard', ['stats' => $stats]);
-    }
 
-    private function sendPaymentApprovalEmail(array $booking): bool
-    {
-        $email = $booking['user_email'] ?? '';
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            return false;
-        }
-
-        $name = $booking['user_name'] ?? 'Traveler';
-        $subject = 'EthioTrip payment approved for booking #' . ($booking['id'] ?? '');
-        $message = implode("\n", [
-            'Hello ' . $name . ',',
-            '',
-            'Your payment has been approved and your EthioTrip booking is now confirmed.',
-            '',
-            'Booking ID: #' . ($booking['id'] ?? ''),
-            'Package: ' . ($booking['package_name'] ?? ''),
-            'Destination: ' . ($booking['destination'] ?? 'Not specified'),
-            'Travel Dates: ' . ($booking['start_date'] ?? '') . ' to ' . ($booking['end_date'] ?? ''),
-            'Total: $' . number_format(floatval($booking['final_amount'] ?? 0), 2),
-            '',
-            'Thank you for choosing EthioTrip.',
-            '',
-            'EthioTrip Team',
-        ]);
-
-        $headers = implode("\r\n", [
-            'From: EthioTrip <no-reply@ethiotrip.local>',
-            'Reply-To: no-reply@ethiotrip.local',
-            'Content-Type: text/plain; charset=UTF-8',
-        ]);
-
-        return @mail($email, $subject, $message, $headers);
-    }
 }

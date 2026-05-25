@@ -5,17 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Bookings - EthioTrip</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/ethiotrip1/ethiotrip/public/css/backend.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <?php require __DIR__ . '/../partials/user_head.php'; ?>
 </head>
 <body>
     <div class="page">
-        <div class="navbar">
-            <a href="/ethiotrip1/ethiotrip/public/dashboard" class="logo">Ethio<span style="color:#d4af37;">Trip</span></a>
-            <div class="nav">
-                <a href="/ethiotrip1/ethiotrip/public/dashboard">Dashboard</a>
-                <a href="/ethiotrip1/ethiotrip/public/logout">Logout</a>
-            </div>
-        </div>
+        <?php require __DIR__ . '/../partials/user_navbar.php'; ?>
 
         <div class="hero">
             <div>
@@ -27,6 +22,7 @@
 
         <div class="card">
             <?php if ($bookings instanceof \mysqli_result && $bookings->num_rows > 0): ?>
+                <div class="table-wrap admin-table-wrap">
                 <table>
                     <thead>
                         <tr>
@@ -59,6 +55,7 @@
                         <?php endwhile; ?>
                     </tbody>
                 </table>
+                </div>
             <?php else: ?>
                 <p>No bookings found yet. Start your next adventure from the dashboard.</p>
             <?php endif; ?>
@@ -67,5 +64,6 @@
             <div class="footer-inner">© <?php echo date('Y'); ?> <a href="/ethiotrip1/ethiotrip/public/">EthioTrip</a> Ethiopia. All rights reserved.</div>
         </footer>
     </div>
+    <script src="/ethiotrip1/ethiotrip/public/js/nav-mobile.js"></script>
 </body>
 </html>

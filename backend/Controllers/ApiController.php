@@ -7,15 +7,21 @@ use Backend\Models\User;
 use Backend\Models\Booking;
 use Backend\Models\DiscountTier;
 use Backend\Models\Package;
+use Backend\Models\Destination;
+use Backend\Models\DestinationHighlight;
+use Backend\Models\DestinationAttraction;
 use Backend\Models\UserDestination;
 
 class ApiController extends Controller {
     
-    private $userModel;
-    private $bookingModel;
-    private $discountTierModel;
-    private $userDestinationModel;
-    private $packageModel;
+    private User $userModel;
+    private Booking $bookingModel;
+    private DiscountTier $discountTierModel;
+    private UserDestination $userDestinationModel;
+    private Package $packageModel;
+    private Destination $destinationModel;
+    private DestinationHighlight $highlightModel;
+    private DestinationAttraction $attractionModel;
     
     public function __construct() {
         parent::__construct();
@@ -24,6 +30,9 @@ class ApiController extends Controller {
         $this->discountTierModel = new DiscountTier();
         $this->userDestinationModel = new UserDestination();
         $this->packageModel = new Package();
+        $this->destinationModel = new Destination();
+        $this->highlightModel = new DestinationHighlight();
+        $this->attractionModel = new DestinationAttraction();
     }
     
     public function checkLogin() {
@@ -44,6 +53,89 @@ class ApiController extends Controller {
             'user_name' => Session::getUserName(),
             'user_email' => $userEmail,
             'user_role' => Session::isAdmin() ? 'admin' : 'user'
+        ]);
+    }
+
+    public function listDestinations(): void {
+        $result = $this->destinationModel->findAllActive();
+        $items = [];
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $items[] = $this->destinationModel->toListItem($row);
+            }
+        }
+        $this->json(['success' => true, 'destinations' => $items]);
+    }
+
+    public function getDestination(): void {
+        $id = (int) ($_GET['id'] ?? 0);
+        if ($id <= 0) {
+            $this->json(['success' => false, 'message' => 'Destination id is required.'], 422);
+        }
+
+        $destination = $this->destinationModel->findActiveById($id);
+        if (!$destination) {
+            $this->json(['success' => false, 'message' => 'Destination not found.'], 404);
+        }
+
+        $highlights = $this->highlightModel->findByDestination($id);
+        if (empty($highlights) && !empty($destination['churches'])) {
+            foreach (preg_split('/\r?\n/', trim($destination['churches'])) as $line) {
+                $line = trim($line);
+                if ($line !== '') {
+                    $highlights[] = ['title' => $line, 'description' => ''];
+                }
+            }
+        }
+
+        $packages = array_map(
+            fn($p) => $this->packageModel->toApiItem($p),
+            $this->packageModel->findActiveByDestination($id)
+        );
+
+        $this->json([
+            'success' => true,
+            'destination' => [
+                'id' => (int) $destination['id'],
+                'name' => $destination['name'],
+                'location' => $destination['location'] ?? '',
+                'description' => $destination['description'] ?? '',
+                'short_description' => $destination['short_description'] ?? '',
+                'travel_guide' => $destination['travel_guide'] ?? '',
+                'best_time' => $destination['best_time'] ?? '',
+                'price' => (float) ($destination['price'] ?? 0),
+                'activities' => $destination['activities'] ?? '',
+                'image_url' => $this->destinationModel->resolveImageUrl($destination),
+                'highlights' => $highlights,
+                'attractions' => $this->attractionModel->findByDestination($id),
+                'packages' => $packages,
+            ],
+        ]);
+    }
+
+    public function listPackages(): void {
+        $destinationId = (int) ($_GET['destination_id'] ?? 0);
+        if ($destinationId <= 0) {
+            $this->json(['success' => false, 'message' => 'destination_id is required. Select a destination first.'], 422);
+        }
+
+        $destination = $this->destinationModel->findActiveById($destinationId);
+        if (!$destination) {
+            $this->json(['success' => false, 'message' => 'Destination not found.'], 404);
+        }
+
+        $packages = array_map(
+            fn($p) => $this->packageModel->toApiItem($p),
+            $this->packageModel->findActiveByDestination($destinationId)
+        );
+
+        $this->json([
+            'success' => true,
+            'destination' => [
+                'id' => (int) $destination['id'],
+                'name' => $destination['name'],
+            ],
+            'packages' => $packages,
         ]);
     }
     
@@ -113,7 +205,9 @@ class ApiController extends Controller {
         }
         
         $packageName = trim($input['package_name'] ?? '');
+        $packageId = (int) ($input['package_id'] ?? 0);
         $destination = trim($input['destination'] ?? '');
+        $destinationId = (int) ($input['destination_id'] ?? 0);
         $startDate = trim($input['start_date'] ?? '');
         $endDate = trim($input['end_date'] ?? '');
         $travelers = intval($input['travelers'] ?? 1);
@@ -124,9 +218,23 @@ class ApiController extends Controller {
             $this->json(['success' => false, 'message' => 'Package and travel dates are required.'], 422);
         }
 
-        $package = $this->packageModel->findByName($packageName);
-        if (!$package) {
+        $package = $packageId > 0
+            ? $this->packageModel->findById($packageId)
+            : $this->packageModel->findByName($packageName);
+
+        if (!$package || !(int) ($package['is_active'] ?? 0)) {
             $this->json(['success' => false, 'message' => 'Selected package was not found.'], 422);
+        }
+
+        if ($destinationId > 0) {
+            $destRow = $this->destinationModel->findActiveById($destinationId);
+            if ($destRow) {
+                $destination = $destRow['name'];
+            }
+        }
+
+        if ($destination === '') {
+            $this->json(['success' => false, 'message' => 'Destination is required.'], 422);
         }
 
         $start = \DateTime::createFromFormat('Y-m-d', $startDate);
@@ -185,7 +293,7 @@ class ApiController extends Controller {
         $bookingId = $this->bookingModel->create([
             'user_id' => $userId,
             'package_id' => (int) $package['id'],
-            'package_name' => $packageName,
+            'package_name' => $package['name'],
             'destination' => $destination,
             'start_date' => $startDate,
             'end_date' => $endDate,
@@ -202,17 +310,6 @@ class ApiController extends Controller {
         ]);
         
         if ($bookingId) {
-            $emailSent = $this->sendBookingConfirmation($user['email'] ?? '', $user['name'] ?? $userName, [
-                'booking_id' => $bookingId,
-                'package_name' => $packageName,
-                'destination' => $destination,
-                'start_date' => $startDate,
-                'end_date' => $endDate,
-                'travelers' => $travelers,
-                'final_amount' => $grandTotal,
-                'payment_status' => 'pending',
-            ]);
-
             $this->json([
                 'success' => true,
                 'booking_id' => $bookingId,
@@ -224,45 +321,10 @@ class ApiController extends Controller {
                 'discount_percent' => $discountRate * 100,
                 'payment_status' => 'pending',
                 'status' => 'pending',
-                'email_sent' => $emailSent
+                'message' => 'Booking submitted. You will receive a confirmation email after admin approval.',
             ]);
         } else {
             $this->json(['success' => false, 'message' => 'Failed to save booking']);
         }
     }
-
-    private function sendBookingConfirmation(string $email, string $name, array $booking): bool
-    {
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            return false;
-        }
-
-        $subject = 'EthioTrip booking confirmation #' . $booking['booking_id'];
-        $lines = [
-            'Hello ' . ($name !== '' ? $name : 'Traveler') . ',',
-            '',
-            'Your EthioTrip booking has been received.',
-            '',
-            'Booking ID: #' . $booking['booking_id'],
-            'Package: ' . $booking['package_name'],
-            'Destination: ' . ($booking['destination'] ?: 'Not specified'),
-            'Travel Dates: ' . $booking['start_date'] . ' to ' . $booking['end_date'],
-            'Travelers: ' . $booking['travelers'],
-            'Total: $' . number_format((float) $booking['final_amount'], 2),
-            'Payment Status: Pending admin review',
-            '',
-            'We will notify you once your payment is approved.',
-            '',
-            'EthioTrip Team',
-        ];
-
-        $headers = [
-            'From: EthioTrip <no-reply@ethiotrip.local>',
-            'Reply-To: no-reply@ethiotrip.local',
-            'Content-Type: text/plain; charset=UTF-8',
-        ];
-
-        return @mail($email, $subject, implode("\n", $lines), implode("\r\n", $headers));
-    }
 }
-?>

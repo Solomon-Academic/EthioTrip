@@ -36,7 +36,11 @@ class DashboardController extends Controller
             $this->redirect('/login');
         }
 
-        $bookings = $this->bookingModel->findAllByUser((int) $userId, ($user['role'] ?? 'user') === 'admin');
+        if (($user['role'] ?? '') === 'admin') {
+            $this->redirect('/admin/dashboard');
+        }
+
+        $bookings = $this->bookingModel->findAllByUser((int) $userId, false);
         $totalBookings = 0;
         $totalSpent = 0.0;
 

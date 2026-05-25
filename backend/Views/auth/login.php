@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - EthioTrip</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/ethiotrip1/ethiotrip/public/css/backend.css">
+    <?php require __DIR__ . '/../partials/user_head.php'; ?>
 </head>
 <body>
     <div class="card">

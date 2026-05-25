@@ -35,4 +35,17 @@ foreach ($coreFiles as $file) {
         require_once $file;
     }
 }
+
+use Backend\Services\Env;
+use Backend\Core\Database;
+use Backend\Core\SchemaMigrator;
+
+Env::load(__DIR__ . '/../.env');
+
+try {
+    $db = Database::getInstance();
+    SchemaMigrator::run($db);
+} catch (\Throwable $e) {
+    error_log('Schema migration skipped: ' . $e->getMessage());
+}
 ?>

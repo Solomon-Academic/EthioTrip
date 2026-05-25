@@ -6,6 +6,7 @@
     <title>EthioTrip | Secure Checkout</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/ethiotrip1/ethiotrip/public/css/responsive.css">
     <style>
         :root {
             --primary: #2d3436;
@@ -629,7 +630,9 @@
             const finalAmount = afterDiscount + tax;
             
             const bookingData = {
+                package_id: parseInt(localStorage.getItem("selectedPackageId") || "0", 10) || undefined,
                 package_name: selectedPackageData.name,
+                destination_id: parseInt(localStorage.getItem("selectedDestinationId") || "0", 10) || undefined,
                 destination: localStorage.getItem("selectedDestinationName") || '',
                 start_date: startDate,
                 end_date: endDate,
@@ -767,5 +770,6 @@
         
         init();
     </script>
+    <script src="/ethiotrip1/ethiotrip/public/js/nav-mobile.js"></script>
 </body>
 </html>

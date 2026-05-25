@@ -12,7 +12,6 @@ class Booking extends Model {
     }
 
     private function ensureAdminApprovalColumns(): void {
-        // Check if columns exist using simple queries (NOT prepared statements with LIKE)
         $result = $this->db->query("SHOW COLUMNS FROM bookings LIKE 'admin_approval_status'");
         if ($result && $result->num_rows === 0) {
             $this->db->query("ALTER TABLE bookings ADD COLUMN admin_approval_status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending'");
@@ -161,6 +160,12 @@ class Booking extends Model {
         return $row['count'] ?? 0;
     }
     
+    public function getPendingPaymentsCount() {
+        $result = $this->db->query("SELECT COUNT(*) as count FROM bookings WHERE payment_status = 'pending'");
+        $row = $result->fetch_assoc();
+        return $row['count'] ?? 0;
+    }
+    
     public function getTotalRevenue() {
         $result = $this->db->query("SELECT SUM(final_amount) as total FROM bookings WHERE admin_approval_status = 'approved' AND payment_status = 'completed'");
         $row = $result->fetch_assoc();
@@ -172,5 +177,16 @@ class Booking extends Model {
         $stmt->bind_param("i", $limit);
         $stmt->execute();
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+    
+    public function updatePaymentStatus($bookingId, $status, $adminId = null, $notes = '') {
+        if ($status === 'completed') {
+            $stmt = $this->db->prepare("UPDATE bookings SET payment_status = 'completed', admin_approval_status = 'approved', approved_by = ?, approved_at = NOW(), admin_notes = CONCAT(IFNULL(admin_notes, ''), ?, '\n[Payment Completed] ', NOW()) WHERE id = ?");
+            $stmt->bind_param("isi", $adminId, $notes, $bookingId);
+        } else {
+            $stmt = $this->db->prepare("UPDATE bookings SET payment_status = 'failed', admin_notes = CONCAT(IFNULL(admin_notes, ''), ?, '\n[Payment Failed] ', NOW()) WHERE id = ?");
+            $stmt->bind_param("si", $notes, $bookingId);
+        }
+        return $stmt->execute();
     }
 }

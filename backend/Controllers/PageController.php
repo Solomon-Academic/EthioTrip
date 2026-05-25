@@ -15,6 +15,10 @@ class PageController extends Controller {
     public function destination() {
         $this->serveHtmlPage('destination.html');
     }
+
+    public function destinationDetails() {
+        $this->serveHtmlPage('destination-detail.html');
+    }
     
     public function packages() {
         $this->serveHtmlPage('packages.html');

@@ -3,6 +3,7 @@ return [
     'GET' => [
         '/' => 'PageController@home',
         '/destination' => 'PageController@destination',
+        '/destination/details' => 'PageController@destinationDetails',
         '/packages' => 'PageController@packages',
         '/payment' => 'PageController@payment',
         '/about' => 'PageController@about',
@@ -26,6 +27,9 @@ return [
         '/admin/bookings/view' => 'AdminController@viewBookingAction',
         '/admin/dashboard' => 'AdminController@dashboardAction',
         '/api/check-login' => 'ApiController@checkLogin',
+        '/api/destinations' => 'ApiController@listDestinations',
+        '/api/destinations/detail' => 'ApiController@getDestination',
+        '/api/packages' => 'ApiController@listPackages',
         '/api/loyalty-discount' => 'ApiController@getLoyaltyDiscount',
         '/api/next-tier' => 'ApiController@getNextTier',
     ],

@@ -31,25 +31,14 @@ CREATE TABLE discount_tiers (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- 3. PACKAGES TABLE
-CREATE TABLE packages (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(100) NOT NULL,
-    price DECIMAL(10,2) NOT NULL,
-    duration VARCHAR(50) DEFAULT NULL,
-    description TEXT,
-    features TEXT,
-    category VARCHAR(50) DEFAULT NULL,
-    is_active BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- 4. DESTINATIONS TABLE
+-- 3. DESTINATIONS TABLE
 CREATE TABLE destinations (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
     location VARCHAR(100),
+    short_description VARCHAR(500),
     description TEXT,
+    travel_guide TEXT,
     best_time VARCHAR(100),
     price DECIMAL(10,2) DEFAULT 0.00,
     activities TEXT,
@@ -59,6 +48,43 @@ CREATE TABLE destinations (
     attachment_path VARCHAR(255),
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 4b. DESTINATION HIGHLIGHTS
+CREATE TABLE destination_highlights (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    destination_id INT NOT NULL,
+    title VARCHAR(150) NOT NULL,
+    description TEXT,
+    sort_order INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (destination_id) REFERENCES destinations(id) ON DELETE CASCADE
+);
+
+-- 4c. DESTINATION ATTRACTIONS
+CREATE TABLE destination_attractions (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    destination_id INT NOT NULL,
+    name VARCHAR(150) NOT NULL,
+    description TEXT,
+    sort_order INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (destination_id) REFERENCES destinations(id) ON DELETE CASCADE
+);
+
+-- 4. PACKAGES TABLE
+CREATE TABLE packages (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    destination_id INT NULL,
+    name VARCHAR(100) NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    duration VARCHAR(50) DEFAULT NULL,
+    description TEXT,
+    features TEXT,
+    category VARCHAR(50) DEFAULT NULL,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (destination_id) REFERENCES destinations(id) ON DELETE SET NULL
 );
 
 -- 5. BOOKINGS TABLE (WITH ALL ADMIN APPROVAL FIELDS)
@@ -144,6 +170,8 @@ INSERT INTO packages (name, price, duration, description, features, category, is
 ('Gadaa Heritage', 200.00, 'per day', 'Immerse yourself in Ethiopian heritage.', '["Private Land Cruiser", "Authentic Village homestays", "Traditional ceremony participation"]', 'cultural', 1),
 ('Tizita Express', 200.00, 'per day', 'Quick escape to Ethiopia\'s highlights.', '["Quick Flight & Airport Shuttle", "1 Night premium city stay", "Focused 1-day historical tour"]', 'short_escape', 1),
 ('Abyssinia Trek', 125.00, 'per day', 'Trek through Ethiopia\'s natural wonders.', '["Local Bus & Mule trekking", "Eco-lodge stay & nature fees", "Endemic wildlife tracking guide"]', 'nature', 1);
+
+UPDATE packages SET destination_id = (SELECT id FROM destinations WHERE name = 'Lalibela' LIMIT 1) WHERE destination_id IS NULL;
 
 -- 11. INSERT ADMIN USER (Password: admin123)
 INSERT INTO users (name, email, password, phone, role, trips_completed, total_spent, loyalty_discount) VALUES

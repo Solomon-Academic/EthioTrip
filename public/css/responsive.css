@@ -1,0 +1,538 @@
+/**
+ * EthioTrip — global responsive layout (public + admin)
+ */
+
+:root {
+    --touch-min: 44px;
+    --page-pad: clamp(16px, 4vw, 32px);
+    --nav-height: 64px;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: calc(var(--nav-height) + 12px);
+}
+
+img, video, svg {
+    max-width: 100%;
+    height: auto;
+}
+
+/* ——— Site navbar (public + admin) ——— */
+.site-navbar,
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1200;
+    width: 100%;
+}
+
+.navbar-inner,
+.site-navbar > .logo:first-child {
+    /* legacy: logo direct child */
+}
+
+.navbar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    min-height: var(--nav-height);
+}
+
+/* Wrap logo + toggle when using new structure */
+.site-navbar:not(:has(.navbar-inner)) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px var(--page-pad) !important;
+}
+
+.site-navbar:has(.navbar-inner) {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0 !important;
+}
+
+.site-navbar:has(.navbar-inner) .navbar-inner {
+    padding: 12px var(--page-pad);
+}
+
+.nav-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: var(--touch-min);
+    height: var(--touch-min);
+    min-width: var(--touch-min);
+    min-height: var(--touch-min);
+    padding: 10px;
+    border: 1px solid #e0e4e8;
+    border-radius: 12px;
+    background: #fff;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.nav-toggle:hover {
+    background: #fff9e8;
+    border-color: #d4af37;
+}
+
+.nav-toggle-bar {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: #2d3436;
+    border-radius: 2px;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.navbar.is-menu-open .nav-toggle-bar:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+.navbar.is-menu-open .nav-toggle-bar:nth-child(2) {
+    opacity: 0;
+}
+.navbar.is-menu-open .nav-toggle-bar:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
+/* Nav panels: .nav (admin), .nav-links (public) */
+.site-nav-panel,
+.navbar .nav,
+.navbar .nav-links,
+.navbar > .nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar .nav-links li {
+    list-style: none;
+}
+
+.navbar .nav a,
+.navbar .nav-links a,
+.navbar .nav-links li a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--touch-min);
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: clamp(0.8rem, 2.5vw, 0.95rem);
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+/* ——— Buttons (touch-friendly) ——— */
+.btn,
+.button,
+.btn-select,
+.btn-pkg,
+.btn-book,
+.btn-read,
+.btn-dashboard,
+.button-save,
+.button-cancel,
+.btn-add,
+.btn-edit,
+.btn-delete,
+.btn-view,
+.btn-approve,
+.btn-reject,
+.btn-primary,
+.link-button,
+.tab-btn,
+.modal-btn,
+.quick-btn,
+.help-nav-btn {
+    min-height: var(--touch-min);
+    padding: 12px 20px;
+    font-size: clamp(0.85rem, 2.5vw, 1rem);
+    line-height: 1.3;
+    touch-action: manipulation;
+}
+
+/* ——— Forms ——— */
+.form-container {
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+.form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 28px;
+    align-items: stretch;
+}
+
+.form-actions .button-save,
+.form-actions .button-cancel,
+.form-actions .button,
+.form-actions a,
+.form-actions button {
+    flex: 1 1 160px;
+    min-width: min(100%, 140px);
+    text-align: center;
+}
+
+/* ——— Tables ——— */
+.table-wrap,
+.recent-table,
+.admin-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 14px;
+}
+
+.table-wrap table,
+.recent-table table {
+    min-width: 560px;
+}
+
+/* Card grids */
+.destinations-grid,
+.packages-container,
+.highlights-grid,
+.attractions-grid,
+.dashboard-stats,
+.quick-actions,
+.cards,
+.exp-grid,
+.personnel-grid {
+    width: 100%;
+}
+
+/* Headers */
+.header {
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.header .btn-add,
+.header a.btn-add {
+    width: auto;
+    max-width: 100%;
+}
+
+/* Payment / checkout */
+.checkout-grid {
+    display: grid;
+    grid-template-columns: 1fr min(380px, 100%);
+    gap: clamp(20px, 4vw, 30px);
+}
+
+.split {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+/* Detail page */
+.detail-hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(20px, 4vw, 30px);
+}
+
+/* Stepper */
+.stepper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: clamp(12px, 3vw, 40px);
+}
+
+/* Modal */
+.modal-container {
+    width: min(450px, calc(100vw - 32px));
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+/* Page width */
+.page {
+    width: min(1200px, 100%) !important;
+    padding-left: var(--page-pad) !important;
+    padding-right: var(--page-pad) !important;
+}
+
+/* ——— Mobile navigation ——— */
+@media (max-width: 992px) {
+    .nav-toggle {
+        display: inline-flex;
+    }
+
+    .site-navbar:has(.navbar-inner) .site-nav-panel,
+    .site-navbar:has(.navbar-inner) .nav,
+    .navbar.is-menu-open .nav,
+    .navbar.is-menu-open .nav-links,
+    .navbar.is-menu-open > .nav-links {
+        display: flex !important;
+    }
+
+    .navbar .nav,
+    .navbar .nav-links,
+    .navbar > .nav-links:not(.is-desktop) {
+        display: none;
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        gap: 4px;
+        padding: 8px var(--page-pad) 16px;
+        background: #fff;
+        border-top: 1px solid #eee;
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.06);
+        max-height: min(70vh, 480px);
+        overflow-y: auto;
+    }
+
+    .navbar.is-menu-open .nav,
+    .navbar.is-menu-open .nav-links {
+        display: flex !important;
+    }
+
+    .navbar .nav a,
+    .navbar .nav-links a,
+    .navbar .nav-links li a {
+        width: 100%;
+        justify-content: flex-start;
+        white-space: normal;
+    }
+
+.navbar .nav-links li {
+    width: 100%;
+}
+
+@media (max-width: 992px) {
+    .navbar.is-menu-open .nav-links:not(ul) {
+        display: flex !important;
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+    .nav-links li:nth-child(6) {
+        border-left: none !important;
+        padding-left: 0 !important;
+    }
+
+    /* Public navbar without inner wrapper */
+    .navbar:not(:has(.navbar-inner)) {
+        flex-wrap: nowrap;
+        padding: 12px var(--page-pad) !important;
+    }
+
+    .navbar:not(:has(.navbar-inner)) .nav-links {
+        order: 3;
+        flex-basis: 100%;
+    }
+
+    .navbar:not(:has(.navbar-inner)) .nav-toggle {
+        order: 2;
+        margin-left: auto;
+    }
+
+    .navbar:not(:has(.navbar-inner)) .logo {
+        order: 1;
+        flex: 1;
+        min-width: 0;
+        font-size: clamp(1.1rem, 4vw, 1.5rem);
+    }
+}
+
+@media (max-width: 768px) {
+    .checkout-grid,
+    .detail-hero,
+    .split,
+    .row {
+        grid-template-columns: 1fr !important;
+    }
+
+    .hero {
+        padding: clamp(24px, 6vw, 40px) var(--page-pad) !important;
+    }
+
+    .section-header {
+        padding: 50px var(--page-pad) 30px !important;
+    }
+
+    .section-header h2 {
+        font-size: clamp(1.5rem, 6vw, 2.2rem) !important;
+    }
+
+    .destinations-grid {
+        grid-template-columns: 1fr !important;
+        padding: 24px var(--page-pad) !important;
+        gap: 20px !important;
+    }
+
+    .packages-container {
+        grid-template-columns: 1fr !important;
+        padding: 24px var(--page-pad) 60px !important;
+    }
+
+    .dashboard-stats {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 14px !important;
+    }
+
+    .stat-card {
+        padding: 18px !important;
+    }
+
+    .stat-number {
+        font-size: clamp(1.35rem, 5vw, 1.75rem) !important;
+    }
+
+    .quick-actions {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .form-actions > * {
+        flex: 1 1 100%;
+        width: 100% !important;
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: stretch !important;
+    }
+
+    .header .btn-add {
+        width: 100%;
+        text-align: center;
+    }
+
+    .button-container {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 0 var(--page-pad);
+    }
+
+    .button-container .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .slider-wrapper {
+        height: clamp(320px, 55vh, 500px) !important;
+    }
+
+    .footer-grid {
+        grid-template-columns: 1fr !important;
+        text-align: center;
+        gap: 28px !important;
+    }
+
+    .social-links {
+        justify-content: center;
+    }
+
+    th, td {
+        padding: 10px 8px;
+        font-size: 0.82rem;
+    }
+
+    .actions-cell,
+    .actions {
+        flex-direction: column;
+        align-items: stretch !important;
+    }
+
+    .actions-cell .btn-view,
+    .actions-cell .btn-approve,
+    .actions-cell .btn-reject,
+    .actions a,
+    .actions button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-stats,
+    .quick-actions {
+        grid-template-columns: 1fr !important;
+    }
+
+    .logo {
+        font-size: 1.15rem !important;
+    }
+
+    .card {
+        padding: 18px !important;
+    }
+
+    body > .card {
+        width: calc(100% - 24px) !important;
+        margin: 40px auto !important;
+    }
+}
+
+/* Prevent horizontal scroll */
+body {
+    overflow-x: hidden;
+}
+
+/* Admin modals (bookings) */
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+    padding: var(--page-pad);
+    background: rgba(0, 0, 0, 0.55);
+}
+
+.modal-content {
+    width: min(520px, 100%);
+    max-height: min(90vh, 640px);
+    overflow-y: auto;
+    background: #fff;
+    border-radius: 16px;
+    padding: clamp(20px, 4vw, 28px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content form > div[style*="flex"] {
+    display: flex !important;
+    flex-wrap: wrap;
+    gap: 10px !important;
+    justify-content: stretch !important;
+}
+
+.modal-content form button {
+    flex: 1 1 140px;
+    min-height: var(--touch-min);
+}
+
+/* Safe area for notched phones */
+@supports (padding: max(0px)) {
+    .navbar,
+    .site-navbar {
+        padding-left: max(var(--page-pad), env(safe-area-inset-left));
+        padding-right: max(var(--page-pad), env(safe-area-inset-right));
+    }
+}

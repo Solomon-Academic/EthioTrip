@@ -43,7 +43,8 @@ class AuthController extends Controller
                     Session::set('user_email', $user['email']);
                     Session::set('user_role', $user['role']);
 
-                    $redirectUrl = Session::get('return_url') ?: '/dashboard';
+                    $defaultUrl = ($user['role'] ?? '') === 'admin' ? '/admin/dashboard' : '/dashboard';
+                    $redirectUrl = Session::get('return_url') ?: $defaultUrl;
                     Session::remove('return_url');
                     $this->redirect($redirectUrl);
                 }

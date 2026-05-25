@@ -5,18 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - EthioTrip</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/ethiotrip1/ethiotrip/public/css/backend.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <?php require __DIR__ . '/../partials/user_head.php'; ?>
 </head>
 <body>
     <div class="page">
-        <div class="navbar">
-            <a href="/ethiotrip1/ethiotrip/public/dashboard" class="logo">Ethio<span>Trip</span></a>
-            <div class="nav">
-                <a href="/ethiotrip1/ethiotrip/public/"><i class="fas fa-home"></i> Home</a>
-                <a href="/ethiotrip1/ethiotrip/public/bookings">My Bookings</a>
-                <a href="/ethiotrip1/ethiotrip/public/logout">Logout</a>
-            </div>
-        </div>
+        <?php require __DIR__ . '/../partials/user_navbar.php'; ?>
 
         <div class="hero">
             <h1>Welcome, <?php echo htmlspecialchars($user['name'] ?? 'Traveler'); ?>!</h1>
@@ -64,5 +58,6 @@
             <div class="footer-inner">© <?php echo date('Y'); ?> <a href="/ethiotrip1/ethiotrip/public/">EthioTrip</a> Ethiopia. All rights reserved.</div>
         </footer>
     </div>
+    <script src="/ethiotrip1/ethiotrip/public/js/nav-mobile.js"></script>
 </body>
 </html>

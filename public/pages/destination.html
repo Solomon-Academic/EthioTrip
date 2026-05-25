@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EthioTrip | Professional Journey Planner</title>
-    
+    <title>EthioTrip | Destinations</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/ethiotrip1/ethiotrip/public/css/destination.css">
-    
+    <link rel="stylesheet" href="/ethiotrip1/ethiotrip/public/css/responsive.css">
     <style>
         .btn-select {
             padding: 16px;
@@ -25,81 +24,7 @@
             display: inline-block;
             width: 100%;
         }
-        .btn-select:hover {
-            background: #d4af37;
-            transform: translateY(-2px);
-        }
-        .selection-toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #2d3436;
-            color: white;
-            padding: 15px 40px;
-            border-radius: 50px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            display: none;
-            z-index: 1000;
-            font-weight: 600;
-        }
-        .destination-header {
-            text-align: center;
-            padding: 80px 8% 40px;
-            background: linear-gradient(180deg, #ffffff, #fafafa);
-        }
-        .destination-header h1 {
-            font-size: 2.5rem;
-            font-weight: 300;
-            margin-bottom: 15px;
-            color: #2d3436;
-        }
-        .destination-header p {
-            color: #636e72;
-            font-size: 0.95rem;
-            max-width: 700px;
-            margin: 0 auto;
-            line-height: 1.6;
-        }
-        .carousel-outer {
-            position: relative;
-            margin-top: 20px;
-            padding: 0 8%;
-        }
-        .navbar {
-            position: relative;
-            top: auto;
-            left: auto;
-            width: 100%;
-            background: white;
-            z-index: 100;
-            padding: 1rem 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .footer {
-            position: relative;
-            bottom: auto;
-            left: auto;
-            width: 100%;
-        }
-        .navbar .nav-links {
-            display: flex;
-            gap: 25px;
-            align-items: center;
-            list-style: none;
-        }
-        .navbar .nav-links a {
-            text-decoration: none;
-            color: #2d3436;
-            font-weight: 500;
-            transition: 0.3s;
-        }
-        .navbar .nav-links a:hover {
-            color: #d4af37;
-        }
-        /* Destination Grid Layout */
+        .btn-select:hover { background: #d4af37; transform: translateY(-2px); }
         .destinations-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -112,233 +37,47 @@
             overflow: hidden;
             box-shadow: 0 15px 35px rgba(0,0,0,0.1);
             transition: 0.4s ease;
-            cursor: pointer;
             border: 2px solid transparent;
         }
-        .dest-card:hover {
-            transform: translateY(-10px);
-            border-color: #d4af37;
-        }
-        .dest-card img {
-            width: 100%;
-            height: 250px;
-            object-fit: cover;
-        }
-        .dest-content {
-            padding: 25px;
-        }
-        .dest-content h3 {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-        }
-        .dest-location {
-            color: #d4af37;
-            font-size: 0.8rem;
-            margin-bottom: 10px;
-        }
-        .dest-desc {
-            color: #666;
-            font-size: 0.85rem;
-            line-height: 1.5;
-            margin-bottom: 15px;
-        }
-        .best-time {
-            color: #d4af37;
-            font-size: 0.7rem;
-            margin-top: 10px;
-        }
-        @media (max-width: 768px) {
-            .destination-header {
-                padding: 60px 5% 30px;
-            }
-            .destination-header h1 {
-                font-size: 1.8rem;
-            }
-            .navbar {
-                flex-direction: column;
-                padding: 1rem;
-            }
-            .nav-links {
-                justify-content: center;
-                flex-wrap: wrap;
-            }
-            .destinations-grid {
-                grid-template-columns: 1fr;
-                padding: 20px 5%;
-            }
-        }
+        .dest-card:hover { transform: translateY(-10px); border-color: #d4af37; }
+        .dest-card img { width: 100%; height: 250px; object-fit: cover; }
+        .dest-content { padding: 25px; }
+        .dest-location { color: #d4af37; font-size: 0.8rem; margin-bottom: 10px; }
+        .dest-desc { color: #666; font-size: 0.85rem; line-height: 1.5; }
+        .state-msg { text-align: center; padding: 40px; color: #636e72; grid-column: 1 / -1; }
+        .state-error { color: #c0392b; }
     </style>
 </head>
 <body>
-
     <nav class="navbar">
         <a href="/ethiotrip1/ethiotrip/public/" class="logo">Ethio<span>Trip</span></a>
         <div class="nav-links">
             <a href="/ethiotrip1/ethiotrip/public/"><i class="fas fa-home"></i> Home</a>
             <a href="/ethiotrip1/ethiotrip/public/destination">Destinations</a>
-            <a href="/ethiotrip1/ethiotrip/public/packages">Packages</a>
             <a href="/ethiotrip1/ethiotrip/public/about">About</a>
             <a href="/ethiotrip1/ethiotrip/public/login"><i class="fas fa-sign-in-alt"></i> Sign In</a>
         </div>
     </nav>
 
     <div class="destination-header">
-        <h1>🌍 Choose Your Destination</h1>
-        <p>Select a destination to start your Ethiopian adventure. Each destination offers unique experiences and packages.</p>
+        <h1>Explore Ethiopia</h1>
+        <p>Browse destinations, read full travel guides, then choose packages for your journey.</p>
     </div>
 
     <div class="destinations-grid" id="destinationsGrid">
-        <!-- Lalibela -->
-        <div class="dest-card" onclick="selectDestination('Lalibela', 'Amhara Region', 'Oct - Mar')">
-            <img src="/ethiotrip1/ethiotrip/public/images/dest_images/upscaled_lalibela.jpg" alt="Lalibela">
-            <div class="dest-content">
-                <h3>Lalibela</h3>
-                <div class="dest-location"><i class="fas fa-map-marker-alt"></i> Amhara Region</div>
-                <p class="dest-desc">Famous for its 11 monolithic rock-hewn churches, a UNESCO World Heritage site.</p>
-                <div class="best-time"><i class="far fa-calendar-alt"></i> Best: Oct - Mar</div>
-                <button class="btn-select">Select Destination →</button>
-            </div>
-        </div>
-
-        <!-- Axum -->
-        <div class="dest-card" onclick="selectDestination('Axum', 'Tigray Region', 'Sep - May')">
-            <img src="/ethiotrip1/ethiotrip/public/images/dest_images/Axum.jpg" alt="Axum">
-            <div class="dest-content">
-                <h3>Axum</h3>
-                <div class="dest-location"><i class="fas fa-map-marker-alt"></i> Tigray Region</div>
-                <p class="dest-desc">Ancient city known for its obelisks and as the home of the Ark of the Covenant.</p>
-                <div class="best-time"><i class="far fa-calendar-alt"></i> Best: Sep - May</div>
-                <button class="btn-select">Select Destination →</button>
-            </div>
-        </div>
-
-        <!-- Gondar -->
-        <div class="dest-card" onclick="selectDestination('Gondar', 'Amhara Region', 'Oct - Feb')">
-            <img src="/ethiotrip1/ethiotrip/public/images/dest_images/Gondar.jpg" alt="Gondar">
-            <div class="dest-content">
-                <h3>Gondar</h3>
-                <div class="dest-location"><i class="fas fa-map-marker-alt"></i> Amhara Region</div>
-                <p class="dest-desc">Known as the "Camelot of Africa" with its royal castles.</p>
-                <div class="best-time"><i class="far fa-calendar-alt"></i> Best: Oct - Feb</div>
-                <button class="btn-select">Select Destination →</button>
-            </div>
-        </div>
-
-        <!-- Harar -->
-        <div class="dest-card" onclick="selectDestination('Harar', 'Harari Region', 'All Year')">
-            <img src="/ethiotrip1/ethiotrip/public/images/dest_images/upscaled_3x_harar.jpg" alt="Harar">
-            <div class="dest-content">
-                <h3>Harar</h3>
-                <div class="dest-location"><i class="fas fa-map-marker-alt"></i> Harari Region</div>
-                <p class="dest-desc">The walled city of Harar, known for its alleyways and hyena feeding.</p>
-                <div class="best-time"><i class="far fa-calendar-alt"></i> Best: All Year</div>
-                <button class="btn-select">Select Destination →</button>
-            </div>
-        </div>
-
-        <!-- Danakil Depression -->
-        <div class="dest-card" onclick="selectDestination('Danakil Depression', 'Afar Region', 'Nov - Jan')">
-            <img src="/ethiotrip1/ethiotrip/public/images/dest_images/upscaled_3x_Afar.jpg" alt="Danakil Depression">
-            <div class="dest-content">
-                <h3>Danakil Depression</h3>
-                <div class="dest-location"><i class="fas fa-map-marker-alt"></i> Afar Region</div>
-                <p class="dest-desc">One of the hottest places on Earth with active volcanoes.</p>
-                <div class="best-time"><i class="far fa-calendar-alt"></i> Best: Nov - Jan</div>
-                <button class="btn-select">Select Destination →</button>
-            </div>
-        </div>
-
-        <!-- Sof Omar Cave -->
-        <div class="dest-card" onclick="selectDestination('Sof Omar Cave', 'Oromia Region', 'Dec - Apr')">
-            <img src="/ethiotrip1/ethiotrip/public/images/dest_images/Cave.jpg" alt="Sof Omar Cave">
-            <div class="dest-content">
-                <h3>Sof Omar Cave</h3>
-                <div class="dest-location"><i class="fas fa-map-marker-alt"></i> Oromia Region</div>
-                <p class="dest-desc">One of the largest cave systems in the world.</p>
-                <div class="best-time"><i class="far fa-calendar-alt"></i> Best: Dec - Apr</div>
-                <button class="btn-select">Select Destination →</button>
-            </div>
-        </div>
-
-        <!-- Simien Mountains -->
-        <div class="dest-card" onclick="selectDestination('Simien Mountains', 'Amhara Region', 'Sep - Nov')">
-            <img src="/ethiotrip1/ethiotrip/public/images/dest_images/upscaled_simen.jpg" alt="Simien Mountains">
-            <div class="dest-content">
-                <h3>Simien Mountains</h3>
-                <div class="dest-location"><i class="fas fa-map-marker-alt"></i> Amhara Region</div>
-                <p class="dest-desc">Stunning mountain landscapes with endemic wildlife.</p>
-                <div class="best-time"><i class="far fa-calendar-alt"></i> Best: Sep - Nov</div>
-                <button class="btn-select">Select Destination →</button>
-            </div>
-        </div>
-
-        <!-- Omo Valley -->
-        <div class="dest-card" onclick="selectDestination('Omo Valley', 'Southern Region', 'Jun - Aug')">
-            <img src="/ethiotrip1/ethiotrip/public/images/dest_images/upscaled_3x_Omo.jpg" alt="Omo Valley">
-            <div class="dest-content">
-                <h3>Omo Valley</h3>
-                <div class="dest-location"><i class="fas fa-map-marker-alt"></i> Southern Region</div>
-                <p class="dest-desc">Home to diverse tribal cultures and traditions.</p>
-                <div class="best-time"><i class="far fa-calendar-alt"></i> Best: Jun - Aug</div>
-                <button class="btn-select">Select Destination →</button>
-            </div>
-        </div>
+        <p class="state-msg" id="destinationsLoading">Loading destinations...</p>
+        <p class="state-msg" id="destinationsEmpty" style="display:none;">No destinations available yet.</p>
+        <p class="state-msg state-error" id="destinationsError" style="display:none;"></p>
     </div>
 
     <footer class="footer">
-        <div class="footer-grid">
-            <div class="footer-col">
-                <a href="#" class="logo">Ethio<span>Trip</span></a>
-                <p style="margin-top: 15px; color: #bbb;">Authentic Ethiopian journeys curated for the modern explorer.</p>
-                <div class="social-links">
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                </div>
-            </div>
-            <div class="footer-col">
-                <h4>Explore</h4>
-                <ul>
-                    <li><a href="/ethiotrip1/ethiotrip/public/destination">Destinations</a></li>
-                    <li><a href="/ethiotrip1/ethiotrip/public/packages">Packages</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Connect</h4>
-                <ul>
-                    <li><a href="/ethiotrip1/ethiotrip/public/about">About Us</a></li>
-                    <li><a href="/ethiotrip1/ethiotrip/public/about">Contact Us</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">© <span id="currentYear"></span> EthioTrip Ethiopia. All rights reserved.</div>
+        <div class="footer-bottom">© <span id="currentYear"></span> EthioTrip Ethiopia.</div>
     </footer>
 
-    <div class="selection-toast" id="toast">Destination Selected!</div>
-
-    <script>
-        document.getElementById('currentYear').textContent = new Date().getFullYear();
-
-        function selectDestination(destName, location, bestTime) {
-            const destinationData = {
-                name: destName,
-                location: location,
-                bestTime: bestTime,
-                churches: destName === 'Lalibela' ? ['Bete Medhane Alem', 'Bete Maryam', 'Bete Gabriel-Rufael', 'Bete Golgotha Mikael', 'Bete Amanuel'] : []
-            };
-            localStorage.setItem('selectedDestination', JSON.stringify(destinationData));
-            localStorage.setItem('selectedDestinationName', destName);
-            
-            const toast = document.getElementById('toast');
-            toast.textContent = destName + " Selected! ✓";
-            toast.style.display = "block";
-            setTimeout(() => {
-                toast.style.display = "none";
-            }, 2000);
-            setTimeout(() => {
-                window.location.href = "/ethiotrip1/ethiotrip/public/packages";
-            }, 800);
-        }
-    </script>
+    <script>document.getElementById('currentYear').textContent = new Date().getFullYear();</script>
+    <script src="/ethiotrip1/ethiotrip/public/js/ethiotrip-config.js"></script>
+    <script src="/ethiotrip1/ethiotrip/public/js/ethiotrip-api.js"></script>
+    <script src="/ethiotrip1/ethiotrip/public/js/destinations.js"></script>
+    <script src="/ethiotrip1/ethiotrip/public/js/nav-mobile.js"></script>
 </body>
 </html>

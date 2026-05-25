@@ -17,12 +17,22 @@
         .logo { font-size: 1.6rem; font-weight: 600; text-decoration: none; color: inherit; }
         .logo span { color: var(--accent); }
 
+        .nav-links {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
         .nav-links a {
             text-decoration: none;
             color: var(--primary);
             font-weight: 600;
-            font-size: 1rem;
+            font-size: clamp(0.85rem, 2.5vw, 1rem);
             transition: 0.3s;
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 12px;
         }
         .nav-links a:hover { color: var(--accent); }
 
