@@ -1,88 +1,129 @@
 <?php
 namespace Backend\Services;
 
+use Backend\Services\Mail\EmailTemplates;
+use Backend\Services\Mail\GmailSmtpMailer;
+use Backend\Services\Mail\MailerInterface;
+/**
+ * Sends booking/payment notifications via Gmail SMTP.
+ */
 class BookingEmailService
 {
-    private ResendMailer $mailer;
+    private MailerInterface $mailer;
+    private EmailTemplates $templates;
 
-    public function __construct(?ResendMailer $mailer = null)
+    public function __construct(?MailerInterface $mailer = null, ?EmailTemplates $templates = null)
     {
-        $this->mailer = $mailer ?? new ResendMailer();
+        $this->mailer = $mailer ?? new GmailSmtpMailer();
+        $this->templates = $templates ?? new EmailTemplates();
     }
 
     /**
-     * Send confirmation only after admin approval (payment or booking).
+     * @return array{sent: bool, skipped: bool, reason: string, email: string}
      */
-    public function sendApprovalConfirmation(array $booking): bool
+    public function sendPaymentApprovedNotification(array $booking): array
     {
-        $email = $booking['user_email'] ?? '';
-        $name = $booking['user_name'] ?? 'Traveler';
-        $bookingId = $booking['id'] ?? '';
-        $destination = $booking['destination'] ?? 'Not specified';
-        $package = $booking['package_name'] ?? '';
-        $start = $booking['start_date'] ?? '';
-        $end = $booking['end_date'] ?? '';
-        $status = ucfirst($booking['admin_approval_status'] ?? 'approved');
-        $total = number_format((float) ($booking['final_amount'] ?? 0), 2);
-
-        $config = require __DIR__ . '/../Config/config.php';
-        $appUrl = rtrim($config['app_url'] ?? '', '/');
-
-        $subject = "EthioTrip Booking Confirmed #{$bookingId}";
-
-        $html = $this->wrapTemplate(
-            'Your booking is approved!',
-            "
-            <p>Dear <strong>" . htmlspecialchars($name) . "</strong>,</p>
-            <p>Great news — your EthioTrip booking has been <strong style='color:#27ae60;'>APPROVED</strong>.</p>
-            <div class='details'>
-                <p><strong>Booking ID:</strong> #{$bookingId}</p>
-                <p><strong>Destination:</strong> " . htmlspecialchars($destination) . "</p>
-                <p><strong>Package:</strong> " . htmlspecialchars($package) . "</p>
-                <p><strong>Travel dates:</strong> {$start} to {$end}</p>
-                <p><strong>Status:</strong> {$status}</p>
-                <p><strong>Total:</strong> \${$total}</p>
-            </div>
-            <p><a href='{$appUrl}/bookings' class='button'>View My Bookings</a></p>
-            "
-        );
-
-        $text = implode("\n", [
-            "Hello {$name},",
-            '',
-            'Your EthioTrip booking has been approved.',
-            '',
-            "Booking ID: #{$bookingId}",
-            "Destination: {$destination}",
-            "Package: {$package}",
-            "Travel dates: {$start} to {$end}",
-            "Status: {$status}",
-            "Total: \${$total}",
-            '',
-            "View bookings: {$appUrl}/bookings",
-        ]);
-
-        return $this->mailer->send($email, $subject, $html, $text);
+        $tpl = $this->templates->paymentApproved($booking);
+        return $this->dispatch($booking, $tpl['subject'], $tpl['html'], $tpl['text']);
     }
 
-    private function wrapTemplate(string $headline, string $bodyHtml): string
+    /**
+     * @return array{sent: bool, skipped: bool, reason: string, email: string}
+     */
+    public function sendPaymentRejectedNotification(array $booking): array
     {
-        return "
-        <html><head><style>
-            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-            .header { background: #d4af37; padding: 20px; text-align: center; color: #2d3436; }
-            .content { padding: 30px; background: #f9f9f9; }
-            .details { background: white; padding: 15px; border-radius: 8px; margin: 15px 0; }
-            .footer { text-align: center; padding: 20px; font-size: 12px; color: #777; }
-            .button { background: #d4af37; color: #2d3436; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; }
-        </style></head>
-        <body>
-            <div class='container'>
-                <div class='header'><h2>EthioTrip</h2><h3>" . htmlspecialchars($headline) . "</h3></div>
-                <div class='content'>{$bodyHtml}</div>
-                <div class='footer'><p>&copy; " . date('Y') . " EthioTrip Ethiopia.</p></div>
-            </div>
-        </body></html>";
+        $tpl = $this->templates->paymentRejected($booking);
+        return $this->dispatch($booking, $tpl['subject'], $tpl['html'], $tpl['text']);
+    }
+
+    /**
+     * @return array{sent: bool, skipped: bool, reason: string, email: string}
+     */
+    public function sendBookingApprovedNotification(array $booking): array
+    {
+        $tpl = $this->templates->bookingConfirmed($booking);
+        return $this->dispatch($booking, $tpl['subject'], $tpl['html'], $tpl['text']);
+    }
+
+    public function isDeliverableEmail(string $email): bool
+    {
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return false;
+        }
+        $lower = strtolower($email);
+        if (str_contains($lower, '@ethiotrip.local') || str_contains($lower, 'guest+')) {
+            return false;
+        }
+        return true;
+    }
+
+    public function isMailConfigured(): bool
+    {
+        return $this->mailer->isConfigured();
+    }
+
+    /**
+     * @return array{sent: bool, skipped: bool, reason: string, email: string}
+     */
+    private function dispatch(array $booking, string $subject, string $html, string $text): array
+    {
+        $email = trim($booking['user_email'] ?? '');
+
+        if ($email === '') {
+            return [
+                'sent' => false,
+                'skipped' => true,
+                'reason' => 'No email address on file for this customer.',
+                'email' => '',
+            ];
+        }
+
+        if (!$this->isDeliverableEmail($email)) {
+            return [
+                'sent' => false,
+                'skipped' => true,
+                'reason' => 'This account uses a placeholder email. Ask the customer to register with a valid email address.',
+                'email' => $email,
+            ];
+        }
+
+        if (!$this->mailer->isConfigured()) {
+            return [
+                'sent' => false,
+                'skipped' => false,
+                'reason' => 'Gmail SMTP is not configured. Add GMAIL_USER and GMAIL_APP_PASSWORD to your .env file.',
+                'email' => $email,
+            ];
+        }
+
+        $result = $this->mailer->send($email, $subject, $html, $text);
+
+        if ($result['success']) {
+            return [
+                'sent' => true,
+                'skipped' => false,
+                'reason' => '',
+                'email' => $email,
+            ];
+        }
+
+        return [
+            'sent' => false,
+            'skipped' => false,
+            'reason' => $this->humanizeMailError($result['error'] ?? 'Unable to send email.'),
+            'email' => $email,
+        ];
+    }
+
+    private function humanizeMailError(string $error): string
+    {
+        $lower = strtolower($error);
+        if (str_contains($lower, 'authenticate') || str_contains($lower, 'username and password')) {
+            return 'Gmail authentication failed. Check GMAIL_USER and GMAIL_APP_PASSWORD in .env (use a Google App Password, not your normal password).';
+        }
+        if (str_contains($lower, 'could not connect')) {
+            return 'Could not connect to Gmail SMTP. Check your internet connection and that port 587 is not blocked.';
+        }
+        return $error;
     }
 }

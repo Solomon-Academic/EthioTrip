@@ -1,10 +1,13 @@
 {
   "name": "ethiotrip/ip2_travel",
-  "description": "Simple PHP travel booking application",
+  "description": "EthioTrip travel booking application",
   "autoload": {
     "psr-4": {
       "Backend\\": "backend/"
     }
   },
-  "require": {}
+  "require": {
+    "php": ">=8.0",
+    "phpmailer/phpmailer": "^6.9"
+  }
 }

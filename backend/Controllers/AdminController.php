@@ -142,36 +142,52 @@ class AdminController extends Controller
                     $result = $this->bookingModel->approveBooking($bookingId, $adminId, $adminNotes);
                     if ($result) {
                         $booking = $this->bookingModel->getBookingWithDetails($bookingId);
-                        $emailOk = $this->emailService->sendApprovalConfirmation($booking ?: []);
-                        $message = $emailOk
-                            ? 'Booking approved successfully! Confirmation email sent via Resend.'
-                            : 'Booking approved. Email could not be sent (check Resend API key).';
-                        $messageType = 'success';
+                        [$message, $messageType] = $this->notifyAfterApproval(
+                            $bookingId,
+                            $booking ?: [],
+                            $this->emailService->sendBookingApprovedNotification($booking ?: [])
+                        );
                     } else {
-                        $message = 'Failed to approve booking.';
+                        $message = 'Unable to approve this booking. Please try again.';
                         $messageType = 'error';
                     }
                 } elseif ($action === 'reject') {
                     $result = $this->bookingModel->rejectBooking($bookingId, $adminId, $adminNotes);
-                    $message = $result ? 'Booking rejected successfully!' : 'Failed to reject booking.';
+                    $message = $result
+                        ? 'Booking has been rejected. The customer can view the updated status in their account.'
+                        : 'Unable to reject this booking. Please try again.';
                     $messageType = $result ? 'warning' : 'error';
                 } elseif ($action === 'approve_payment') {
                     $result = $this->bookingModel->approvePayment($bookingId, $adminId, $adminNotes);
                     if ($result) {
                         $booking = $this->bookingModel->getBookingWithDetails($bookingId);
-                        $emailOk = $this->emailService->sendApprovalConfirmation($booking ?: []);
-                        $message = $emailOk
-                            ? 'Payment approved successfully! Confirmation email sent via Resend.'
-                            : 'Payment approved. Email could not be sent (check Resend API key).';
-                        $messageType = 'success';
+                        [$message, $messageType] = $this->notifyAfterApproval(
+                            $bookingId,
+                            $booking ?: [],
+                            $this->emailService->sendPaymentApprovedNotification($booking ?: []),
+                            true
+                        );
                     } else {
-                        $message = 'Failed to approve payment.';
+                        $message = 'Unable to approve this payment. Please try again.';
                         $messageType = 'error';
                     }
                 } elseif ($action === 'fail_payment') {
                     $result = $this->bookingModel->markPaymentFailed($bookingId, $adminId, $adminNotes);
-                    $message = $result ? 'Payment marked as failed.' : 'Failed to update payment.';
-                    $messageType = $result ? 'warning' : 'error';
+                    if ($result) {
+                        $booking = $this->bookingModel->getBookingWithDetails($bookingId);
+                        $notify = $this->emailService->sendPaymentRejectedNotification($booking ?: []);
+                        if ($notify['sent']) {
+                            $this->bookingModel->markCustomerNotified($bookingId, 'payment_rejected');
+                        }
+                        [$message, $messageType] = $this->formatNotificationFeedback(
+                            $notify,
+                            'Payment was not approved. The customer has been notified by email.',
+                            'Payment was not approved. Notification email could not be delivered.'
+                        );
+                    } else {
+                        $message = 'Unable to update payment status. Please try again.';
+                        $messageType = 'error';
+                    }
                 }
             }
         }
@@ -212,4 +228,48 @@ class AdminController extends Controller
         ]);
     }
 
+    /**
+     * @param array{sent: bool, skipped: bool, reason: string, email: string} $notify
+     * @return array{0: string, 1: string} message and type
+     */
+    private function notifyAfterApproval(int $bookingId, array $booking, array $notify, bool $isPayment = false): array
+    {
+        if ($notify['sent']) {
+            $this->bookingModel->markCustomerNotified(
+                $bookingId,
+                $isPayment ? 'payment_approved' : 'booking_approved'
+            );
+        }
+
+        $successLead = $isPayment
+            ? 'Payment approved successfully. The booking is now confirmed.'
+            : 'Booking approved successfully.';
+
+        $sentMessage = $successLead . ' A confirmation email was sent to ' . ($notify['email'] ?: 'the customer') . '.';
+
+        return $this->formatNotificationFeedback($notify, $sentMessage, $successLead);
+    }
+
+    /**
+     * @param array{sent: bool, skipped: bool, reason: string, email: string} $notify
+     * @return array{0: string, 1: string}
+     */
+    private function formatNotificationFeedback(array $notify, string $sentMessage, string $partialMessage): array
+    {
+        if ($notify['sent']) {
+            return [$sentMessage, 'success'];
+        }
+
+        if ($notify['skipped']) {
+            return [
+                $partialMessage . ' No automated email was sent: ' . $notify['reason'],
+                'warning',
+            ];
+        }
+
+        return [
+            $partialMessage . ' Email could not be sent: ' . ($notify['reason'] ?: 'Please check Gmail SMTP settings in .env.'),
+            'warning',
+        ];
+    }
 }

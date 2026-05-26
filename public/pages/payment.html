@@ -741,27 +741,27 @@
                 const receipt = document.getElementById('phase-receipt');
                 receipt.innerHTML = `
                     <div class="receipt">
-                        <h2><i class="fas fa-check-circle"></i> Booking Confirmed!</h2>
+                        <h2><i class="fas fa-check-circle"></i> Booking request received</h2>
+                        <p style="color:#636e72;margin-bottom:20px;line-height:1.6;">Thank you. Your trip details have been saved. Our team will review your payment shortly. You will receive a <strong>confirmation email</strong> once your payment is approved.</p>
                         <div class="receipt-details">
-                            <p><strong>Booking ID:</strong> #${result.booking_id}</p>
+                            <p><strong>Booking reference:</strong> #${result.booking_id}</p>
                             <p><strong>Transaction ID:</strong> ${result.transaction_id || 'Pending'}</p>
                             <p><strong>Package:</strong> ${selectedPackageData.name}</p>
-                            <p><strong>Travel Dates:</strong> ${startDate} to ${endDate}</p>
+                            <p><strong>Travel dates:</strong> ${startDate} to ${endDate}</p>
                             <p><strong>Travelers:</strong> ${travelers}</p>
                             <hr>
                             <p><strong>Subtotal:</strong> $${subtotal.toFixed(2)}</p>
-                            ${discountPercent > 0 ? `<p><strong>Loyalty Discount (${discountPercent}%):</strong> -$${discountAmount.toFixed(2)}</p>` : ''}
+                            ${discountPercent > 0 ? `<p><strong>Loyalty discount (${discountPercent}%):</strong> -$${discountAmount.toFixed(2)}</p>` : ''}
                             <p><strong>VAT (10%):</strong> $${tax.toFixed(2)}</p>
-                            <p><strong>Total Paid:</strong> $${finalAmount.toFixed(2)}</p>
-                            <p><strong>Payment Method:</strong> ${paymentMethod}</p>
-                            <p><strong>Payment Status:</strong> ${result.payment_status || 'Pending'} admin review</p>
-                            <p><strong>Booking Status:</strong> ${result.status || 'Pending'}</p>
-                            <p><strong>Confirmation Email:</strong> ${result.email_sent ? 'Sent to ' + (result.user_email || userData.user_email) : 'Queued for configured mail server'}</p>
+                            <p><strong>Total amount:</strong> $${finalAmount.toFixed(2)}</p>
+                            <p><strong>Payment method:</strong> ${paymentMethod}</p>
+                            <p><strong>Payment status:</strong> <span style="color:#856404;">Pending review</span></p>
+                            <p><strong>Booking status:</strong> <span style="color:#856404;">Awaiting approval</span></p>
                         </div>
-                        <a href="/ethiotrip1/ethiotrip/public/bookings" class="btn-primary" style="display: inline-block; text-decoration: none; margin-top: 20px;">View My Bookings</a>
+                        <a href="/ethiotrip1/ethiotrip/public/bookings" class="btn-primary" style="display: inline-block; text-decoration: none; margin-top: 20px;">View my bookings</a>
                     </div>
                 `;
-                showNotice('Booking saved successfully!');
+                showNotice('Your booking request was submitted successfully.');
                 
                 // Clear stored package data
                 localStorage.removeItem("selectedPackage");

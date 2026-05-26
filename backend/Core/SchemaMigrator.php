@@ -8,6 +8,8 @@ class SchemaMigrator
         self::addColumnIfMissing($db, 'destinations', 'short_description', 'VARCHAR(500) NULL');
         self::addColumnIfMissing($db, 'destinations', 'travel_guide', 'TEXT NULL');
         self::addColumnIfMissing($db, 'packages', 'destination_id', 'INT NULL');
+        self::addColumnIfMissing($db, 'bookings', 'customer_notified_at', 'TIMESTAMP NULL');
+        self::addColumnIfMissing($db, 'bookings', 'last_notification_type', 'VARCHAR(50) NULL');
 
         $db->query("CREATE TABLE IF NOT EXISTS destination_highlights (
             id INT PRIMARY KEY AUTO_INCREMENT,

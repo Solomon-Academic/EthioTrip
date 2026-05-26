@@ -116,8 +116,8 @@
 
         <div class="header">
             <div>
-                <h1>Payment & Booking Management</h1>
-                <p>Review and approve user payments, manage booking approvals.</p>
+                <h1>Payment &amp; booking review</h1>
+                <p>Verify customer payments and confirm bookings. Approving a payment marks the booking as confirmed and sends a confirmation email to the customer via Gmail.</p>
             </div>
         </div>
 
@@ -239,16 +239,17 @@
 
     <div id="approveModal" class="modal">
         <div class="modal-content">
-            <h3>Approve Booking / Payment</h3>
-            <p>Add optional notes for the customer:</p>
+            <h3 id="approveModalTitle">Approve payment</h3>
+            <p id="approveModalDesc">The customer will receive an email confirmation with their trip details once you confirm.</p>
             <form method="POST" action="/ethiotrip1/ethiotrip/public/admin/bookings" id="approveForm">
                 <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(Backend\Core\Session::csrfToken()); ?>">
                 <input type="hidden" name="booking_id" id="approveBookingId">
                 <input type="hidden" name="action" id="approveAction">
-                <textarea name="admin_notes" rows="4" placeholder="Add confirmation notes, special instructions, or thank you message..."></textarea>
-                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <label for="approveNotes" style="font-weight:600;display:block;margin-bottom:8px;">Message to customer (optional)</label>
+                <textarea id="approveNotes" name="admin_notes" rows="4" placeholder="e.g. Thank you for your payment. Your guide will contact you 48 hours before departure."></textarea>
+                <div style="display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap;">
                     <button type="button" onclick="closeModal('approveModal')" class="button-secondary">Cancel</button>
-                    <button type="submit" class="btn-approve">Confirm Approval</button>
+                    <button type="submit" class="btn-approve" id="approveSubmitBtn">Approve &amp; notify customer</button>
                 </div>
             </form>
         </div>
@@ -256,8 +257,8 @@
 
     <div id="rejectModal" class="modal">
         <div class="modal-content">
-            <h3>Reject Booking / Payment</h3>
-            <p>Please provide a reason for rejection:</p>
+            <h3 id="rejectModalTitle">Decline payment</h3>
+            <p id="rejectModalDesc">The customer will be notified by email with your reason.</p>
             <form method="POST" action="/ethiotrip1/ethiotrip/public/admin/bookings" id="rejectForm">
                 <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(Backend\Core\Session::csrfToken()); ?>">
                 <input type="hidden" name="booking_id" id="rejectBookingId">
@@ -275,12 +276,23 @@
         function showApproveModal(bookingId, action) {
             document.getElementById('approveBookingId').value = bookingId;
             document.getElementById('approveAction').value = action;
+            const isPayment = action === 'approve_payment';
+            document.getElementById('approveModalTitle').textContent = isPayment ? 'Approve payment' : 'Approve booking';
+            document.getElementById('approveModalDesc').textContent = isPayment
+                ? 'Payment status will be set to Confirmed and a confirmation email will be sent to the customer automatically.'
+                : 'The booking will be marked as approved and the customer will receive a confirmation email.';
+            document.getElementById('approveSubmitBtn').textContent = isPayment ? 'Approve payment & send email' : 'Approve booking & send email';
             document.getElementById('approveModal').style.display = 'flex';
         }
         
         function showRejectModal(bookingId, action) {
             document.getElementById('rejectBookingId').value = bookingId;
             document.getElementById('rejectAction').value = action;
+            const isPayment = action === 'fail_payment';
+            document.getElementById('rejectModalTitle').textContent = isPayment ? 'Decline payment' : 'Reject booking';
+            document.getElementById('rejectModalDesc').textContent = isPayment
+                ? 'The customer will receive an email explaining that the payment could not be approved.'
+                : 'The booking will be cancelled and the customer should be informed.';
             document.getElementById('rejectModal').style.display = 'flex';
         }
         

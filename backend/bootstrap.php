@@ -1,6 +1,11 @@
 <?php
 // backend/bootstrap.php
 
+$vendorAutoload = __DIR__ . '/../vendor/autoload.php';
+if (is_file($vendorAutoload)) {
+    require_once $vendorAutoload;
+}
+
 spl_autoload_register(function ($class) {
     $prefix = 'Backend\\';
     $base_dir = __DIR__ . '/';

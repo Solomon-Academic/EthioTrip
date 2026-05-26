@@ -1,6 +1,5 @@
 <?php
 namespace Backend\Models;
-
 use Backend\Core\Model;
 
 class Booking extends Model {
@@ -146,6 +145,15 @@ class Booking extends Model {
         $stmt->bind_param("i", $bookingId);
         $stmt->execute();
         return $stmt->get_result()->fetch_assoc();
+    }
+
+    public function markCustomerNotified(int $bookingId, string $notificationType): bool
+    {
+        $stmt = $this->db->prepare(
+            "UPDATE bookings SET customer_notified_at = NOW(), last_notification_type = ? WHERE id = ?"
+        );
+        $stmt->bind_param('si', $notificationType, $bookingId);
+        return $stmt->execute();
     }
     
     public function getTotalBookingsCount() {

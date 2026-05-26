@@ -323,7 +323,7 @@ class ApiController extends Controller {
                 'discount_percent' => $discountRate * 100,
                 'payment_status' => 'pending',
                 'status' => 'pending',
-                'message' => 'Booking submitted. You will receive a confirmation email after admin approval.',
+                'message' => 'Your booking request was received. You will receive a confirmation email once our team approves your payment.',
             ]);
         } else {
             $this->json(['success' => false, 'message' => 'Failed to save booking']);
