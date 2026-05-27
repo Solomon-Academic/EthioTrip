@@ -632,6 +632,99 @@
 
     // Render the destinations on page load
     renderDestinations();
+    
+
+    // Function to render all destination cards (images preserved)
+    function renderDestinations() {
+        if (!gridContainer) return;
+        
+        gridContainer.innerHTML = '';
+        
+        destinationsData.forEach(dest => {
+            const card = document.createElement('div');
+            card.className = 'dest-card';
+            card.innerHTML = `
+                <img src="${dest.imageUrl}" alt="${dest.name}" loading="lazy" onerror="this.src='https://placehold.co/800x500?text=${encodeURIComponent(dest.name)}'">
+                <div class="dest-content">
+                    <div class="dest-location"><i class="fas fa-map-pin"></i> ${dest.location}</div>
+                    <div class="dest-title">${dest.name}</div>
+                    <div class="dest-short-desc">${dest.shortDesc}</div>
+                    <div class="dest-description">${dest.fullDescription.substring(0, 110)}...</div>
+                    <button class="btn-details" data-id="${dest.id}">
+                        <i class="fas fa-book-open"></i> Read More
+                    </button>
+                </div>
+            `;
+            gridContainer.appendChild(card);
+        });
+
+        // Add event listeners to all "Read More" buttons
+        document.querySelectorAll('.btn-details').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const destId = parseInt(btn.getAttribute('data-id'));
+                const destination = destinationsData.find(d => d.id === destId);
+                if (destination) {
+                    openModal(destination);
+                }
+            });
+        });
+    }
+
+    // Open modal with full destination description (image preserved)
+    function openModal(destination) {
+        currentDestination = destination;
+        const modal = document.getElementById('destinationModal');
+        document.getElementById('modalTitle').innerHTML = `<i class="fas fa-landmark"></i> ${destination.name}`;
+        
+        // Preserve the image - use the same image URL from the card
+        const modalImg = document.getElementById('modalImage');
+        modalImg.src = destination.imageUrl;
+        modalImg.onerror = function() {
+            this.src = 'https://placehold.co/800x500?text=' + encodeURIComponent(destination.name);
+        };
+        
+        document.getElementById('modalFullDescription').innerHTML = destination.fullDescription;
+        
+        // Build highlights HTML
+        let highlightsHtml = `<h4><i class="fas fa-star-of-life"></i> Top Highlights & Experiences</h4><ul>`;
+        destination.highlights.forEach(h => {
+            highlightsHtml += `<li><i class="fas fa-check-circle"></i> ${h}</li>`;
+        });
+        highlightsHtml += `</ul>`;
+        document.getElementById('modalHighlights').innerHTML = highlightsHtml;
+        
+        // Set booking link: go to packages page with destination ID and name
+        const bookLink = document.getElementById('modalBookLink');
+        bookLink.href = `/ethiotrip1/ethiotrip/public/packages?destination_id=${destination.id}&dest_name=${encodeURIComponent(destination.name)}`;
+        
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Close modal
+    function closeModal() {
+        const modal = document.getElementById('destinationModal');
+        modal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+
+    // Close modal when clicking outside the modal container
+    document.getElementById('destinationModal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('destinationModal')) {
+            closeModal();
+        }
+    });
+
+    // Escape key close
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && document.getElementById('destinationModal').classList.contains('active')) {
+            closeModal();
+        }
+    });
+
+    // Render the destinations on page load
+    renderDestinations();
+
 
 
 
