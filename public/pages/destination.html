@@ -724,6 +724,24 @@
 
     // Render the destinations on page load
     renderDestinations();
+    
+
+    // Optional: If there's a destination ID in URL to auto-open modal
+    const urlParams = new URLSearchParams(window.location.search);
+    const highlightId = urlParams.get('highlight');
+    if (highlightId) {
+        setTimeout(() => {
+            const btn = document.querySelector(`.btn-details[data-id="${highlightId}"]`);
+            if (btn) {
+                btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                btn.click();
+            }
+        }, 500);
+    }
+</script>
+</body>
+</html>
+
 
 
 
