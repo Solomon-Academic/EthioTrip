@@ -320,4 +320,92 @@
             background: var(--accent);
             color: #2d3436;
         }
+        
+
+        /* Footer */
+        .footer {
+            background: #1a1a1a;
+            padding: 60px 8% 40px;
+            color: white;
+            margin-top: 40px;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+            font-size: 0.8rem;
+            color: #777;
+        }
+
+        .state-msg {
+            text-align: center;
+            padding: 60px;
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .destinations-grid {
+                grid-template-columns: 1fr;
+                padding: 30px 5%;
+            }
+            .navbar {
+                padding: 1rem 5%;
+            }
+            .modal-body {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="/ethiotrip1/ethiotrip/public/" class="logo">Ethio<span>Trip</span></a>
+    <ul class="nav-links">
+        <li><a href="/ethiotrip1/ethiotrip/public/">Home</a></li>
+        <li><a href="/ethiotrip1/ethiotrip/public/destination">Destinations</a></li>
+        <li><a href="/ethiotrip1/ethiotrip/public/packages">Packages</a></li>
+        <li><a href="/ethiotrip1/ethiotrip/public/about">About</a></li>
+        <li><a href="/ethiotrip1/ethiotrip/public/login">Sign In</a></li>
+        <li><a href="/ethiotrip1/ethiotrip/public/help">Help</a></li>
+    </ul>
+</nav>
+
+<div class="destination-header">
+    <h1>Explore Ethiopia's Wonders</h1>
+    <p>Discover ancient civilizations, breathtaking landscapes, and vibrant cultures. Click "Read More" to explore detailed descriptions of each destination.</p>
+</div>
+
+<div class="destinations-grid" id="destinationsGrid">
+    <!-- Destinations will be dynamically loaded here with full descriptions and IMAGES preserved -->
+</div>
+
+<footer class="footer">
+    <div class="footer-bottom">© <span id="currentYear"></span> EthioTrip Ethiopia. All rights reserved.</div>
+</footer>
+
+<!-- Modal for Full Description -->
+<div class="modal-overlay" id="destinationModal">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h2 id="modalTitle">Destination Details</h2>
+            <button class="close-modal" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <img id="modalImage" class="modal-img" src="" alt="">
+            <div class="modal-full-description" id="modalFullDescription"></div>
+            <div class="modal-highlights" id="modalHighlights"></div>
+            <a href="#" id="modalBookLink" class="btn-book-now">
+                <i class="fas fa-calendar-check"></i> Book This Destination
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+
 
