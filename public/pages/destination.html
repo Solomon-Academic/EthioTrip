@@ -657,7 +657,7 @@
             `;
             gridContainer.appendChild(card);
         });
-
+         
         // Add event listeners to all "Read More" buttons
         document.querySelectorAll('.btn-details').forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -682,7 +682,7 @@
         modalImg.onerror = function() {
             this.src = 'https://placehold.co/800x500?text=' + encodeURIComponent(destination.name);
         };
-        
+// Set the full description in the modal
         document.getElementById('modalFullDescription').innerHTML = destination.fullDescription;
         
         // Build highlights HTML
