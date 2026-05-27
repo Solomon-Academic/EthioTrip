@@ -3,82 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EthioTrip | Destinations</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>EthioTrip | Destinations with Descriptions</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/ethiotrip1/ethiotrip/public/css/destination.css">
-    <link rel="stylesheet" href="/ethiotrip1/ethiotrip/public/css/responsive.css">
     <style>
-        .btn-select {
-            padding: 16px;
-            background: #2d3436;
-            color: white;
-            border: none;
-            border-radius: 50px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.3s;
-            margin-top: 15px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            width: 100%;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .btn-select:hover { background: #d4af37; transform: translateY(-2px); }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #ffffff;
+            color: #2d3436;
+        }
+
+        :root {
+            --primary: #2d3436;
+            --accent: #d4af37;
+            --text-light: #636e72;
+            --shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        /* Navigation */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 8%;
+            background: white;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 700;
+            text-decoration: none;
+            color: var(--primary);
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--primary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+
+        /* Header */
+        .destination-header {
+            text-align: center;
+            padding: 60px 8% 30px;
+            background: linear-gradient(180deg, #faf9f5, #ffffff);
+        }
+
+        .destination-header h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .destination-header p {
+            color: var(--text-light);
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Destinations Grid */
         .destinations-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px;
-            padding: 40px 8%;
+            gap: 35px;
+            padding: 40px 8% 80px;
+            max-width: 1400px;
+            margin: 0 auto;
         }
+
         .dest-card {
             background: white;
-            border-radius: 24px;
+            border-radius: 28px;
             overflow: hidden;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            transition: 0.4s ease;
+            box-shadow: var(--shadow);
+            transition: all 0.4s ease;
             border: 2px solid transparent;
         }
-        .dest-card:hover { transform: translateY(-10px); border-color: #d4af37; }
-        .dest-card img { width: 100%; height: 250px; object-fit: cover; }
-        .dest-content { padding: 25px; }
-        .dest-location { color: #d4af37; font-size: 0.8rem; margin-bottom: 10px; }
-        .dest-desc { color: #666; font-size: 0.85rem; line-height: 1.5; }
-        .state-msg { text-align: center; padding: 40px; color: #636e72; grid-column: 1 / -1; }
-        .state-error { color: #c0392b; }
-    </style>
-</head>
-<body>
-    <nav class="navbar">
-        <a href="/ethiotrip1/ethiotrip/public/" class="logo">Ethio<span>Trip</span></a>
-        <ul class="nav-links">
-            <li><a href="/ethiotrip1/ethiotrip/public/">Home</a></li>
-            <li><a href="/ethiotrip1/ethiotrip/public/destination">Destinations</a></li>
-            <li><a href="/ethiotrip1/ethiotrip/public/packages">Packages</a></li>
-            <li><a href="/ethiotrip1/ethiotrip/public/about">About</a></li>
-            <li><a href="/ethiotrip1/ethiotrip/public/login">Sign In</a></li>
-        </ul>
-    </nav>
 
-    <div class="destination-header">
-        <h1>Explore Ethiopia</h1>
-        <p>Browse destinations, read full travel guides, then choose packages for your journey.</p>
-    </div>
+        .dest-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--accent);
+        }
 
-    <div class="destinations-grid" id="destinationsGrid">
-        <p class="state-msg" id="destinationsLoading">Loading destinations...</p>
-        <p class="state-msg" id="destinationsEmpty" style="display:none;">No destinations available yet.</p>
-        <p class="state-msg state-error" id="destinationsError" style="display:none;"></p>
-    </div>
+        .dest-card img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: 0.5s;
+            display: block;
+        }
 
-    <footer class="footer">
-        <div class="footer-bottom">© <span id="currentYear"></span> EthioTrip Ethiopia.</div>
-    </footer>
+        .dest-card:hover img {
+            transform: scale(1.02);
+        }
 
-    <script>document.getElementById('currentYear').textContent = new Date().getFullYear();</script>
-    <script src="/ethiotrip1/ethiotrip/public/js/ethiotrip-config.js"></script>
-    <script src="/ethiotrip1/ethiotrip/public/js/ethiotrip-api.js"></script>
-    <script src="/ethiotrip1/ethiotrip/public/js/destinations.js"></script>
-    <script src="/ethiotrip1/ethiotrip/public/js/nav-mobile.js"></script>
-</body>
-</html>
+        .dest-content {
+            padding: 25px;
+        }
+
+        .dest-location {
+            color: var(--accent);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        .dest-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .dest-description {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .dest-short-desc {
+            color: #7f8c8d;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
