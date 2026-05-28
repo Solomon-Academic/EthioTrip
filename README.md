@@ -190,10 +190,10 @@ Home → Destination → Packages → Payment → Booking → Dashboard
 | Member | Role |
 |--------|------|
 | Solomon Kahsay | Core System |
-| Zerihun Berhanu | Core System |
-| Suheil Ali | Authentication System |
-| Yordanos Abebe | Booking System |
-| Zemedkun Workalem | Admin Module + API & Email |
+| Zerihun Berhanu | Authentication System |
+| Suheil Ali | Booking System |
+| Yordanos Abebe | Admin Module |
+| Zemedkun Workalem | API & Email Services |
 
 ---
 
