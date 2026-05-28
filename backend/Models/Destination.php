@@ -8,7 +8,7 @@ class Destination extends Model {
 
     public function findAllActive(): \mysqli_result|false {
         return $this->db->query(
-            "SELECT id, name, location, short_description, description, best_time, price, image_path, image_url
+            "SELECT id, name, location, short_description, description, best_time, price, image_path, image_url, is_active
              FROM destinations WHERE is_active = 1 ORDER BY name ASC"
         );
     }
@@ -36,7 +36,11 @@ class Destination extends Model {
     }
 
     public function createDestination(array $data) {
-        return $this->create($data);
+        $allowedColumns = ['name', 'location', 'short_description', 'description', 'travel_guide', 'best_time', 'price', 'activities', 'image_path', 'attachment_path', 'is_active'];
+        $filteredData = array_filter($data, function($key) use ($allowedColumns) {
+            return in_array($key, $allowedColumns);
+        }, ARRAY_FILTER_USE_KEY);
+        return $this->create($filteredData);
     }
 
     public function updateDestination(int $id, array $data) {
@@ -83,18 +87,32 @@ class Destination extends Model {
         ];
     }
 
+    /**
+     * FIXED: Properly resolves image URLs
+     */
     public function resolveImageUrl(array $row): string {
         $path = $row['image_path'] ?? $row['image_url'] ?? '';
-        if ($path === '') {
+        
+        // If no image path, return default
+        if (empty($path)) {
             return '/ethiotrip1/ethiotrip/public/images/dest_images/upscaled_lalibela.jpg';
         }
-        if (str_starts_with($path, 'http')) {
+        
+        // If it's already a full URL, return as is
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
             return $path;
         }
-        return '/' . ltrim($path, '/');
+        
+        // Clean up the path - remove any duplicate base paths
+        $path = ltrim($path, '/');
+        $path = str_replace('ethiotrip1/ethiotrip/public/', '', $path);
+        $path = str_replace('ethiotrip1/ethiotrip/public', '', $path);
+        $path = str_replace('ethiotrip1/', '', $path);
+        
+        // Build the correct full path
+        return '/ethiotrip1/ethiotrip/public/' . $path;
     }
 
-    /** Parse admin textarea: "Title|Description" per line */
     public static function parseHighlightLines(string $text): array {
         $items = [];
         foreach (preg_split('/\r?\n/', $text) as $line) {

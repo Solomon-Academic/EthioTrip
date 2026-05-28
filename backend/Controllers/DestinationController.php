@@ -205,35 +205,36 @@ class DestinationController extends Controller {
         return implode("\n", $lines);
     }
 
-    private function handleUploads(): array {
-        $saved = [];
-        $uploadDir = __DIR__ . '/../../public/uploads/destinations';
-        
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0775, true);
-        }
-
-        $fields = [
-            'image' => 'image_path',
-            'attachment' => 'attachment_path',
-        ];
-
-        foreach ($fields as $field => $column) {
-            if (empty($_FILES[$field]['tmp_name']) || !is_uploaded_file($_FILES[$field]['tmp_name'])) {
-                continue;
-            }
-
-            $original = basename($_FILES[$field]['name']);
-            $extension = pathinfo($original, PATHINFO_EXTENSION);
-            $safeName = preg_replace('/[^a-zA-Z0-9_-]+/', '-', pathinfo($original, PATHINFO_FILENAME));
-            $filename = trim($safeName, '-') . '-' . time() . ($extension ? '.' . strtolower($extension) : '');
-            $target = $uploadDir . '/' . $filename;
-
-            if (move_uploaded_file($_FILES[$field]['tmp_name'], $target)) {
-                $saved[$column] = 'ethiotrip1/ethiotrip/public/uploads/destinations/' . $filename;
-            }
-        }
-
-        return $saved;
+   private function handleUploads(): array {
+    $saved = [];
+    $uploadDir = __DIR__ . '/../../public/uploads/destinations';
+    
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0775, true);
     }
+
+    $fields = [
+        'image' => 'image_path',
+        'attachment' => 'attachment_path',
+    ];
+
+    foreach ($fields as $field => $column) {
+        if (empty($_FILES[$field]['tmp_name']) || !is_uploaded_file($_FILES[$field]['tmp_name'])) {
+            continue;
+        }
+
+        $original = basename($_FILES[$field]['name']);
+        $extension = pathinfo($original, PATHINFO_EXTENSION);
+        $safeName = preg_replace('/[^a-zA-Z0-9_-]+/', '-', pathinfo($original, PATHINFO_FILENAME));
+        $filename = trim($safeName, '-') . '-' . time() . ($extension ? '.' . strtolower($extension) : '');
+        $target = $uploadDir . '/' . $filename;
+
+        if (move_uploaded_file($_FILES[$field]['tmp_name'], $target)) {
+            // FIXED: Use relative path without duplicate base
+            $saved[$column] = 'uploads/destinations/' . $filename;
+        }
+    }
+
+    return $saved;
+}
 }

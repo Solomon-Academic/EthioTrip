@@ -3,28 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EthioTrip | Destinations with Descriptions</title>
+    <title>EthioTrip | Destinations</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: #ffffff;
-            color: #2d3436;
-        }
-
-        :root {
-            --primary: #2d3436;
-            --accent: #d4af37;
-            --text-light: #636e72;
-            --shadow: 0 15px 35px rgba(0,0,0,0.1);
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: #ffffff; color: #2d3436; }
+        :root { --primary: #2d3436; --accent: #d4af37; --text-light: #636e72; --shadow: 0 15px 35px rgba(0,0,0,0.1); }
 
         .navbar {
             display: flex;
@@ -36,55 +21,19 @@
             flex-wrap: wrap;
             gap: 15px;
         }
-
-        .logo {
-            font-size: 1.6rem;
-            font-weight: 700;
-            text-decoration: none;
-            color: var(--primary);
-        }
-
-        .logo span {
-            color: var(--accent);
-        }
-
-        .nav-links {
-            list-style: none;
-            display: flex;
-            gap: 30px;
-            flex-wrap: wrap;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: var(--primary);
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: 0.3s;
-        }
-
-        .nav-links a:hover {
-            color: var(--accent);
-        }
+        .logo { font-size: 1.6rem; font-weight: 700; text-decoration: none; color: var(--primary); }
+        .logo span { color: var(--accent); }
+        .nav-links { list-style: none; display: flex; gap: 30px; flex-wrap: wrap; }
+        .nav-links a { text-decoration: none; color: var(--primary); font-size: 0.9rem; font-weight: 500; transition: 0.3s; }
+        .nav-links a:hover { color: var(--accent); }
 
         .destination-header {
             text-align: center;
             padding: 60px 8% 30px;
             background: linear-gradient(180deg, #faf9f5, #ffffff);
         }
-
-        .destination-header h1 {
-            font-size: 2.5rem;
-            font-weight: 600;
-            margin-bottom: 15px;
-        }
-
-        .destination-header p {
-            color: var(--text-light);
-            max-width: 700px;
-            margin: 0 auto;
-            line-height: 1.6;
-        }
+        .destination-header h1 { font-size: 2.5rem; font-weight: 600; margin-bottom: 15px; }
+        .destination-header p { color: var(--text-light); max-width: 700px; margin: 0 auto; line-height: 1.6; }
 
         .destinations-grid {
             display: grid;
@@ -94,7 +43,6 @@
             max-width: 1400px;
             margin: 0 auto;
         }
-
         .dest-card {
             background: white;
             border-radius: 28px;
@@ -103,56 +51,14 @@
             transition: all 0.4s ease;
             border: 2px solid transparent;
         }
-
-        .dest-card:hover {
-            transform: translateY(-10px);
-            border-color: var(--accent);
-        }
-
-        .dest-card img {
-            width: 100%;
-            height: 250px;
-            object-fit: cover;
-            transition: 0.5s;
-            display: block;
-        }
-
-        .dest-card:hover img {
-            transform: scale(1.02);
-        }
-
-        .dest-content {
-            padding: 25px;
-        }
-
-        .dest-location {
-            color: var(--accent);
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 8px;
-        }
-
-        .dest-title {
-            font-size: 1.4rem;
-            font-weight: 600;
-            margin-bottom: 12px;
-        }
-
-        .dest-description {
-            color: var(--text-light);
-            font-size: 0.9rem;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-
-        .dest-short-desc {
-            color: #7f8c8d;
-            font-size: 0.85rem;
-            margin-bottom: 15px;
-            line-height: 1.5;
-        }
-
+        .dest-card:hover { transform: translateY(-10px); border-color: var(--accent); }
+        .dest-card img { width: 100%; height: 250px; object-fit: cover; transition: 0.5s; display: block; }
+        .dest-card:hover img { transform: scale(1.02); }
+        .dest-content { padding: 25px; }
+        .dest-location { color: var(--accent); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
+        .dest-title { font-size: 1.4rem; font-weight: 600; margin-bottom: 12px; }
+        .dest-description { color: var(--text-light); font-size: 0.9rem; line-height: 1.6; margin-bottom: 20px; }
+        .dest-short-desc { color: #7f8c8d; font-size: 0.85rem; margin-bottom: 15px; line-height: 1.5; }
         .btn-details {
             padding: 12px 24px;
             background: transparent;
@@ -167,12 +73,7 @@
             gap: 8px;
             font-size: 0.85rem;
         }
-
-        .btn-details:hover {
-            background: var(--accent);
-            color: #2d3436;
-            transform: translateY(-2px);
-        }
+        .btn-details:hover { background: var(--accent); color: #2d3436; transform: translateY(-2px); }
 
         .modal-overlay {
             position: fixed;
@@ -190,12 +91,7 @@
             transition: 0.3s ease;
             backdrop-filter: blur(5px);
         }
-
-        .modal-overlay.active {
-            visibility: visible;
-            opacity: 1;
-        }
-
+        .modal-overlay.active { visibility: visible; opacity: 1; }
         .modal-container {
             background: white;
             border-radius: 32px;
@@ -205,18 +101,10 @@
             overflow-y: auto;
             animation: modalSlideUp 0.4s ease;
         }
-
         @keyframes modalSlideUp {
-            from {
-                transform: translateY(50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
-
         .modal-header {
             background: var(--accent);
             padding: 20px 25px;
@@ -227,76 +115,22 @@
             top: 0;
             z-index: 10;
         }
-
-        .modal-header h2 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #2d3436;
-        }
-
-        .close-modal {
-            background: none;
-            border: none;
-            font-size: 1.8rem;
-            cursor: pointer;
-            color: #2d3436;
-            transition: 0.3s;
-        }
-
-        .close-modal:hover {
-            transform: scale(1.1);
-        }
-
-        .modal-body {
-            padding: 30px;
-        }
-
-        .modal-img {
-            width: 100%;
-            height: 280px;
-            object-fit: cover;
-            border-radius: 20px;
-            margin-bottom: 20px;
-            display: block;
-        }
-
-        .modal-full-description {
-            color: #2d3436;
-            line-height: 1.8;
-            margin-bottom: 25px;
-            font-size: 1rem;
-        }
-
+        .modal-header h2 { font-size: 1.5rem; font-weight: 600; color: #2d3436; }
+        .close-modal { background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #2d3436; transition: 0.3s; }
+        .close-modal:hover { transform: scale(1.1); }
+        .modal-body { padding: 30px; }
+        .modal-img { width: 100%; height: 280px; object-fit: cover; border-radius: 20px; margin-bottom: 20px; display: block; }
+        .modal-full-description { color: #2d3436; line-height: 1.8; margin-bottom: 25px; font-size: 1rem; }
         .modal-highlights {
             background: #f8f9fa;
             padding: 20px;
             border-radius: 20px;
             margin: 20px 0;
         }
-
-        .modal-highlights h4 {
-            color: var(--accent);
-            margin-bottom: 12px;
-            font-size: 1.1rem;
-        }
-
-        .modal-highlights ul {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .modal-highlights li {
-            padding: 6px 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .modal-highlights li i {
-            color: var(--accent);
-            width: 20px;
-        }
-
+        .modal-highlights h4 { color: var(--accent); margin-bottom: 12px; font-size: 1.1rem; }
+        .modal-highlights ul { list-style: none; padding-left: 0; }
+        .modal-highlights li { padding: 6px 0; display: flex; align-items: center; gap: 10px; }
+        .modal-highlights li i { color: var(--accent); width: 20px; }
         .btn-book-now {
             display: inline-block;
             width: 100%;
@@ -310,46 +144,18 @@
             transition: 0.3s;
             margin-top: 15px;
         }
+        .btn-book-now:hover { background: var(--accent); color: #2d3436; }
 
-        .btn-book-now:hover {
-            background: var(--accent);
-            color: #2d3436;
-        }
-
-        .footer {
-            background: #1a1a1a;
-            padding: 60px 8% 40px;
-            color: white;
-            margin-top: 40px;
-        }
-
-        .footer-bottom {
-            text-align: center;
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid #333;
-            font-size: 0.8rem;
-            color: #777;
-        }
-
-        .state-msg {
-            text-align: center;
-            padding: 60px;
-            color: var(--text-light);
-            font-size: 1rem;
-        }
+        .footer { background: #1a1a1a; padding: 60px 8% 40px; color: white; margin-top: 40px; }
+        .footer-bottom { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #333; font-size: 0.8rem; color: #777; }
+        .state-msg { text-align: center; padding: 60px; color: var(--text-light); font-size: 1rem; }
+        .loading-spinner { display: inline-block; width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         @media (max-width: 768px) {
-            .destinations-grid {
-                grid-template-columns: 1fr;
-                padding: 30px 5%;
-            }
-            .navbar {
-                padding: 1rem 5%;
-            }
-            .modal-body {
-                padding: 20px;
-            }
+            .destinations-grid { grid-template-columns: 1fr; padding: 30px 5%; }
+            .navbar { padding: 1rem 5%; }
+            .modal-body { padding: 20px; }
         }
     </style>
 </head>
@@ -369,10 +175,14 @@
 
 <div class="destination-header">
     <h1>Explore Ethiopia's Wonders</h1>
-    <p>Discover ancient civilizations, breathtaking landscapes, and vibrant cultures. Click "Details" to explore detailed descriptions of each destination.</p>
+    <p>Discover ancient civilizations, breathtaking landscapes, and vibrant cultures.</p>
 </div>
 
 <div class="destinations-grid" id="destinationsGrid">
+    <div class="state-msg">
+        <div class="loading-spinner"></div>
+        <p>Loading destinations...</p>
+    </div>
 </div>
 
 <footer class="footer">
@@ -399,225 +209,133 @@
 <script>
     document.getElementById('currentYear').textContent = new Date().getFullYear();
 
-    const destinationsData = [
-        {
-            id: 1,
-            name: "Lalibela",
-            location: "Amhara Region",
-            shortDesc: "The legendary rock-hewn churches, a UNESCO World Heritage site.",
-            fullDescription: "Lalibela is one of Ethiopia's most spiritual and awe-inspiring destinations. Known as the 'New Jerusalem,' it features 11 medieval monolithic rock-hewn churches carved directly from the earth in the 12th century. These extraordinary structures, including the famous Church of St. George (Bete Giyorgis), are connected by tunnels and trenches. Pilgrims from all over Ethiopia flock here during Orthodox Christian holidays, creating a vibrant atmosphere of faith and tradition.",
-            highlights: [
-                "11 rock-hewn churches with intricate carvings",
-                "Church of St. George shaped like a cross",
-                "Vibrant religious festivals and pilgrimages",
-                "Panoramic views from Asheton Maryam",
-                "Unique underground passageways and tunnels"
-            ],
-            imageUrl: "/ethiotrip1/ethiotrip/public/images/home_images/Gondar.jpg"
-        },
-        {
-            id: 2,
-            name: "Simien Mountains",
-            location: "Northern Ethiopia",
-            shortDesc: "Dramatic peaks, deep valleys, and rare wildlife.",
-            fullDescription: "The Simien Mountains National Park is a UNESCO World Heritage site known as the 'Roof of Africa.' This breathtaking landscape features jagged peaks, sheer cliffs, and deep gorges carved by ancient rivers. Ras Dashen, Ethiopia's highest peak at 4,550 meters, challenges trekkers from around the world.",
-            highlights: [
-                "Trek to Ras Dashen (4,550m)",
-                "Gelada baboons in their natural habitat",
-                "Stunning viewpoints like Chenek and Geech",
-                "Diverse birdlife including lammergeyer",
-                "Camping under starry skies"
-            ],
-            imageUrl: "/ethiotrip1/ethiotrip/public/images/home_images/Camel.jpg"
-        },
-        {
-            id: 3,
-            name: "Danakil Depression",
-            location: "Afar Region",
-            shortDesc: "One of the hottest and most surreal places on Earth.",
-            fullDescription: "The Danakil Depression is a landscape from another world — a vast, otherworldly desert of salt flats, sulfur springs, and active volcanoes. As one of the lowest and hottest places on the planet (120 meters below sea level), temperatures can soar above 50°C.",
-            highlights: [
-                "Dallol's colorful hydrothermal fields",
-                "Erta Ale's persistent lava lake",
-                "Traditional salt extraction caravans",
-                "Camel trekking across salt flats",
-                "Camping near active volcano"
-            ],
-            imageUrl: "/ethiotrip1/ethiotrip/public/images/home_images/Axum.jpg"
-        },
-        {
-            id: 4,
-            name: "Axum",
-            location: "Tigray Region",
-            shortDesc: "Ancient kingdom of obelisks and legends of the Ark.",
-            fullDescription: "Axum was the capital of the Axumite Empire, one of the greatest civilizations of the ancient world. Today, it is a living museum of towering stelae (obelisks), royal tombs, and ancient inscriptions.",
-            highlights: [
-                "The Great Stele and ancient obelisks",
-                "Church of St. Mary of Zion (Ark of Covenant tradition)",
-                "Queen of Sheba's Palace ruins",
-                "Archaeological museum with artifacts",
-                "Ezana stone inscriptions"
-            ],
-            imageUrl: "/ethiotrip1/ethiotrip/public/images/home_images/Gondar.jpg"
-        },
-        {
-            id: 5,
-            name: "Harar Jugol",
-            location: "Harari Region",
-            shortDesc: "Walled city of 100 mosques and vibrant markets.",
-            fullDescription: "Harar Jugol, the ancient walled city, is considered Islam's fourth holiest city after Mecca, Medina, and Jerusalem. Encircled by 3.5km of fortified walls with five ancient gates, Harar has been a center of Islamic scholarship and trade for centuries.",
-            highlights: [
-                "Night hyena feeding ritual (unique worldwide)",
-                "Rimbaud House museum",
-                "Traditional Harari homes with decorative walls",
-                "Colorful fruit and spice markets",
-                "Five ancient gates of the old walled city"
-            ],
-            imageUrl: "/ethiotrip1/ethiotrip/public/images/home_images/Harar2.jpg"
-        },
-        {
-            id: 6,
-            name: "Omo Valley",
-            location: "Southern Nations",
-            shortDesc: "Incredible tribal cultures and ancient traditions.",
-            fullDescription: "The Omo Valley is a cultural mosaic, home to more than a dozen distinct indigenous tribes including the Hamer, Mursi, Karo, Dassanech, and Arbore. This remote region is a living anthropology museum where ancient customs are still practiced today.",
-            highlights: [
-                "Mursi village & traditional lip plates",
-                "Hamar bull jumping ceremonies",
-                "Karo body painting on the Omo river banks",
-                "Tribal markets (Key Afer, Turmi)",
-                "Stunning river and landscape views"
-            ],
-            imageUrl: "/ethiotrip1/ethiotrip/public/images/home_images/omo_girl.jpg"
-        },
-        {
-            id: 7,
-            name: "Gondar",
-            location: "Amhara Region",
-            shortDesc: "The Camelot of Africa with royal castles.",
-            fullDescription: "Gondar is famous for its magnificent royal enclosures, a collection of medieval castles and palaces built during the 17th and 18th centuries. Known as the 'Camelot of Africa,' the city's Fasil Ghebbi fortress-city is a UNESCO World Heritage site.",
-            highlights: [
-                "Fasil Ghebbi castle complex",
-                "Fasilides Bath (site of Timket festival)",
-                "Debre Berhan Selassie Church & angel murals",
-                "Kuskuam Palace ruins",
-                "Traditional Ethiopian coffee ceremonies"
-            ],
-            imageUrl: "/ethiotrip1/ethiotrip/public/images/home_images/Gondar.jpg"
-        },
-        {
-            id: 8,
-            name: "Bale Mountains",
-            location: "Oromia Region",
-            shortDesc: "Alpine landscapes and endemic wildlife paradise.",
-            fullDescription: "The Bale Mountains National Park offers a stunning contrast of lush forests, alpine meadows, and the largest afro-alpine zone in Africa. It is home to the rare Ethiopian wolf, mountain nyala, and over 300 bird species.",
-            highlights: [
-                "Ethiopian wolf sightings",
-                "Trekking to Tullu Dimtu peak (4,377m)",
-                "Harenna Forest & beautiful waterfalls",
-                "Wildlife including mountain nyala",
-                "Spectacular birdwatching"
-            ],
-            imageUrl: "/ethiotrip1/ethiotrip/public/images/home_images/Sof Omar Cave.jpg"
-        }
-    ];
-
-    const gridContainer = document.getElementById('destinationsGrid');
-    let currentDestination = null;
-
-    function renderDestinations() {
-        if (!gridContainer) return;
+    // ============================================
+    // LOAD DESTINATIONS FROM DATABASE VIA API
+    // ============================================
+    
+    async function loadDestinations() {
+        const grid = document.getElementById('destinationsGrid');
         
-        gridContainer.innerHTML = '';
-        
-        destinationsData.forEach(dest => {
-            const card = document.createElement('div');
-            card.className = 'dest-card';
-            card.innerHTML = `
-                <img src="${dest.imageUrl}" alt="${dest.name}" loading="lazy" onerror="this.src='https://placehold.co/800x500?text=${encodeURIComponent(dest.name)}'">
-                <div class="dest-content">
-                    <div class="dest-location"><i class="fas fa-map-pin"></i> ${dest.location}</div>
-                    <div class="dest-title">${dest.name}</div>
-                    <div class="dest-short-desc">${dest.shortDesc}</div>
-                    <div class="dest-description">${dest.fullDescription.substring(0, 110)}...</div>
-                    <button class="btn-details" data-id="${dest.id}">
-                        <i class="fas fa-book-open"></i> Details
-                    </button>
-                </div>
-            `;
-            gridContainer.appendChild(card);
-        });
-
-        document.querySelectorAll('.btn-details').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const destId = parseInt(btn.getAttribute('data-id'));
-                const destination = destinationsData.find(d => d.id === destId);
-                if (destination) {
-                    openModal(destination);
-                }
+        try {
+            const response = await fetch('/ethiotrip1/ethiotrip/public/api/destinations');
+            const data = await response.json();
+            
+            console.log('API Response:', data);
+            
+            if (!data.success || !data.destinations || data.destinations.length === 0) {
+                grid.innerHTML = '<div class="state-msg"><p>No destinations available. Check back soon!</p></div>';
+                return;
+            }
+            
+            // Clear loading message
+            grid.innerHTML = '';
+            
+            // Render each destination from database
+            data.destinations.forEach(dest => {
+                const card = document.createElement('div');
+                card.className = 'dest-card';
+                card.innerHTML = `
+                    <img src="${dest.image_url}" alt="${dest.name}" loading="lazy" onerror="this.src='/ethiotrip1/ethiotrip/public/images/dest_images/upscaled_lalibela.jpg'">
+                    <div class="dest-content">
+                        <div class="dest-location"><i class="fas fa-map-pin"></i> ${escapeHtml(dest.location)}</div>
+                        <div class="dest-title">${escapeHtml(dest.name)}</div>
+                        <div class="dest-short-desc">${escapeHtml(dest.short_description)}</div>
+                        <div class="dest-description">${escapeHtml(dest.short_description ? dest.short_description.substring(0, 110) : '')}...</div>
+                        <button class="btn-details" data-id="${dest.id}">
+                            <i class="fas fa-book-open"></i> Details
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
             });
-        });
+            
+            // Add event listeners to all detail buttons
+            document.querySelectorAll('.btn-details').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const destId = btn.getAttribute('data-id');
+                    await openModal(destId);
+                });
+            });
+            
+        } catch (error) {
+            console.error('Error loading destinations:', error);
+            grid.innerHTML = '<div class="state-msg"><p>Error loading destinations. Please try again later.</p></div>';
+        }
     }
-
-    function openModal(destination) {
-        currentDestination = destination;
+    
+    async function openModal(destinationId) {
         const modal = document.getElementById('destinationModal');
-        document.getElementById('modalTitle').innerHTML = `<i class="fas fa-landmark"></i> ${destination.name}`;
         
-        const modalImg = document.getElementById('modalImage');
-        modalImg.src = destination.imageUrl;
-        modalImg.onerror = function() {
-            this.src = 'https://placehold.co/800x500?text=' + encodeURIComponent(destination.name);
-        };
-        
-        document.getElementById('modalFullDescription').innerHTML = destination.fullDescription;
-        
-        let highlightsHtml = `<h4><i class="fas fa-star-of-life"></i> Top Highlights & Experiences</h4><ul>`;
-        destination.highlights.forEach(h => {
-            highlightsHtml += `<li><i class="fas fa-check-circle"></i> ${h}</li>`;
-        });
-        highlightsHtml += `</ul>`;
-        document.getElementById('modalHighlights').innerHTML = highlightsHtml;
-        
-        const bookLink = document.getElementById('modalBookLink');
-        bookLink.href = `/ethiotrip1/ethiotrip/public/packages?destination_id=${destination.id}&dest_name=${encodeURIComponent(destination.name)}`;
-        
-        modal.classList.add('active');
-        document.body.style.overflow = 'hidden';
+        try {
+            const response = await fetch('/ethiotrip1/ethiotrip/public/api/destinations/detail?id=' + destinationId);
+            const data = await response.json();
+            
+            if (!data.success || !data.destination) {
+                alert('Destination details not found');
+                return;
+            }
+            
+            const dest = data.destination;
+            
+            document.getElementById('modalTitle').innerHTML = `<i class="fas fa-landmark"></i> ${escapeHtml(dest.name)}`;
+            document.getElementById('modalImage').src = dest.image_url;
+            document.getElementById('modalFullDescription').innerHTML = escapeHtml(dest.description || dest.short_description || 'No description available.');
+            
+            // Build highlights HTML
+            let highlightsHtml = `<h4><i class="fas fa-star-of-life"></i> Top Highlights & Experiences</h4><ul>`;
+            if (dest.highlights && dest.highlights.length > 0) {
+                dest.highlights.forEach(h => {
+                    highlightsHtml += `<li><i class="fas fa-check-circle"></i> ${escapeHtml(h.title)}${h.description ? ' - ' + escapeHtml(h.description) : ''}</li>`;
+                });
+            } else {
+                highlightsHtml += `<li>No highlights available.</li>`;
+            }
+            highlightsHtml += `</ul>`;
+            document.getElementById('modalHighlights').innerHTML = highlightsHtml;
+            
+            const bookLink = document.getElementById('modalBookLink');
+            bookLink.href = `/ethiotrip1/ethiotrip/public/packages?destination_id=${dest.id}&dest_name=${encodeURIComponent(dest.name)}`;
+            
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+        } catch (error) {
+            console.error('Error loading destination details:', error);
+            alert('Could not load destination details');
+        }
     }
-
+    
     function closeModal() {
         const modal = document.getElementById('destinationModal');
         modal.classList.remove('active');
         document.body.style.overflow = 'auto';
     }
-
+    
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
     document.getElementById('destinationModal').addEventListener('click', (e) => {
         if (e.target === document.getElementById('destinationModal')) {
             closeModal();
         }
     });
-
+    
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && document.getElementById('destinationModal').classList.contains('active')) {
             closeModal();
         }
     });
-
-    renderDestinations();
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const highlightId = urlParams.get('highlight');
-    if (highlightId) {
-        setTimeout(() => {
-            const btn = document.querySelector(`.btn-details[data-id="${highlightId}"]`);
-            if (btn) {
-                btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                btn.click();
-            }
-        }, 500);
-    }
-
+    
+    // Load destinations from database when page loads
+    loadDestinations();
+    
     // Session check - maintains login state across pages (icon only, no name)
     (function() {
         fetch('/ethiotrip1/ethiotrip/public/api/check-login')
