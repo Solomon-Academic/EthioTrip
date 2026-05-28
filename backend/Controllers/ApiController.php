@@ -71,11 +71,13 @@ class ApiController extends Controller {
         $id = (int) ($_GET['id'] ?? 0);
         if ($id <= 0) {
             $this->json(['success' => false, 'message' => 'Destination id is required.'], 422);
+            return;
         }
 
         $destination = $this->destinationModel->findActiveById($id);
         if (!$destination) {
             $this->json(['success' => false, 'message' => 'Destination not found.'], 404);
+            return;
         }
 
         $highlights = $this->highlightModel->findByDestination($id);
@@ -113,32 +115,35 @@ class ApiController extends Controller {
         ]);
     }
 
+    // FIXED: listPackages now works with or without destination_id
     public function listPackages(): void {
         $destinationId = (int) ($_GET['destination_id'] ?? 0);
-        if ($destinationId <= 0) {
-            $this->json(['success' => false, 'message' => 'destination_id is required. Select a destination first.'], 422);
-        }
-
-        $destination = $this->destinationModel->findActiveById($destinationId);
-        if (!$destination) {
-            $this->json(['success' => false, 'message' => 'Destination not found.'], 404);
-        }
-
-        // All active packages are available for every destination (destination sets trip context only).
+        
+        // Get all active packages
         $packages = array_map(
             fn($p) => $this->packageModel->toApiItem($p),
             $this->packageModel->findAllActiveArray()
         );
-
-        $this->json([
+        
+        $response = [
             'success' => true,
-            'destination' => [
-                'id' => (int) $destination['id'],
-                'name' => $destination['name'],
-                'location' => $destination['location'] ?? '',
-            ],
             'packages' => $packages,
-        ]);
+        ];
+        
+        // If destination_id is provided and valid, add destination info
+        if ($destinationId > 0) {
+            $destination = $this->destinationModel->findActiveById($destinationId);
+            if ($destination) {
+                $response['destination'] = [
+                    'id' => (int) $destination['id'],
+                    'name' => $destination['name'],
+                    'location' => $destination['location'] ?? '',
+                ];
+            }
+            // Don't return error if destination not found - just don't include it
+        }
+        
+        $this->json($response);
     }
     
     public function getLoyaltyDiscount() {
@@ -204,6 +209,7 @@ class ApiController extends Controller {
         $input = json_decode(file_get_contents('php://input'), true);
         if (!is_array($input)) {
             $this->json(['success' => false, 'message' => 'Invalid booking payload.'], 400);
+            return;
         }
         
         $packageName = trim($input['package_name'] ?? '');
@@ -218,6 +224,7 @@ class ApiController extends Controller {
 
         if ($packageName === '' || $startDate === '' || $endDate === '') {
             $this->json(['success' => false, 'message' => 'Package and travel dates are required.'], 422);
+            return;
         }
 
         $package = $packageId > 0
@@ -226,6 +233,7 @@ class ApiController extends Controller {
 
         if (!$package || !(int) ($package['is_active'] ?? 0)) {
             $this->json(['success' => false, 'message' => 'Selected package was not found.'], 422);
+            return;
         }
 
         if ($destinationId > 0) {
@@ -237,21 +245,25 @@ class ApiController extends Controller {
 
         if ($destination === '') {
             $this->json(['success' => false, 'message' => 'Destination is required.'], 422);
+            return;
         }
 
         $start = \DateTime::createFromFormat('Y-m-d', $startDate);
         $end = \DateTime::createFromFormat('Y-m-d', $endDate);
         if (!$start || !$end || $start >= $end) {
             $this->json(['success' => false, 'message' => 'End date must be after start date.'], 422);
+            return;
         }
 
         $durationDays = (int) $start->diff($end)->days;
         if ($durationDays < 1 || $durationDays > 30) {
             $this->json(['success' => false, 'message' => 'Trip duration must be between 1 and 30 days.'], 422);
+            return;
         }
 
         if ($travelers < 1 || $travelers > 20) {
             $this->json(['success' => false, 'message' => 'Travelers must be between 1 and 20.'], 422);
+            return;
         }
 
         $packagePrice = floatval($package['price']);
@@ -261,6 +273,7 @@ class ApiController extends Controller {
         if (!$userId) {
             if ($userName === '') {
                 $this->json(['success' => false, 'message' => 'Please sign in before completing a booking.'], 401);
+                return;
             }
 
             $users = $this->userModel->where('name', $userName);
@@ -281,6 +294,7 @@ class ApiController extends Controller {
         $user = $this->userModel->find($userId);
         if (!$user) {
             $this->json(['success' => false, 'message' => 'Signed-in user was not found.'], 401);
+            return;
         }
 
         $discountRate = floatval($user['loyalty_discount']);
