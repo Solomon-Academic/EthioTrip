@@ -200,5 +200,6 @@ Home → Destination → Packages → Payment → Booking → Dashboard
 ## 📄 License
 
 Educational use only.
+EthioTrip
 
 ---
