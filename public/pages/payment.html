@@ -148,6 +148,22 @@
             .stepper { gap: 20px; }
         }
     </style>
+    <script>
+        // Payment page protection - redirect guests to login
+        (function() {
+            fetch('/ethiotrip1/ethiotrip/public/api/check-login')
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.logged_in) {
+                        const returnUrl = encodeURIComponent(window.location.href);
+                        window.location.href = '/ethiotrip1/ethiotrip/public/login?return=' + returnUrl + '&message=Please login to complete payment';
+                    }
+                })
+                .catch(() => {
+                    console.log('Auth check skipped');
+                });
+        })();
+    </script>
 </head>
 <body>
     <header class="navbar">
@@ -179,7 +195,6 @@
             <h1 style="text-align: center; margin-bottom: 10px;">Complete Your Booking</h1>
             <p style="text-align: center; margin-bottom: 30px; color: var(--text-light);">Please confirm your payment details below.</p>
             
-            <!-- User Info Display (auto-filled from login) -->
             <div class="user-info-card" id="userInfoCard">
                 <p><strong><i class="fas fa-user"></i> Logged in as:</strong> <span id="displayUserName">Loading...</span></p>
                 <p><strong><i class="fas fa-envelope"></i> Email:</strong> <span id="displayUserEmail">Loading...</span></p>
@@ -362,7 +377,6 @@
             setTimeout(() => notice.remove(), 4000);
         }
         
-        // Load user data from session
         async function loadUserData() {
             try {
                 const response = await fetch('/ethiotrip1/ethiotrip/public/api/check-login');
@@ -373,7 +387,6 @@
                     document.getElementById('displayUserName').textContent = data.user_name;
                     document.getElementById('displayUserEmail').textContent = data.user_email || 'Not available';
                     
-                    // Load loyalty discount
                     const discountResponse = await fetch('/ethiotrip1/ethiotrip/public/api/loyalty-discount');
                     const discountDataResult = await discountResponse.json();
                     if (discountDataResult.success) {
@@ -444,7 +457,6 @@
             return total;
         }
         
-        // Load package data from localStorage
         function loadPackageData() {
             const pkgName = localStorage.getItem("selectedPackage");
             const pkgPrice = localStorage.getItem("selectedPrice");
@@ -578,7 +590,6 @@
             calculateTotals();
         }
         
-        // Calculate totals
         function calculateTotals() {
             const dailyRate = selectedPackageData.perDay;
             if (bookingDetails && bookingDetails.durationDays > 0) {
@@ -631,7 +642,6 @@
             collectBookingDetailsFromEditor();
         });
         
-        // Proceed button
         document.getElementById('btnProceed').addEventListener('click', () => {
             const phone = document.getElementById('inputPhone').value.trim();
             const guestName = document.getElementById('inputGuestName').value.trim();
@@ -662,7 +672,6 @@
             calculateTotals();
         });
         
-        // Tab switching
         const tabs = document.querySelectorAll('.tab-btn');
         const views = {
             card: document.getElementById('form-card'),
@@ -684,7 +693,6 @@
             });
         });
         
-        // Save booking function
         async function saveBooking(paymentMethod, button) {
             button.disabled = true;
             const originalText = button.innerHTML;
@@ -763,7 +771,6 @@
                 `;
                 showNotice('Your booking request was submitted successfully.');
                 
-                // Clear stored package data
                 localStorage.removeItem("selectedPackage");
                 localStorage.removeItem("selectedPrice");
                 localStorage.removeItem("pricePerDay");
@@ -781,7 +788,6 @@
             }
         }
         
-        // Payment method handlers
         document.getElementById('form-card').addEventListener('submit', async (e) => {
             e.preventDefault();
             await saveBooking('Credit Card', e.submitter || document.querySelector('#form-card button[type="submit"]'));
@@ -818,7 +824,6 @@
             await saveBooking('Cash at Office', document.getElementById('btnCash'));
         });
         
-        // Card formatting
         document.getElementById('cardNumber').addEventListener('input', (e) => {
             const groups = e.target.value.replace(/\D/g, '').match(/.{1,4}/g);
             e.target.value = groups ? groups.join(' ') : '';
@@ -829,16 +834,9 @@
             e.target.value = value.length > 2 ? `${value.slice(0, 2)}/${value.slice(2)}` : value;
         });
         
-        // Initialize page
         async function init() {
             await loadUserData();
-            if (loadPackageData()) {
-                // Pre-fill destination if available
-                const savedDest = localStorage.getItem("selectedDestinationName");
-                if (savedDest) {
-                    console.log("Destination pre-selected:", savedDest);
-                }
-            }
+            loadPackageData();
         }
         
         init();

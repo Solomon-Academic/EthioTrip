@@ -21,6 +21,7 @@ class AuthController extends Controller
     {
         $errors = [];
         $email = '';
+        $returnUrl = $_GET['return'] ?? Session::get('return_url') ?? '';
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $this->requireValidCsrf();
@@ -32,6 +33,8 @@ class AuthController extends Controller
             }
             if ($password === '') {
                 $errors['password'] = 'Please enter your password.';
+            } elseif (strlen($password) < 6) {
+                $errors['password'] = 'Password must be at least 6 characters.';
             }
 
             if (empty($errors)) {
@@ -44,7 +47,7 @@ class AuthController extends Controller
                     Session::set('user_role', $user['role']);
 
                     $defaultUrl = ($user['role'] ?? '') === 'admin' ? '/admin/dashboard' : '/dashboard';
-                    $redirectUrl = Session::get('return_url') ?: $defaultUrl;
+                    $redirectUrl = !empty($returnUrl) ? $returnUrl : (Session::get('return_url') ?: $defaultUrl);
                     Session::remove('return_url');
                     $this->redirect($redirectUrl);
                 }
@@ -56,6 +59,7 @@ class AuthController extends Controller
         $this->render('auth.login', [
             'errors' => $errors,
             'email' => $email,
+            'returnUrl' => $returnUrl,
         ]);
     }
 
@@ -67,6 +71,7 @@ class AuthController extends Controller
             'email' => '',
             'phone' => '',
         ];
+        $returnUrl = $_GET['return'] ?? Session::get('return_url') ?? '';
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $this->requireValidCsrf();
@@ -85,11 +90,14 @@ class AuthController extends Controller
             if ($data['phone'] === '') {
                 $errors['phone'] = 'Phone number is required.';
             }
+            
+            // FIXED: Password validation with length check
             if ($password === '') {
                 $errors['password'] = 'Password is required.';
             } elseif (strlen($password) < 6) {
                 $errors['password'] = 'Password must be at least 6 characters.';
             }
+            
             if ($password !== $confirmPassword) {
                 $errors['confirm_password'] = 'Passwords do not match.';
             }
@@ -110,7 +118,9 @@ class AuthController extends Controller
                     Session::set('user_name', $user['name']);
                     Session::set('user_email', $user['email']);
                     Session::set('user_role', $user['role']);
-                    $this->redirect('/dashboard');
+                    
+                    $redirectUrl = !empty($returnUrl) ? $returnUrl : '/dashboard';
+                    $this->redirect($redirectUrl);
                 }
 
                 $errors['general'] = 'Registration failed. Please try again.';
@@ -120,6 +130,7 @@ class AuthController extends Controller
         $this->render('auth.register', [
             'errors' => $errors,
             'form' => $data,
+            'returnUrl' => $returnUrl,
         ]);
     }
 

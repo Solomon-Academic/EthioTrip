@@ -64,10 +64,31 @@
         localStorage.setItem('packageIsPerDay', isPerDay ? '1' : '0');
     }
 
+    // UPDATED: selectPackage function with login check
     function selectPackage(pkg) {
-        persistPackage(pkg);
-        showToastMessage('✓ ' + pkg.name + ' selected. Opening payment...');
-        window.location.href = ETHIOTRIP.page('/payment');
+        // Check if user is logged in before proceeding to payment
+        fetch('/ethiotrip1/ethiotrip/public/api/check-login')
+            .then(response => response.json())
+            .then(data => {
+                if (data.logged_in) {
+                    // User logged in - proceed
+                    persistPackage(pkg);
+                    showToastMessage('✓ ' + pkg.name + ' selected. Opening payment...');
+                    window.location.href = ETHIOTRIP.page('/payment');
+                } else {
+                    // Guest - ask to login
+                    if (confirm('Please sign in to book this package. Would you like to login now?')) {
+                        const returnUrl = encodeURIComponent(window.location.href);
+                        window.location.href = ETHIOTRIP.page('/login?return=' + returnUrl);
+                    }
+                }
+            })
+            .catch(() => {
+                // If API fails, still allow booking (fallback)
+                persistPackage(pkg);
+                showToastMessage('✓ ' + pkg.name + ' selected. Opening payment...');
+                window.location.href = ETHIOTRIP.page('/payment');
+            });
     }
 
     function renderCard(pkg) {
