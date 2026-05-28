@@ -189,11 +189,11 @@ Home → Destination → Packages → Payment → Booking → Dashboard
 
 | Member | Role |
 |--------|------|
-| Solomon | Core System |
-| Suheil | Authentication |
-| Yordanos | Booking System |
-| Zemedkun | Admin Module |
-| Zerihun | API & Email |
+| Solomon Kahsay | Core System |
+| Zerihun Berhanu | Core System |
+| Suheil Ali | Authentication System |
+| Yordanos Abebe | Booking System |
+| Zemedkun Workalem | Admin Module + API & Email |
 
 ---
 
